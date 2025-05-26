@@ -1,5 +1,4 @@
 import { AppDataSource } from '~/config/database.config'
-import refresh_tokens from '~/models/Entity/Refresh_token.entity'
 import refresh_tokens from '~/models/Entity/refresh_token.entity'
 
 class RefreshTokenService {
