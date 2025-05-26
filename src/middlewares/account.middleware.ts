@@ -1,10 +1,8 @@
 import { checkSchema } from 'express-validator'
-import { isLength, isString } from 'lodash'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/message'
 import { ErrorWithStatus } from '~/models/Error'
 import accountService from '~/services/account.service'
-import { verifyPassword } from '~/utils/crypto'
 import { verifyToken } from '~/utils/jwt'
 import { validate } from '~/utils/validations'
 
@@ -20,7 +18,7 @@ export const validateRegister = validate(
           if (user) {
             throw new ErrorWithStatus({
               message: USERS_MESSAGES.EMAIL_ALREADY_EXIST,
-              status: 400
+              status: HTTP_STATUS.BAD_REQUEST
             })
           }
           return true
@@ -51,7 +49,7 @@ export const validateRegister = validate(
           if (value !== req.body.password) {
             throw new ErrorWithStatus({
               message: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_MATCH,
-              status: 400
+              status: HTTP_STATUS.BAD_REQUEST
             })
           }
           return true
@@ -74,7 +72,10 @@ export const validateLogin = validate(
             accountService.checkPassword(value, req.body.password)
           ])
           if (!user || !isPasswordValid) {
-            throw new Error(USERS_MESSAGES.EMAIL_OR_PASSWORD_INVALID)
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.EMAIL_OR_PASSWORD_INVALID,
+              status: HTTP_STATUS.BAD_REQUEST
+            })
           }
           req.body.account_id = user.account_id
           req.body.password = user.password
@@ -100,11 +101,14 @@ export const validateAccessToken = validate(
         options: async (value, { req }) => {
           const token = value.split(' ')[1]
           if (!token) {
-            throw new Error(USERS_MESSAGES.ACCESS_TOKEN_REQUIRED)
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.ACCESS_TOKEN_REQUIRED,
+              status: HTTP_STATUS.UNAUTHORIZED
+            })
           }
           const decoded = await verifyToken({ token, secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string })
           console.log(decoded)
-
+          req.body.email = decoded.email
           req.body.account_id = decoded.account_id
           return true
         }
@@ -172,7 +176,7 @@ export const validateVerifyEmail = validate(
   })
 )
 
-export const validateUpdateProfile = validate(
+export const validateUpdateAccount = validate(
   checkSchema({
     full_name: {
       isString: true,
@@ -191,7 +195,7 @@ export const validateUpdateProfile = validate(
       }
     },
     dob: {
-      isDate: true,
+      isTimestamp: true,
       errorMessage: USERS_MESSAGES.DOB_INVALID
     },
     gender: {

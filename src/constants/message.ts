@@ -40,5 +40,6 @@ export const USERS_MESSAGES = {
   FULL_NAME_INVALID: 'Fullname is invalid',
   PHONE_INVALID: 'Phone is invalid',
   DOB_INVALID: 'Date of birth is invalid',
-  GENDER_INVALID: 'Gender is invalid'
+  GENDER_INVALID: 'Gender is invalid',
+  USER_VIEWED_SUCCESS: 'User viewed successfully'
 }

@@ -1,55 +1,74 @@
-import { BeforeInsert, Column, Entity, PrimaryColumn } from 'typeorm'
+import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, Timestamp } from 'typeorm'
 import idPrefix from '~/constants/idPrefix'
 import { v4 as uuidvg4 } from 'uuid'
-
+import RefreshToken from './refresh_token.entity'
+import { PaymentHistory } from './payment_history.entity'
+import { MenstrualCycle } from './menstrual_cycle.entity'
+import Blog from './blog.entity'
 export interface AccountType {
   account_id: string
   full_name?: string | null
   email: string
+  password: string
   phone?: string | null
   dob?: Date | null
   gender?: string | null
-  password: string
-  role?: string | null
+  role: string
   is_verified?: string | null
-  created_at: Date
-  updated_at: Date
+  created_at: Timestamp
+  updated_at: Timestamp
 }
 
-@Entity()
+@Entity({ name: 'account' })
 export default class Account implements AccountType {
   @PrimaryColumn('varchar')
-  account_id!: string
+  account_id: string
 
-  @Column('varchar', { nullable: true })
+  @Column('varchar', { length: 1000, nullable: true })
   full_name: string | null
 
-  @Column('varchar')
-  email!: string
+  @Column('varchar', { length: 100 })
+  email: string
 
-  @Column('varchar', { nullable: true })
+  @Column('text')
+  password: string
+
+  @Column('varchar', { length: 10, nullable: true })
   phone: string | null
 
   @Column('date', { nullable: true })
   dob: Date | null
 
-  @Column('varchar', { nullable: true })
+  @Column('varchar', { length: 100, nullable: true })
   gender: string | null
 
-  @Column('varchar')
-  password!: string
+  @Column('varchar', { length: 100 })
+  role: string
 
-  @Column('varchar', { nullable: true })
-  role: string | null
-
-  @Column('varchar', { default: 'false' })
+  @Column('text', { default: 'false' })
   is_verified: string
 
-  @Column('date')
-  created_at!: Date
+  @Column({ type: 'timestamptz' })
+  created_at: Timestamp
 
-  @Column('date')
-  updated_at!: Date
+  @Column({ type: 'timestamptz' })
+  updated_at: Timestamp
+
+  @OneToOne(() => RefreshToken, (refreshToken: RefreshToken) => refreshToken.account_id)
+  @JoinColumn({ name: 'account_id' })
+  refreshToken: RefreshToken
+
+  @OneToMany(() => PaymentHistory, (paymentHistory: PaymentHistory) => paymentHistory.account_id)
+  @JoinColumn({ name: 'account_id' })
+  paymentHistory: PaymentHistory[]
+
+  @OneToOne(() => MenstrualCycle, (menstrualCycle: MenstrualCycle) => menstrualCycle.account_id)
+  @JoinColumn({ name: 'account_id' })
+  menstrualCycle: MenstrualCycle
+
+  @OneToMany(() => Blog, (blog: Blog) => blog.created_by)
+  @JoinColumn({ name: 'account_id' })
+  blog: Blog[]
 
   @BeforeInsert()
   generateId() {
