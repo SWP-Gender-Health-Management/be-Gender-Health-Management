@@ -1,4 +1,13 @@
 import { Entity, PrimaryColumn, Column, Timestamp } from 'typeorm'
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  Timestamp,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  CreateDateColumn
+} from 'typeorm'
 
 export interface FeedbackType {
   feed_id: string
@@ -11,6 +20,7 @@ export interface FeedbackType {
 @Entity({ name: 'feedback' })
 export default class Feedback implements FeedbackType {
   @PrimaryColumn({ type: 'varchar', length: 20 })
+  @PrimaryGeneratedColumn('uuid')
   feed_id: string
 
   @Column({ type: 'text' })
@@ -20,8 +30,10 @@ export default class Feedback implements FeedbackType {
   rating: number
 
   @Column({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
   @Column({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 }

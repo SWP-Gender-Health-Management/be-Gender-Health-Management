@@ -1,4 +1,14 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, Timestamp } from 'typeorm'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  Timestamp,
+  UpdateDateColumn,
+  CreateDateColumn
+} from 'typeorm'
 import WorkingSlot from './working_slot.entity'
 import Account from './Account.entity'
 
@@ -14,6 +24,7 @@ export interface StaffPatternType {
 @Entity({ name: 'staff_pattern' }) // Tên bảng trong CSDL
 export default class StaffPattern implements StaffPatternType {
   @PrimaryColumn({ type: 'varchar', length: 20 })
+  @PrimaryGeneratedColumn('uuid')
   pattern_id: string
 
   @Column({ type: 'varchar', length: 20 })
@@ -26,6 +37,7 @@ export default class StaffPattern implements StaffPatternType {
   date: Date
 
   @Column({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
   @Column({ type: 'timestamptz' })

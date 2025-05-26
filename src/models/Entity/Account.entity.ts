@@ -1,4 +1,16 @@
 import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, Timestamp } from 'typeorm'
+import {
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  Timestamp
+} from 'typeorm'
 import idPrefix from '~/constants/idPrefix'
 import { v4 as uuidvg4 } from 'uuid'
 import RefreshToken from './Refresh_token.entity'
@@ -23,6 +35,7 @@ export interface AccountType {
 @Entity({ name: 'account' })
 export default class Account implements AccountType {
   @PrimaryColumn('varchar')
+  @PrimaryGeneratedColumn('uuid')
   account_id: string
 
   @Column('varchar', { length: 1000, nullable: true })
@@ -50,9 +63,11 @@ export default class Account implements AccountType {
   is_verified: string
 
   @Column({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
   @Column({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
   @OneToOne(() => RefreshToken, (refreshToken: RefreshToken) => refreshToken.account_id)

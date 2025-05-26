@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryColumn, Timestamp } from 'typeorm'
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Timestamp, UpdateDateColumn } from 'typeorm'
 
 export interface ResultType {
   result_id: string
@@ -11,6 +12,7 @@ export interface ResultType {
 @Entity({ name: 'result' })
 export default class Result implements ResultType {
   @PrimaryColumn({ type: 'varchar', length: 20 })
+  @PrimaryGeneratedColumn('uuid')
   result_id: string
 
   @Column({ type: 'varchar', length: 1000 })
@@ -20,8 +22,10 @@ export default class Result implements ResultType {
   description: string
 
   @Column({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
   @Column({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 }

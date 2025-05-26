@@ -1,4 +1,14 @@
 import { Column, Entity, PrimaryColumn, Timestamp, ManyToOne, JoinColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  Timestamp,
+  ManyToOne,
+  JoinColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import WorkingSlot from './working_slot.entity'
 import Account from './Account.entity'
 
@@ -15,6 +25,7 @@ export interface ConsultantPatternType {
 @Entity({ name: 'consultant_pattern' })
 export default class ConsultantPattern implements ConsultantPatternType {
   @PrimaryColumn({ type: 'varchar', length: 20 })
+  @PrimaryGeneratedColumn('uuid')
   pattern_id: string
 
   @Column({ type: 'varchar', length: 20 })
@@ -30,9 +41,11 @@ export default class ConsultantPattern implements ConsultantPatternType {
   is_booked: boolean
 
   @Column({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
   @Column({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
   @ManyToOne(() => WorkingSlot, (slot) => slot.slot_id)

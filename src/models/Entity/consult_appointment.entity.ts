@@ -1,4 +1,15 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, Timestamp, OneToOne } from 'typeorm'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  Timestamp,
+  OneToOne,
+  UpdateDateColumn,
+  CreateDateColumn
+} from 'typeorm'
 import Account from './Account.entity'
 
 import Feedback from './feedback.entity'
@@ -17,6 +28,7 @@ export interface ConsultAppointmentType {
 @Entity({ name: 'consult_appointment' })
 export default class ConsultAppointment implements ConsultAppointmentType {
   @PrimaryColumn({ type: 'varchar', length: 20 })
+  @PrimaryGeneratedColumn('uuid')
   app_id: string
 
   @Column({ type: 'varchar', length: 20 })
@@ -35,9 +47,11 @@ export default class ConsultAppointment implements ConsultAppointmentType {
   description: string
 
   @Column({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
   @Column({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
   @ManyToOne(() => Account, (customer: Account) => customer.account_id)

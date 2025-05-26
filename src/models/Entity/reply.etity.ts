@@ -1,6 +1,17 @@
 // src/entity/Reply.ts
 
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, Timestamp } from 'typeorm'
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  Timestamp,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  CreateDateColumn
+} from 'typeorm'
 import Account from './Account.entity'
 
 // Interface định nghĩa cấu trúc dữ liệu cho Reply
@@ -13,8 +24,10 @@ export interface ReplyType {
 }
 
 @Entity({ name: 'reply' }) // Tên bảng trong CSDL
+@Entity({ name: 'reply' })
 export default class Reply implements ReplyType {
   @PrimaryColumn({ type: 'varchar', length: 20 })
+  @PrimaryGeneratedColumn('uuid')
   reply_id: string
 
   @Column({ type: 'varchar', length: 20 })
@@ -24,9 +37,11 @@ export default class Reply implements ReplyType {
   content: string
 
   @Column({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
   @Column({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
   @ManyToOne(() => Account, (account: Account) => account.account_id)

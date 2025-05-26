@@ -10,6 +10,8 @@ import {
   OneToOne,
   ManyToMany,
   JoinTable
+  JoinTable,
+  PrimaryGeneratedColumn
 } from 'typeorm'
 import WorkingSlot from './working_slot.entity'
 import Account from './Account.entity'
@@ -17,6 +19,7 @@ import Result from './result.entity'
 import Feedback from './feedback.entity'
 import Laborarity from './laborarity.entity'
 // Interface định nghĩa cấu trúc dữ liệu
+
 export interface LaboratoryAppointmentType {
   app_id: string
   customer_id: string
@@ -31,8 +34,10 @@ export interface LaboratoryAppointmentType {
 }
 
 @Entity({ name: 'laborarity_appointment' }) // Tên bảng trong CSDL
+@Entity({ name: 'laborarity_appointment' })
 export default class LaboratoryAppointment implements LaboratoryAppointmentType {
   @PrimaryColumn({ type: 'varchar', length: 20 })
+  @PrimaryGeneratedColumn('uuid')
   app_id: string
 
   @Column({ type: 'varchar', length: 20 })
@@ -57,9 +62,11 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
   description: string
 
   @Column({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
   @Column({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
   @ManyToOne(() => Account, (customer) => customer.account_id)

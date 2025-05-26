@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, Timestamp } from 'typeorm'
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Timestamp, UpdateDateColumn } from 'typeorm'
 
 export interface WorkingSlotType {
   slot_id: string
@@ -28,8 +29,10 @@ export default class WorkingSlot implements WorkingSlotType {
   type: string
 
   @Column({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
   @Column({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 }
