@@ -1,10 +1,11 @@
 import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, Timestamp } from 'typeorm'
 import idPrefix from '~/constants/idPrefix'
 import { v4 as uuidvg4 } from 'uuid'
-import RefreshToken from './refresh_token.entity'
-import { PaymentHistory } from './payment_history.entity'
-import { MenstrualCycle } from './menstrual_cycle.entity'
+import RefreshToken from './Refresh_token.entity'
+import PaymentHistory from './payment_history.entity'
+import MenstrualCycle from './menstrual_cycle.entity'
 import Blog from './blog.entity'
+
 export interface AccountType {
   account_id: string
   full_name?: string | null
