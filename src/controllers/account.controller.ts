@@ -11,14 +11,14 @@ export const registerController = async (req: Request, res: Response, next: Next
   const { account_id, refreshToken } = result
   await refreshTokenService.createRefreshToken({ account_id: account_id, token: refreshToken })
 
-  // res.cookie('refreshToken', refreshToken, {
-  //   httpOnly: true,
-  //   secure: process.env.NODE_ENV === 'production', // Quan trọng: Chỉ gửi cookie qua HTTPS (true cho production)
-  //   sameSite: 'strict', // Hoặc 'Lax'. 'Strict' là an toàn nhất (chống CSRF)
-  //   expires: new Date(Date.now() + parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string)),
-  //   // path: '/api/auth/refresh-token' // Tùy chọn: Giới hạn cookie chỉ được gửi đến endpoint cụ thể này
-  //   path: '/' // Hoặc đặt path rộng hơn nếu cần thiết cho các kịch bản khác nhau
-  // })
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
+    secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production
+    sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
+    maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string), // Thời gian sống của cookie (tính bằng mili giây)
+    // path: '/', // (Tùy chọn) Đường dẫn mà cookie hợp lệ, '/' là cho toàn bộ domain
+    // domain: 'yourdomain.com', // (Tùy chọn) Chỉ định domain cho cookie
+  })
   res.status(200).json({
     message: USERS_MESSAGES.USER_CREATED_SUCCESS,
     result
@@ -27,7 +27,15 @@ export const registerController = async (req: Request, res: Response, next: Next
 
 export const loginController = async (req: Request, res: Response, next: NextFunction) => {
   const result = await accountService.login(req.body)
-
+  const { refreshToken } = result
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
+    secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production
+    sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
+    maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string), // Thời gian sống của cookie (tính bằng mili giây)
+    // path: '/', // (Tùy chọn) Đường dẫn mà cookie hợp lệ, '/' là cho toàn bộ domain
+    // domain: 'yourdomain.com', // (Tùy chọn) Chỉ định domain cho cookie
+  })
   res.status(200).json({
     message: USERS_MESSAGES.USER_LOGGED_IN_SUCCESS,
     result
