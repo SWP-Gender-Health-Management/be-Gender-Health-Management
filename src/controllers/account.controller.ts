@@ -67,7 +67,7 @@ export const verifyEmailController = async (req: Request, res: Response, next: N
 }
 
 export const sendEmailVerifiedController = async (req: Request, res: Response, next: NextFunction) => {
-  await accountService.sendEmailVerified(req.body.account_id, req.body.email)
+  await accountService.sendEmailVerified(req.body.account_id)
   res.status(200).json({
     message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
   })
@@ -82,9 +82,23 @@ export const viewAccountController = async (req: Request, res: Response, next: N
 }
 
 export const updateAccountController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.updateAccount(req.body)
+  const result = await accountService.updateProfile(req.body)
   res.status(200).json({
     message: USERS_MESSAGES.USER_UPDATED_SUCCESS,
+    result
+  })
+}
+
+export const checkEmailVerifiedController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await accountService.checkEmailVerified(req.body)
+  if (!result) {
+    throw new ErrorWithStatus({
+      message: USERS_MESSAGES.EMAIL_NOT_VERIFIED,
+      status: 400
+    })
+  }
+  res.status(200).json({
+    message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS,
     result
   })
 }

@@ -41,5 +41,7 @@ export const USERS_MESSAGES = {
   PHONE_INVALID: 'Phone is invalid',
   DOB_INVALID: 'Date of birth is invalid',
   GENDER_INVALID: 'Gender is invalid',
-  USER_VIEWED_SUCCESS: 'User viewed successfully'
+  USER_VIEWED_SUCCESS: 'User viewed successfully',
+  EMAIL_NOT_VERIFIED: 'Email not verified',
+  EMAIL_VERIFIED_TOKEN_EXPIRED: 'Email verified token expired'
 }

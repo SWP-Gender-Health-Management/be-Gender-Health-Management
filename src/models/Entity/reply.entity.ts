@@ -1,38 +1,34 @@
 import {
+  Entity,
+  Column,
   ManyToOne,
   Timestamp,
-  UpdateDateColumn,
-  OneToOne,
-  Column,
-  CreateDateColumn,
   PrimaryGeneratedColumn,
-  Entity
+  UpdateDateColumn,
+  CreateDateColumn,
+  OneToOne
 } from 'typeorm'
 import Account from './account.entity'
-import Reply from './reply.entity'
-export interface QuestionType {
-  ques_id: string
+import Question from './question.entity'
+
+export interface ReplyType {
   reply_id: string
-  created_by: string
+  consultant_id: string
   content: string
+  // created_at: Timestamp
+  // updated_at: Timestamp
 }
 
-@Entity({ name: 'question' })
-export default class Question implements QuestionType {
+@Entity({ name: 'reply' })
+export default class Reply implements ReplyType {
   @PrimaryGeneratedColumn('uuid')
-  ques_id: string
-
-  @Column({ type: 'uuid', nullable: false })
   reply_id: string
 
   @Column({ type: 'uuid', nullable: false })
-  created_by: string
+  consultant_id: string
 
   @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   content: string
-
-  @Column({ type: 'boolean', default: false })
-  status: boolean
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
@@ -40,9 +36,9 @@ export default class Question implements QuestionType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (account: Account) => account.question)
+  @ManyToOne(() => Account, (account: Account) => account.reply)
   account: Account
 
-  @OneToOne(() => Reply, (reply: Reply) => reply.question)
-  reply: Reply
+  @OneToOne(() => Question, (question: Question) => question.reply)
+  question: Question
 }

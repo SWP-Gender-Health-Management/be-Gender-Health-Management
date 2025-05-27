@@ -1,4 +1,3 @@
-import { Column, Entity, PrimaryColumn, Timestamp, ManyToOne, JoinColumn } from 'typeorm'
 import {
   Column,
   CreateDateColumn,
@@ -6,11 +5,12 @@ import {
   PrimaryGeneratedColumn,
   Timestamp,
   ManyToOne,
-  JoinColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  OneToMany
 } from 'typeorm'
 import WorkingSlot from './working_slot.entity'
-import Account from './Account.entity'
+import Account from './account.entity'
+import ConsultAppointment from './consult_appointment.entity'
 
 export interface ConsultantPatternType {
   pattern_id: string
@@ -18,41 +18,42 @@ export interface ConsultantPatternType {
   consultant_id: string
   date: Date
   is_booked: boolean
-  created_at: Timestamp
-  updated_at: Timestamp
+  // created_at: Timestamp
+  // updated_at: Timestamp
 }
 
 @Entity({ name: 'consultant_pattern' })
 export default class ConsultantPattern implements ConsultantPatternType {
-  @PrimaryColumn({ type: 'varchar', length: 20 })
   @PrimaryGeneratedColumn('uuid')
   pattern_id: string
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   slot_id: string
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   consultant_id: string
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', nullable: false })
   date: Date
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: false })
   is_booked: boolean
 
-  @Column({ type: 'timestamptz' })
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
-  @Column({ type: 'timestamptz' })
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => WorkingSlot, (slot) => slot.slot_id)
-  @JoinColumn({ name: 'slot_id' })
-  slot: WorkingSlot
+  @ManyToOne(() => WorkingSlot, (working_slot) => working_slot.consultant_pattern)
+  working_slot: WorkingSlot
 
-  @ManyToOne(() => Account, (consultant) => consultant.account_id)
-  @JoinColumn({ name: 'consultant_id' })
+  @ManyToOne(() => Account, (consultant) => consultant.consultant_pattern)
   consultant: Account
+
+  @OneToMany(
+    () => ConsultAppointment,
+    (consultAppointment: ConsultAppointment) => consultAppointment.consultant_pattern
+  )
+  consult_appointment: ConsultAppointment[]
 }

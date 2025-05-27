@@ -1,24 +1,20 @@
 import {
   Entity,
-  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
   Timestamp,
   ManyToOne,
-  JoinColumn,
   OneToOne,
   ManyToMany,
-  JoinTable
   JoinTable,
   PrimaryGeneratedColumn
 } from 'typeorm'
 import WorkingSlot from './working_slot.entity'
-import Account from './Account.entity'
+import Account from './account.entity'
 import Result from './result.entity'
 import Feedback from './feedback.entity'
 import Laborarity from './laborarity.entity'
-// Interface định nghĩa cấu trúc dữ liệu
 
 export interface LaboratoryAppointmentType {
   app_id: string
@@ -29,57 +25,51 @@ export interface LaboratoryAppointmentType {
   feed_id: string
   queue_index: number
   description: string
-  created_at: Timestamp
-  updated_at: Timestamp
+  // created_at: Timestamp
+  // updated_at: Timestamp
 }
 
-@Entity({ name: 'laborarity_appointment' }) // Tên bảng trong CSDL
 @Entity({ name: 'laborarity_appointment' })
 export default class LaboratoryAppointment implements LaboratoryAppointmentType {
-  @PrimaryColumn({ type: 'varchar', length: 20 })
   @PrimaryGeneratedColumn('uuid')
   app_id: string
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   customer_id: string
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   slot_id: string
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   lab_id: string
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   result_id: string
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   feed_id: string
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: false })
   queue_index: number
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
   description: string
 
-  @Column({ type: 'timestamptz' })
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
-  @Column({ type: 'timestamptz' })
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (customer) => customer.account_id)
-  @JoinColumn({ name: 'customer_id' })
+  @ManyToOne(() => Account, (customer: Account) => customer.laborarity_appointment)
   customer: Account
 
-  @ManyToOne(() => WorkingSlot, (slot) => slot.slot_id)
-  @JoinColumn({ name: 'slot_id' })
-  slot: WorkingSlot
+  @ManyToOne(() => WorkingSlot, (working_slot: WorkingSlot) => working_slot.laborarity_appointment)
+  working_slot: WorkingSlot
 
-  @ManyToMany(() => Laborarity, (lab) => lab.lab_id)
+  @ManyToMany(() => Laborarity, (laborarity: Laborarity) => laborarity.laboratoryAppointment)
   @JoinTable({
-    name: 'laboratory_appointment_lab', // name of the junction table
+    name: 'laboratory_appointment_lab',
     joinColumn: {
       name: 'app_id',
       referencedColumnName: 'app_id'
@@ -89,13 +79,11 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
       referencedColumnName: 'lab_id'
     }
   })
-  lab: Laborarity[]
+  laborarity: Laborarity[]
 
-  @OneToOne(() => Result, (result) => result.result_id)
-  @JoinColumn({ name: 'result_id' })
+  @OneToOne(() => Result, (result: Result) => result.laboratoryAppointment)
   result: Result
 
-  @OneToOne(() => Feedback, (feedback) => feedback.feed_id)
-  @JoinColumn({ name: 'feed_id' })
+  @OneToOne(() => Feedback, (feedback: Feedback) => feedback.laboratoryAppointment)
   feedback: Feedback
 }

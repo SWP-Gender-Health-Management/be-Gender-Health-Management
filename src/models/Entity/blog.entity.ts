@@ -1,56 +1,52 @@
-import { Entity, PrimaryColumn, Column, Timestamp, ManyToOne, JoinColumn } from 'typeorm'
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   Timestamp,
   ManyToOne,
-  JoinColumn,
   UpdateDateColumn,
   CreateDateColumn
 } from 'typeorm'
-import Account from './Account.entity'
+import Account from './account.entity'
+import { Major } from '~/enum/major.enum'
 
 export interface BlogType {
   blog_id: string
+  major: Major
   title: string
   content: string
-  status: string
   status: boolean
   created_by: string
-  created_at: Timestamp
-  updated_at: Timestamp
+  // created_at: Timestamp
+  // updated_at: Timestamp
 }
 
 @Entity('blog')
 export default class Blog implements BlogType {
-  @PrimaryColumn({ type: 'varchar', length: 20 })
   @PrimaryGeneratedColumn('uuid')
   blog_id: string
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'enum', nullable: false, enum: Major })
+  major: Major
+
+  @Column({ type: 'varchar', length: 255, nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   title: string
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   content: string
 
-  @Column({ type: 'varchar', length: 20 })
-  status: string
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: false })
   status: boolean
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   created_by: string
 
-  @Column({ type: 'timestamptz' })
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
-  @Column({ type: 'timestamptz' })
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (account) => account.account_id)
-  @JoinColumn({ name: 'created_by' })
+  @ManyToOne(() => Account, (account) => account.blog)
   account: Account
 }

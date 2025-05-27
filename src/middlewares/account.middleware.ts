@@ -195,7 +195,7 @@ export const validateUpdateAccount = validate(
       }
     },
     dob: {
-      isTimestamp: true,
+      isDate: true,
       errorMessage: USERS_MESSAGES.DOB_INVALID
     },
     gender: {

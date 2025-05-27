@@ -1,15 +1,13 @@
-import { Entity, PrimaryColumn, Column, Timestamp, OneToOne, JoinColumn } from 'typeorm'
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   Timestamp,
   OneToOne,
-  JoinColumn,
   UpdateDateColumn,
   CreateDateColumn
 } from 'typeorm'
-import Account from './Account.entity'
+import Account from './account.entity'
 
 export interface MenstrualCycleType {
   cycle_id: string
@@ -24,34 +22,30 @@ export interface MenstrualCycleType {
 
 @Entity('menstrual_cycle')
 export default class MenstrualCycle implements MenstrualCycleType {
-  @PrimaryColumn({ type: 'varchar', length: 20 })
   @PrimaryGeneratedColumn('uuid')
   cycle_id: string
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   account_id: string
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', nullable: false })
   start_date: Date
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', nullable: false })
   end_date: Date
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', default: 30 })
   period: number
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
   note: string
 
-  @Column({ type: 'timestamptz' })
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
-  @Column({ type: 'timestamptz' })
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @OneToOne(() => Account, (account) => account.account_id)
-  @JoinColumn({ name: 'account_id' })
+  @OneToOne(() => Account, (account: Account) => account.menstrualCycle)
   account: Account
 }

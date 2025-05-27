@@ -1,55 +1,47 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, Timestamp } from 'typeorm'
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  JoinColumn,
   Timestamp,
   UpdateDateColumn,
   CreateDateColumn
 } from 'typeorm'
 import WorkingSlot from './working_slot.entity'
-import Account from './Account.entity'
+import Account from './account.entity'
 
 export interface StaffPatternType {
   pattern_id: string
   slot_id: string
   staff_id: string
   date: Date
-  created_at: Timestamp
-  updated_at: Timestamp
+  // created_at: Timestamp
+  // updated_at: Timestamp
 }
 
 @Entity({ name: 'staff_pattern' }) // Tên bảng trong CSDL
 export default class StaffPattern implements StaffPatternType {
-  @PrimaryColumn({ type: 'varchar', length: 20 })
   @PrimaryGeneratedColumn('uuid')
   pattern_id: string
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   slot_id: string
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'uuid', nullable: false })
   staff_id: string
 
-  @Column({ type: 'date' }) // Giả sử 'date' có thể null
+  @Column({ type: 'date', nullable: false }) // Giả sử 'date' có thể null
   date: Date
 
-  @Column({ type: 'timestamptz' })
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
-  @Column({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  // --- Định nghĩa các mối quan hệ ---
+  @ManyToOne(() => WorkingSlot, (working_slot: WorkingSlot) => working_slot.staff_pattern)
+  working_slot: WorkingSlot
 
-  @ManyToOne(() => WorkingSlot, (slot) => slot.slot_id)
-  @JoinColumn({ name: 'slot_id' })
-  slot: WorkingSlot
-
-  @ManyToOne(() => Account, (staff) => staff.account_id)
-  @JoinColumn({ name: 'staff_id' })
-  staff: Account
+  @ManyToOne(() => Account, (account: Account) => account.consultant_pattern)
+  account: Account
 }
