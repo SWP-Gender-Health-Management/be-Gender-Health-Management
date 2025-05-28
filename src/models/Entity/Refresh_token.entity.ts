@@ -1,43 +1,39 @@
-import { Entity, PrimaryColumn, Column, Timestamp, OneToOne, JoinColumn } from 'typeorm'
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   Timestamp,
   OneToOne,
-  JoinColumn,
   UpdateDateColumn,
-  CreateDateColumn
+  CreateDateColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm'
-import Account from './Account.entity'
+import Account from './account.entity'
 
 export interface RefreshTokenType {
+  token_id: string
   account_id: string
   token: string
-  created_at: Timestamp
-  updated_at: Timestamp
+  // created_at: Timestamp
+  // updated_at: Timestamp
 }
 
-@Entity()
 @Entity({ name: 'refresh_token' })
 export default class RefreshToken implements RefreshTokenType {
-  @PrimaryColumn('varchar')
   @PrimaryGeneratedColumn('uuid')
+  token_id: string
+
+  @Column({ type: 'uuid', nullable: false })
   account_id: string
 
-  @Column('varchar')
-  @Column({ type: 'varchar' })
+  @Column({ type: 'text', nullable: false })
   token: string
 
-  @Column('timestamptz')
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
-  @Column('timestamptz')
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @OneToOne(() => Account, (account) => account.account_id)
-  @JoinColumn({ name: 'account_id' })
+  @OneToOne(() => Account, (account: Account) => account.refreshToken)
   account: Account
 }

@@ -1,31 +1,39 @@
-import { Column, Entity, PrimaryColumn, Timestamp } from 'typeorm'
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Timestamp, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  Timestamp,
+  UpdateDateColumn
+} from 'typeorm'
+import LaboratoryAppointment from './laborarity_appointment.entity'
 
 export interface ResultType {
   result_id: string
   name: string
   description: string
-  created_at: Timestamp
-  updated_at: Timestamp
+  // created_at: Timestamp
+  // updated_at: Timestamp
 }
 
 @Entity({ name: 'result' })
 export default class Result implements ResultType {
-  @PrimaryColumn({ type: 'varchar', length: 20 })
   @PrimaryGeneratedColumn('uuid')
   result_id: string
 
-  @Column({ type: 'varchar', length: 1000 })
+  @Column({ type: 'varchar', length: 1000, nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   name: string
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   description: string
 
-  @Column({ type: 'timestamptz' })
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
-  @Column({ type: 'timestamptz' })
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
+
+  @OneToOne(() => LaboratoryAppointment, (laboratoryAppointment: LaboratoryAppointment) => laboratoryAppointment.result)
+  laboratoryAppointment: LaboratoryAppointment
 }

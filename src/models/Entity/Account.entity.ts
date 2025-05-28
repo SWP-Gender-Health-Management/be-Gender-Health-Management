@@ -1,24 +1,23 @@
-// import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, Timestamp } from 'typeorm'
 import {
-  PrimaryColumn,
-  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
-  Timestamp
+  Timestamp,
+  UpdateDateColumn
 } from 'typeorm'
-import idPrefix from '~/constants/idPrefix'
-import { v4 as uuidvg4 } from 'uuid'
-import RefreshToken from './Refresh_token.entity'
-import PaymentHistory from './payment_history.entity'
+import RefreshToken from './refresh_token.entity'
 import MenstrualCycle from './menstrual_cycle.entity'
 import Blog from './blog.entity'
-
+import Transaction from './transaction.entity'
+import ConsultAppointment from './consult_appointment.entity'
+import ConsultantPattern from './consultant_pattern.entity'
+import LaboratoryAppointment from './laborarity_appointment.entity'
+import Reply from './reply.entity'
+import { Role } from '~/enum/role.enum'
+import Question from './question.entity'
 export interface AccountType {
   account_id: string
   full_name?: string | null
@@ -27,70 +26,78 @@ export interface AccountType {
   phone?: string | null
   dob?: Date | null
   gender?: string | null
-  role: string
-  is_verified?: string | null
-  created_at: Timestamp
-  updated_at: Timestamp
+  avatar?: string | null
+  role: Role
+  is_verified?: boolean
+  // created_at: Timestamp
+  // updated_at: Timestamp
 }
 
 @Entity({ name: 'account' })
 export default class Account implements AccountType {
-  @PrimaryColumn('varchar')
   @PrimaryGeneratedColumn('uuid')
   account_id: string
 
-  @Column('varchar', { length: 1000, nullable: true })
-  full_name: string | null
+  @Column({ type: 'varchar', length: 1000, nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
+  full_name?: string
 
-  @Column('varchar', { length: 100 })
+  @Column({ type: 'varchar', length: 100, nullable: false })
   email: string
 
-  @Column('text')
+  @Column({ type: 'text', nullable: false })
   password: string
 
-  @Column('varchar', { length: 10, nullable: true })
-  phone: string | null
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  phone?: string
 
-  @Column('date', { nullable: true })
-  dob: Date | null
+  @Column({ type: 'date', nullable: true })
+  dob?: Date
 
-  @Column('varchar', { length: 100, nullable: true })
-  gender: string | null
+  @Column({ type: 'varchar', length: 100, nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
+  gender?: string
 
-  @Column('varchar', { length: 100 })
-  role: string
+  @Column({ type: 'text', nullable: true })
+  avatar?: string
 
-  @Column('text', { default: 'false' })
-  is_verified: string
+  @Column({ type: 'enum', default: Role.CUSTOMER, enum: Role })
+  role: Role
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'boolean', default: false })
+  is_verified: boolean
+
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
-  @Column({ type: 'timestamptz' })
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @OneToOne(() => RefreshToken, (refreshToken: RefreshToken) => refreshToken.account_id)
-  @JoinColumn({ name: 'account_id' })
+  @OneToOne(() => RefreshToken, (refreshToken: RefreshToken) => refreshToken.account)
   refreshToken: RefreshToken
 
-  @OneToMany(() => PaymentHistory, (paymentHistory: PaymentHistory) => paymentHistory.account_id)
-  @JoinColumn({ name: 'account_id' })
-  paymentHistory: PaymentHistory[]
+  @OneToMany(() => Transaction, (transaction: Transaction) => transaction.account)
+  transaction: Transaction[]
 
-  @OneToOne(() => MenstrualCycle, (menstrualCycle: MenstrualCycle) => menstrualCycle.account_id)
-  @JoinColumn({ name: 'account_id' })
+  @OneToOne(() => MenstrualCycle, (menstrualCycle: MenstrualCycle) => menstrualCycle.account)
   menstrualCycle: MenstrualCycle
 
-  @OneToMany(() => Blog, (blog: Blog) => blog.created_by)
-  @JoinColumn({ name: 'account_id' })
+  @OneToMany(() => Blog, (blog: Blog) => blog.account)
   blog: Blog[]
 
-  @BeforeInsert()
-  generateId() {
-    const prefix = idPrefix.ACCOUNT
-    const uuidPart = uuidvg4().split('-')[0] // Lấy 8 ký tự đầu của UUID
-    this.account_id = `${prefix}-${uuidPart}`
-  }
+  @OneToMany(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.customer)
+  consult_appointment: ConsultAppointment[]
+
+  @OneToMany(() => ConsultantPattern, (consultantPattern: ConsultantPattern) => consultantPattern.consultant)
+  consultant_pattern: ConsultantPattern[]
+
+  @OneToMany(
+    () => LaboratoryAppointment,
+    (laboratoryAppointment: LaboratoryAppointment) => laboratoryAppointment.customer
+  )
+  laborarity_appointment: LaboratoryAppointment[]
+
+  @OneToMany(() => Reply, (reply: Reply) => reply.account)
+  reply: Reply[]
+
+  @OneToMany(() => Question, (question: Question) => question.account)
+  question: Question[]
 }

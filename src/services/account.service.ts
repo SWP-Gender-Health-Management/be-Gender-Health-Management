@@ -1,6 +1,5 @@
 import 'reflect-metadata'
-import account from '~/models/Entity/account.entity'
-// import db_service from './database.service'
+import type { StringValue } from 'ms'
 import { hashPassword, verifyPassword } from '~/utils/crypto'
 import { signToken, verifyToken } from '~/utils/jwt'
 import { config } from 'dotenv'
@@ -9,10 +8,11 @@ import { AppDataSource } from '~/config/database.config'
 import Account from '~/models/Entity/account.entity'
 import { ErrorWithStatus } from '~/models/Error'
 import { USERS_MESSAGES } from '~/constants/message'
-import { Verify, verify } from 'crypto'
-import { log } from 'console'
+import { Role } from '~/enum/role.enum'
+import redisClient from '~/config/redis.config'
+
 config()
-const accountRepository = AppDataSource.getRepository(account)
+const accountRepository = AppDataSource.getRepository(Account)
 class AccountService {
   async checkEmailExist(email: string) {
     return await accountRepository.findOne({ where: { email } })
@@ -21,7 +21,10 @@ class AccountService {
   async checkPassword(email: string, password: string) {
     const user = await accountRepository.findOne({ where: { email } })
     if (!user) {
-      throw new Error('Account not found')
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.ACCOUNT_NOT_FOUND,
+        status: 400
+      })
     }
     const isPasswordValid = await verifyPassword(password, user.password)
     return isPasswordValid
@@ -32,7 +35,7 @@ class AccountService {
       payload,
       secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
       options: {
-        expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRE_IN as string
+        expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRE_IN as StringValue
       }
     })
     return token
@@ -43,7 +46,7 @@ class AccountService {
       payload,
       secretKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
       options: {
-        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as string
+        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as StringValue
       }
     })
   }
@@ -53,41 +56,39 @@ class AccountService {
       payload,
       secretKey: process.env.JWT_SECRET_EMAIL_VERIFIED_TOKEN as string,
       options: {
-        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as string
+        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as StringValue
       }
     })
   }
 
   async createAccount(payload: any) {
     const { email, password } = payload
-    const result = await accountRepository.findOne({ where: { email } })
-
-    if (result) {
-      throw new ErrorWithStatus({
-        message: USERS_MESSAGES.ACCOUNT_ALREADY_EXISTS,
-        status: 400
-      })
-    }
 
     const passwordHash = await hashPassword(password)
     const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
 
     const user = await accountRepository.create({
       email: email,
-      password: passwordHash,
-      created_at: new Date(),
-      updated_at: new Date()
+      password: passwordHash
     })
     await accountRepository.save(user)
 
     const [accessToken, refreshToken, emailVerifiedToken] = await Promise.all([
-      this.createAccessToken({ account_id: user.account_id, password }),
-      this.createRefreshToken({ account_id: user.account_id, password }),
+      this.createAccessToken({ account_id: user.account_id, email: email, password: passwordHash }),
+      this.createRefreshToken({ account_id: user.account_id, email: email, password: passwordHash }),
       this.createEmailVerifiedToken({ account_id: user.account_id, secretPasscode })
     ])
-
-    await this.sendEmailVerified(user.account_id)
-
+    // await this.sendEmailVerified(user.account_id)
+    //lưu token và user vào redis
+    await Promise.all([
+      redisClient.set(
+        user.account_id.concat(process.env.EMAIL_VERRIFY_TOKEN_REDIS as string),
+        emailVerifiedToken,
+        'EX',
+        60 * 60
+      ),
+      redisClient.set(user.account_id, JSON.stringify(user), 'EX', 60 * 60)
+    ])
     return {
       account_id: user.account_id,
       accessToken,
@@ -98,67 +99,92 @@ class AccountService {
 
   async login(payload: any) {
     const { account_id } = payload
+    const user: Account = await accountRepository.findOne({ where: { account_id } })
+    await redisClient.set(user.account_id, JSON.stringify(user), 'EX', 60 * 60)
     const [accessToken, refreshToken] = await Promise.all([
-      this.createAccessToken({ account_id }),
-      this.createRefreshToken({ account_id })
+      this.createAccessToken({ account_id: user.account_id, email: user.email, password: user.password }),
+      this.createRefreshToken({ account_id: user.account_id, email: user.email, password: user.password })
     ])
     return { accessToken, refreshToken }
   }
 
   async changePassword(payload: any) {
     const { account_id, new_password } = payload
-    const user = await accountRepository.update(account_id, { password: new_password })
+    const passwordHash = await hashPassword(new_password)
+    const [userRedis] = await Promise.all([
+      redisClient.get(account_id),
+      accountRepository.update(account_id, { password: passwordHash })
+    ])
+    const user: Account = JSON.parse(userRedis as string)
+    user.password = passwordHash
     const [accessToken, refreshToken] = await Promise.all([
       this.createAccessToken({ account_id, new_password }),
-      this.createRefreshToken({ account_id, new_password })
+      this.createRefreshToken({ account_id, new_password }),
+      redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
     ])
     return { accessToken, refreshToken }
   }
 
-  async getAccountsList(id: any) {}
+  // async getAccountsList(id: any) {}
 
-  async updateAccount(id: any) {}
+  // async updateAccount(id: any) {}
 
   async verifyEmail(payload: any) {
     const { account_id, secretPasscode } = payload
-    const user: account | null = await accountRepository.findOne({ where: { account_id } })
-    console.log(user)
-
-    if (user?.is_verified === '1') {
+    const user: Account = await this.checkEmailVerified(account_id)
+    if (!user) {
       throw new ErrorWithStatus({
-        message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED,
+        message: USERS_MESSAGES.EMAIL_NOT_VERIFIED,
         status: 400
       })
     }
+    //lấy token từ redis
+    const token: string | null = await redisClient.get(
+      account_id.concat(process.env.EMAIL_VERRIFY_TOKEN_REDIS as string)
+    )
+    //kiểm tra token có tồn tại không
+    if (!token) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.EMAIL_VERIFIED_TOKEN_EXPIRED,
+        status: 400
+      })
+    }
+    //kiểm tra token có hợp lệ không
     const isSecretPasscodeValid = await verifyToken({
-      token: user?.is_verified as string,
+      token: token as string,
       secretKey: process.env.JWT_SECRET_EMAIL_VERIFIED_TOKEN as string
     })
-
-    console.log(isSecretPasscodeValid)
-
-    if (secretPasscode !== isSecretPasscodeValid.secretPasscode && account_id !== isSecretPasscodeValid.account_id) {
+    //kiểm tra mã passcode có khớp không
+    if (secretPasscode !== isSecretPasscodeValid.secretPasscode && isSecretPasscodeValid.account_id === account_id) {
       throw new ErrorWithStatus({
         message: USERS_MESSAGES.SECRET_PASSCODE_MISMATCH,
         status: 400
       })
     }
+    //cập nhật trạng thái verified
+    user.is_verified = true
+    await Promise.all([
+      accountRepository.update(user?.account_id as string, { is_verified: true }),
+      redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
+    ])
 
-    await accountRepository.update(user?.account_id as string, { is_verified: '1' as string })
     return {
       message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
     }
   }
 
   async updateProfile(payload: any) {
-    if (!(await this.checkEmailExist(payload.account_id))) {
-      throw new ErrorWithStatus({
-        message: USERS_MESSAGES.ACCOUNT_NOT_FOUND,
-        status: 400
-      })
-    }
     const { account_id, full_name, phone, dob, gender } = payload
-    const user = await accountRepository.update(account_id, { full_name, phone, dob, gender })
+    const [user] = await Promise.all([
+      accountRepository.findOne({ where: { account_id } }),
+      accountRepository.update(account_id, {
+        full_name: full_name || null,
+        phone: phone || null,
+        dob: dob || null,
+        gender: gender || null
+      })
+    ])
+    await redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
     return user
   }
 
@@ -169,13 +195,30 @@ class AccountService {
       secretPasscode: secretPasscode
     })
     await Promise.all([
-      accountRepository.update(account_id, { is_verified: emailVerifyToken }),
+      //lưu token vào redis
+      redisClient.set(
+        account_id.concat(process.env.EMAIL_VERRIFY_TOKEN_REDIS as string),
+        emailVerifyToken,
+        'EX',
+        60 * 60
+      ),
+      //gửi email
       sendMail({
         to: 'ndmanh1005@gmail.com',
         subject: 'Verify your email',
         text: `Your passcode is ${secretPasscode}`
       })
     ])
+  }
+
+  async checkEmailVerified(account_id: string) {
+    const user: Account = JSON.parse((await redisClient.get(account_id)) as string)
+    return user?.is_verified === true ? user : false
+  }
+
+  async viewAccount(account_id: string) {
+    const user: Account = JSON.parse((await redisClient.get(account_id)) as string)
+    return user
   }
 }
 const accountService = new AccountService()

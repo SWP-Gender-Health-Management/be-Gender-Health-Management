@@ -3,18 +3,20 @@ import passport from 'passport'
 // import { accessTokenAuth } from '~/config/passport.config'
 import {
   changePasswordController,
+  checkEmailVerifiedController,
   loginController,
   registerController,
   sendEmailVerifiedController,
-  updateProfileController,
-  verifyEmailController
+  updateAccountController,
+  verifyEmailController,
+  viewAccountController
 } from '~/controllers/account.controller'
 import {
   validateAccessToken,
   validateChangePassword,
   validateLogin,
   validateRegister,
-  validateUpdateProfile,
+  validateUpdateAccount,
   validateVerifyEmail
 } from '~/middlewares/account.middleware'
 import wrapRequestHandler from '~/utils/handle'
@@ -93,6 +95,31 @@ accountRoute.post('/send-email-verified', validateAccessToken, wrapRequestHandle
   gender: string
   }
 */
-accountRoute.post('/update-profile', validateUpdateProfile, wrapRequestHandler(updateProfileController))
+accountRoute.post(
+  '/update-profile',
+  validateAccessToken,
+  validateUpdateAccount,
+  wrapRequestHandler(updateAccountController)
+)
+
+/*
+  check email verified
+  Path: /check-email-verified
+  Method: POST
+  Body: {
+    email: string
+  }
+*/
+accountRoute.post('/check-email-verified', validateAccessToken, wrapRequestHandler(checkEmailVerifiedController))
+
+/*
+  view account
+  Path: /view-account
+  Method: POST
+  Body: {
+    account_id: string
+  }
+*/
+accountRoute.post('/view-account', validateAccessToken, wrapRequestHandler(viewAccountController))
 
 export default accountRoute
