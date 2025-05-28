@@ -43,5 +43,6 @@ export const USERS_MESSAGES = {
   GENDER_INVALID: 'Gender is invalid',
   USER_VIEWED_SUCCESS: 'User viewed successfully',
   EMAIL_NOT_VERIFIED: 'Email not verified',
-  EMAIL_VERIFIED_TOKEN_EXPIRED: 'Email verified token expired'
+  EMAIL_VERIFIED_TOKEN_EXPIRED: 'Email verified token expired',
+  PERMISSION_DENIED: 'Not allowed to access'
 }

@@ -125,6 +125,19 @@ class AccountService {
     return { accessToken, refreshToken }
   }
 
+  async getAccountById(id: any) {
+    const user: Account = await accountRepository.findOneBy({
+      account_id: id
+    })
+    if (!user) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.ACCOUNT_NOT_FOUND,
+        status: 400
+      })
+    }
+    return user;
+  }
+
   // async getAccountsList(id: any) {}
 
   // async updateAccount(id: any) {}
