@@ -45,6 +45,6 @@ export const USERS_MESSAGES = {
   EMAIL_NOT_VERIFIED: 'Email not verified',
   EMAIL_VERIFIED_TOKEN_EXPIRED: 'Email verified token expired',
   USER_LOGGED_OUT_SUCCESS: 'User logged out successfully',
-  SEND_EMAIL_VERIFIED_SUCCESS: 'Send email verified successfully'
+  SEND_EMAIL_VERIFIED_SUCCESS: 'Send email verified successfully',
   PERMISSION_DENIED: 'Not allowed to access'
 }
