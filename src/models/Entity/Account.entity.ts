@@ -1,5 +1,6 @@
-import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, Timestamp } from 'typeorm'
+// import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, Timestamp } from 'typeorm'
 import {
+  PrimaryColumn,
   BeforeInsert,
   Column,
   CreateDateColumn,

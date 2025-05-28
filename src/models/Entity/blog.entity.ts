@@ -1,5 +1,6 @@
-import { Entity, PrimaryColumn, Column, Timestamp, ManyToOne, JoinColumn } from 'typeorm'
+//import { Entity, PrimaryColumn, Column, Timestamp, ManyToOne, JoinColumn } from 'typeorm'
 import {
+  PrimaryColumn,
   Entity,
   PrimaryGeneratedColumn,
   Column,
