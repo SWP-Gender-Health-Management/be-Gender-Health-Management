@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/message'
 import { ErrorWithStatus } from '~/models/Error'
 import accountService from '~/services/account.service'
@@ -15,11 +16,11 @@ export const registerController = async (req: Request, res: Response, next: Next
     httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
     secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production
     sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
-    maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string), // Thời gian sống của cookie (tính bằng mili giây)
+    maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string) // Thời gian sống của cookie (tính bằng mili giây)
     // path: '/', // (Tùy chọn) Đường dẫn mà cookie hợp lệ, '/' là cho toàn bộ domain
     // domain: 'yourdomain.com', // (Tùy chọn) Chỉ định domain cho cookie
   })
-  res.status(200).json({
+  res.status(HTTP_STATUS.CREATED).json({
     message: USERS_MESSAGES.USER_CREATED_SUCCESS,
     result
   })
@@ -28,15 +29,16 @@ export const registerController = async (req: Request, res: Response, next: Next
 export const loginController = async (req: Request, res: Response, next: NextFunction) => {
   const result = await accountService.login(req.body)
   const { refreshToken } = result
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
-    secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production
-    sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
-    maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string), // Thời gian sống của cookie (tính bằng mili giây)
-    // path: '/', // (Tùy chọn) Đường dẫn mà cookie hợp lệ, '/' là cho toàn bộ domain
-    // domain: 'yourdomain.com', // (Tùy chọn) Chỉ định domain cho cookie
-  })
-  res.status(200).json({
+  await refreshTokenService.updateRefreshToken({ account_id: req.body.account_id, token: refreshToken })
+  // res.cookie('refreshToken', refreshToken, {
+  //   httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
+  //   secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production
+  //   sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
+  //   maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string), // Thời gian sống của cookie (tính bằng mili giây)
+  //   // path: '/', // (Tùy chọn) Đường dẫn mà cookie hợp lệ, '/' là cho toàn bộ domain
+  //   // domain: 'yourdomain.com', // (Tùy chọn) Chỉ định domain cho cookie
+  // })
+  res.status(HTTP_STATUS.NOT_FOUND).json({
     message: USERS_MESSAGES.USER_LOGGED_IN_SUCCESS,
     result
   })
@@ -61,7 +63,7 @@ export const changePasswordController = async (req: Request, res: Response, next
   //   path: '/' // Hoặc đặt path rộng hơn nếu cần thiết cho các kịch bản khác nhau
   // })
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.PASSWORD_CHANGED_SUCCESS,
     result
   })
@@ -69,21 +71,21 @@ export const changePasswordController = async (req: Request, res: Response, next
 
 export const verifyEmailController = async (req: Request, res: Response, next: NextFunction) => {
   await accountService.verifyEmail(req.body)
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
   })
 }
 
 export const sendEmailVerifiedController = async (req: Request, res: Response, next: NextFunction) => {
   await accountService.sendEmailVerified(req.body.account_id)
-  res.status(200).json({
-    message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.SEND_EMAIL_VERIFIED_SUCCESS
   })
 }
 
 export const viewAccountController = async (req: Request, res: Response, next: NextFunction) => {
   const result = await accountService.viewAccount(req.body.account_id)
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_VIEWED_SUCCESS,
     result
   })
@@ -91,7 +93,7 @@ export const viewAccountController = async (req: Request, res: Response, next: N
 
 export const updateAccountController = async (req: Request, res: Response, next: NextFunction) => {
   const result = await accountService.updateProfile(req.body)
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_UPDATED_SUCCESS,
     result
   })
@@ -105,8 +107,15 @@ export const checkEmailVerifiedController = async (req: Request, res: Response, 
       status: 400
     })
   }
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS,
     result
+  })
+}
+
+export const logoutController = async (req: Request, res: Response, next: NextFunction) => {
+  await refreshTokenService.deleteRefreshToken(req.body.account_id)
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.USER_LOGGED_OUT_SUCCESS
   })
 }

@@ -5,6 +5,7 @@ import {
   changePasswordController,
   checkEmailVerifiedController,
   loginController,
+  logoutController,
   registerController,
   sendEmailVerifiedController,
   updateAccountController,
@@ -15,6 +16,7 @@ import {
   validateAccessToken,
   validateChangePassword,
   validateLogin,
+  validatePassCode,
   validateRegister,
   validateUpdateAccount,
   validateVerifyEmail
@@ -72,7 +74,7 @@ accountRoute.post(
     secretPasscode: string
   }
 */
-accountRoute.post('/verify-email', validateAccessToken, validateVerifyEmail, wrapRequestHandler(verifyEmailController))
+accountRoute.post('/verify-email', validateAccessToken, validatePassCode, wrapRequestHandler(verifyEmailController))
 
 /*
   Description: send email verified
@@ -121,5 +123,12 @@ accountRoute.post('/check-email-verified', validateAccessToken, wrapRequestHandl
   }
 */
 accountRoute.post('/view-account', validateAccessToken, wrapRequestHandler(viewAccountController))
+
+/*
+  Description: logout
+  Path: /logout
+  Method: POST
+*/
+accountRoute.post('/logout', validateAccessToken, wrapRequestHandler(logoutController))
 
 export default accountRoute

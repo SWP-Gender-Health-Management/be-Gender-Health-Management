@@ -1,4 +1,5 @@
 import { checkSchema } from 'express-validator'
+import redisClient from '~/config/redis.config'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/message'
 import { ErrorWithStatus } from '~/models/Error'
@@ -77,8 +78,8 @@ export const validateLogin = validate(
               status: HTTP_STATUS.BAD_REQUEST
             })
           }
+          await redisClient.set(user.account_id, JSON.stringify(user), 'EX', 60 * 60)
           req.body.account_id = user.account_id
-          req.body.password = user.password
           return true
         }
       }
@@ -163,7 +164,7 @@ export const validateChangePassword = validate(
   })
 )
 
-export const validateVerifyEmail = validate(
+export const validatePassCode = validate(
   checkSchema({
     secretPasscode: {
       isString: true,
