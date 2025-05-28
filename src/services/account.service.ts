@@ -81,12 +81,7 @@ class AccountService {
     // await this.sendEmailVerified(user.account_id)
     //lưu token và user vào redis
     await Promise.all([
-      redisClient.set(
-        user.account_id.concat(process.env.EMAIL_VERRIFY_TOKEN_REDIS as string),
-        emailVerifiedToken,
-        'EX',
-        60 * 60
-      ),
+      redisClient.set(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${user.account_id}`, emailVerifiedToken, 'EX', 60 * 60),
       redisClient.set(user.account_id, JSON.stringify(user), 'EX', 60 * 60)
     ])
     return {
@@ -99,11 +94,10 @@ class AccountService {
 
   async login(payload: any) {
     const { account_id } = payload
-    const user: Account = await accountRepository.findOne({ where: { account_id } })
-    await redisClient.set(user.account_id, JSON.stringify(user), 'EX', 60 * 60)
+    const user: Account = JSON.parse((await redisClient.get(account_id)) as string)
     const [accessToken, refreshToken] = await Promise.all([
-      this.createAccessToken({ account_id: user.account_id, email: user.email, password: user.password }),
-      this.createRefreshToken({ account_id: user.account_id, email: user.email, password: user.password })
+      this.createAccessToken({ account_id: account_id, email: user.email, password: user.password }),
+      this.createRefreshToken({ account_id: account_id, email: user.email, password: user.password })
     ])
     return { accessToken, refreshToken }
   }
@@ -144,19 +138,10 @@ class AccountService {
 
   async verifyEmail(payload: any) {
     const { account_id, secretPasscode } = payload
-    const user: Account = await this.checkEmailVerified(account_id)
-    if (!user) {
-      throw new ErrorWithStatus({
-        message: USERS_MESSAGES.EMAIL_NOT_VERIFIED,
-        status: 400
-      })
-    }
-    //lấy token từ redis
-    const token: string | null = await redisClient.get(
-      account_id.concat(process.env.EMAIL_VERRIFY_TOKEN_REDIS as string)
-    )
-    //kiểm tra token có tồn tại không
-    if (!token) {
+    const userToken = await redisClient.get(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${account_id}`)
+    // const userTokenParse = JSON.parse(userToken as string)
+    console.log(userToken)
+    if (!userToken) {
       throw new ErrorWithStatus({
         message: USERS_MESSAGES.EMAIL_VERIFIED_TOKEN_EXPIRED,
         status: 400
@@ -164,23 +149,23 @@ class AccountService {
     }
     //kiểm tra token có hợp lệ không
     const isSecretPasscodeValid = await verifyToken({
-      token: token as string,
+      token: userToken,
       secretKey: process.env.JWT_SECRET_EMAIL_VERIFIED_TOKEN as string
     })
     //kiểm tra mã passcode có khớp không
-    if (secretPasscode !== isSecretPasscodeValid.secretPasscode && isSecretPasscodeValid.account_id === account_id) {
+    if (secretPasscode !== isSecretPasscodeValid.secretPasscode || isSecretPasscodeValid.account_id !== account_id) {
       throw new ErrorWithStatus({
         message: USERS_MESSAGES.SECRET_PASSCODE_MISMATCH,
         status: 400
       })
     }
     //cập nhật trạng thái verified
-    user.is_verified = true
     await Promise.all([
-      accountRepository.update(user?.account_id as string, { is_verified: true }),
-      redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
+      accountRepository.update(account_id, { is_verified: true }),
+      redisClient.del(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${account_id}`)
     ])
-
+    const user: Account = await accountRepository.findOne({ where: { account_id } })
+    await redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
     return {
       message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
     }
@@ -207,14 +192,11 @@ class AccountService {
       account_id: account_id,
       secretPasscode: secretPasscode
     })
+    console.log(emailVerifyToken)
+
     await Promise.all([
       //lưu token vào redis
-      redisClient.set(
-        account_id.concat(process.env.EMAIL_VERRIFY_TOKEN_REDIS as string),
-        emailVerifyToken,
-        'EX',
-        60 * 60
-      ),
+      redisClient.set(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${account_id}`, emailVerifyToken, 'EX', 60 * 60),
       //gửi email
       sendMail({
         to: 'ndmanh1005@gmail.com',

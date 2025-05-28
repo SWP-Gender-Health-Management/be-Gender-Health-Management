@@ -1,17 +1,14 @@
 import { AppDataSource } from '~/config/database.config'
-import refresh_tokens from '~/models/Entity/refresh_token.entity'
+import refresh_token from '~/models/Entity/refresh_token.entity'
 
+const refreshTokenRepository = AppDataSource.getRepository(refresh_token)
 class RefreshTokenService {
   async createRefreshToken({ account_id, token }: { account_id: string; token: string }) {
-    const refreshTokenRepository = AppDataSource.getRepository(refresh_tokens)
-    console.log('account_id, token', account_id, token)
-
-    return await refreshTokenRepository.save({
+    const refreshToken = refreshTokenRepository.create({
       account_id: account_id,
-      token: token,
-      created_at: new Date(),
-      updated_at: new Date()
+      token: token
     })
+    return await refreshTokenRepository.save(refreshToken)
   }
 
   async updateRefreshToken({ account_id, token }: { account_id: string; token: string }) {
@@ -20,10 +17,8 @@ class RefreshTokenService {
 
     if (existingToken) {
       // Update existing token
-      const refreshTokenRepository = AppDataSource.getRepository(refresh_tokens)
       await refreshTokenRepository.update(existingToken.account_id, {
-        token: token,
-        updated_at: new Date()
+        token: token
       })
     } else {
       // Create new token if doesn't exist
@@ -32,8 +27,11 @@ class RefreshTokenService {
   }
 
   async getRefreshToken({ account_id }: { account_id: string }) {
-    const refreshTokenRepository = AppDataSource.getRepository(refresh_tokens)
     return await refreshTokenRepository.findOne({ where: { account_id: account_id } })
+  }
+
+  async deleteRefreshToken({ account_id }: { account_id: string }) {
+    return await refreshTokenRepository.delete({ account_id: account_id })
   }
 }
 
