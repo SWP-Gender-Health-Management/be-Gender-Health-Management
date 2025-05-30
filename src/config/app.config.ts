@@ -1,5 +1,5 @@
 import { AppDataSource } from './database.config'
-
+import startNotificationWorker from '~/worker/notificationWorker'
 export const initializeApp = async () => {
   try {
     // Initialize database connection
@@ -7,6 +7,9 @@ export const initializeApp = async () => {
       await AppDataSource.initialize()
       console.log('Database connection established')
     }
+
+    // Initialize notification worker
+    startNotificationWorker()
 
     return true
   } catch (error) {

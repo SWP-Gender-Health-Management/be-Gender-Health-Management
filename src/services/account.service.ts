@@ -8,7 +8,6 @@ import { AppDataSource } from '~/config/database.config'
 import Account from '~/models/Entity/account.entity'
 import { ErrorWithStatus } from '~/models/Error'
 import { USERS_MESSAGES } from '~/constants/message'
-import { Role } from '~/enum/role.enum'
 import redisClient from '~/config/redis.config'
 
 config()
@@ -40,7 +39,7 @@ class AccountService {
     })
     return token
   }
-
+  
   async createRefreshToken(payload: any) {
     return await signToken({
       payload,
