@@ -10,7 +10,7 @@ import {
 import ConsultantPattern from './consultant_pattern.entity'
 import LaboratoryAppointment from './laborarity_appointment.entity'
 import StaffPattern from './staff_pattern.entity'
-import { TypeAppointment } from '~/enum/type_appoitmet.enum'
+import { TypeAppointment } from '~/enum/type_appointment.enum'
 export interface WorkingSlotType {
   slot_id: string
   name: string
