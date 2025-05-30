@@ -45,5 +45,19 @@ export const USERS_MESSAGES = {
   EMAIL_NOT_VERIFIED: 'Email not verified',
   EMAIL_VERIFIED_TOKEN_EXPIRED: 'Email verified token expired',
   USER_LOGGED_OUT_SUCCESS: 'User logged out successfully',
-  SEND_EMAIL_VERIFIED_SUCCESS: 'Send email verified successfully'
+  SEND_EMAIL_VERIFIED_SUCCESS: 'Send email verified successfully',
+  YOU_ARE_NOT_FEMALE: 'You are not female'
+}
+
+export const CUSTOMER_MESSAGES = {
+  START_DATE_GREATER_THAN_END_DATE: 'Start date must be before end date',
+  END_DATE_GREATER_THAN_CURRENT_DATE: 'End date must be greater than current date',
+  PERIOD_INVALID: 'Period must be a number',
+  START_DATE_INVALID: 'Start date is invalid',
+  END_DATE_INVALID: 'End date is invalid',
+  NOTE_INVALID: 'Note is invalid',
+  MENSTRUAL_CYCLE_NOT_FOUND: 'Menstrual cycle not found',
+  MENSTRUAL_CYCLE_UPDATED: 'Menstrual cycle updated successfully',
+  MENSTRUAL_CYCLE_SCHEDULED_NOTIFICATION: 'Menstrual cycle scheduled notification',
+  MENSTRUAL_CYCLE_ALREADY_EXISTS: 'Menstrual cycle already exists'
 }

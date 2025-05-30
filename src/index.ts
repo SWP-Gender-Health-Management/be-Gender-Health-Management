@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import { initializeApp } from './config/app.config'
 import defaultErrorHandle from './middlewares/error.middleware'
 import accountRoute from './routes/account.route'
-
+import customerRoute from './routes/customer.route'
 dotenv.config()
 
 const app = express()
@@ -17,7 +17,12 @@ initializeApp()
     if (success) {
       app.use(express.json())
       // Setup routes
+      console.log(new Date().toISOString())
+
+      // route account
       app.use('/account', accountRoute)
+      // route customer
+      app.use('/customer', customerRoute)
       app.use(defaultErrorHandle)
 
       // Start server
