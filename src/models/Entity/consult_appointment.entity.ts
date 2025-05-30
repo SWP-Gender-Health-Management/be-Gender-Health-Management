@@ -52,7 +52,7 @@ export default class ConsultAppointment implements ConsultAppointmentType {
   @ManyToOne(() => Account, (account: Account) => account.consult_appointment)
   customer: Account
 
-  @ManyToOne(() => ConsultantPattern, (consultant_pattern: ConsultantPattern) => consultant_pattern.consult_appointment)
+  @OneToOne(() => ConsultantPattern, (consultant_pattern: ConsultantPattern) => consultant_pattern.consult_appointment)
   consultant_pattern: ConsultantPattern
 
   @OneToOne(() => Feedback, (feedback: Feedback) => feedback.consult_appointment)

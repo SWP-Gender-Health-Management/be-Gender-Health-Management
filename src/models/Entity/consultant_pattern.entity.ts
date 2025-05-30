@@ -6,7 +6,8 @@ import {
   Timestamp,
   ManyToOne,
   UpdateDateColumn,
-  OneToMany
+  OneToMany,
+  OneToOne
 } from 'typeorm'
 import WorkingSlot from './working_slot.entity'
 import Account from './account.entity'
@@ -51,9 +52,6 @@ export default class ConsultantPattern implements ConsultantPatternType {
   @ManyToOne(() => Account, (consultant) => consultant.consultant_pattern)
   consultant: Account
 
-  @OneToMany(
-    () => ConsultAppointment,
-    (consultAppointment: ConsultAppointment) => consultAppointment.consultant_pattern
-  )
-  consult_appointment: ConsultAppointment[]
+  @OneToOne(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.consultant_pattern)
+  consult_appointment: ConsultAppointment
 }
