@@ -72,7 +72,9 @@ class CustomerService {
           account_id: menstrualCycle.account_id,
           email: payload.email,
           message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_SCHEDULED_NOTIFICATION,
-          notificationType: 'Reminder'
+          notificationType: 'Reminder',
+          daysUntilPeriod: 2,
+          predictedPeriodDate: next_start_date.toISOString()
         } as NotificationPayload
       })
     )
@@ -116,7 +118,7 @@ class CustomerService {
     console.log(noti)
     // gửi thông báo lên redis đợi
     await Promise.all([
-      scheduleNotification(new Date('2025-05-30T07:00:00.000Z'), noti.notiPayload),
+      scheduleNotification(new Date('2025-05-31T07:00:00.000Z'), noti.notiPayload),
       redisClient.del(`${payload.account_id}: notiDate`)
     ])
     return {
