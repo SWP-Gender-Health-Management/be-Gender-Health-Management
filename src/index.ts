@@ -5,6 +5,7 @@ import { initializeApp } from './config/app.config'
 import defaultErrorHandle from './middlewares/error.middleware'
 import accountRoute from './routes/account.route'
 import customerRoute from './routes/customer.route'
+import workingSlotRoute from './routes/working_slot.route'
 dotenv.config()
 
 const app = express()
@@ -23,6 +24,8 @@ initializeApp()
       app.use('/account', accountRoute)
       // route customer
       app.use('/customer', customerRoute)
+      // route working slot
+      app.use('/working-slot', workingSlotRoute)
       app.use(defaultErrorHandle)
 
       // Start server
