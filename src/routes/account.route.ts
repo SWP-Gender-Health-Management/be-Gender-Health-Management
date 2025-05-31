@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import passport from 'passport'
 // import { accessTokenAuth } from '~/config/passport.config'
 import {
   changePasswordController,

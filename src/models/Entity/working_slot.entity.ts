@@ -14,8 +14,8 @@ import { TypeAppointment } from '~/enum/type_appointment.enum'
 export interface WorkingSlotType {
   slot_id: string
   name: string
-  start_at: Timestamp
-  end_at: Timestamp
+  start_at: string
+  end_at: string
   type: string
   // created_at: Timestamp
   // updated_at: Timestamp
@@ -29,11 +29,11 @@ export default class WorkingSlot implements WorkingSlotType {
   @Column({ type: 'varchar', length: 1000, nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   name: string
 
-  @Column({ type: 'timestamptz', nullable: false })
-  start_at: Timestamp
+  @Column({ type: 'time', nullable: false })
+  start_at: string
 
-  @Column({ type: 'timestamptz', nullable: false })
-  end_at: Timestamp
+  @Column({ type: 'time', nullable: false })
+  end_at: string
 
   @Column({ type: 'enum', nullable: false, enum: TypeAppointment })
   type: TypeAppointment
