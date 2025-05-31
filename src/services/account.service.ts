@@ -39,7 +39,7 @@ class AccountService {
     })
     return token
   }
-  
+
   async createRefreshToken(payload: any) {
     return await signToken({
       payload,
@@ -184,11 +184,19 @@ class AccountService {
       //lưu token vào redis
       redisClient.set(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${account_id}`, emailVerifyToken, 'EX', 60 * 60),
       //gửi email
-      sendMail({
-        to: 'ndmanh1005@gmail.com',
-        subject: 'Verify your email',
-        text: `Your passcode is ${secretPasscode}`
-      })
+      sendMail(
+        'ndmanh1005@gmail.com',
+        'Verify your email',
+        `Your passcode is ${secretPasscode}`,
+        'template/email-verify.html',
+        {
+          USER_NAME: 'Nguyen Duy Manh',
+          OTP_CODE: secretPasscode,
+          OTP_EXPIRATION_MINUTES: '10',
+          CURRENT_YEAR: new Date().getFullYear().toString(),
+          SUPPORT_EMAIL: 'anhdonguyennhi@gmail.com'
+        }
+      )
     ])
   }
 

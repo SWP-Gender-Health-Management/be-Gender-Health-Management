@@ -11,6 +11,8 @@ export interface NotificationPayload {
   email: string
   message: string
   notificationType: string
+  daysUntilPeriod: number
+  predictedPeriodDate: string
 }
 
 /**
@@ -36,11 +38,19 @@ async function processDueNotifications(): Promise<void> {
         notificationPayload = JSON.parse(notificationString) as NotificationPayload
 
         // gửi thông báo đến account
-        await sendMail({
-          to: 'ndmanh1005@gmail.com',
-          subject: notificationPayload.notificationType,
-          text: notificationPayload.message
-        })
+        await sendMail(
+          'ndmanh1005@gmail.com',
+          notificationPayload.notificationType,
+          notificationPayload.message,
+          'template/menstrual-cycle.html',
+          {
+            USER_NAME: 'Nguyen Duy Manh',
+            DAYS_UNTIL_PERIOD: notificationPayload.daysUntilPeriod.toString(),
+            PREDICTED_PERIOD_DATE: notificationPayload.predictedPeriodDate
+            // CURRENT_YEAR: new Date().getFullYear().toString(),
+            // SUPPORT_EMAIL: 'anhdonguyennhi@gmail.com'
+          }
+        )
 
         const removedCount = await redisClient.zrem(SCHEDULED_NOTIFICATIONS_KEY, notificationString)
         if (removedCount < 0) {

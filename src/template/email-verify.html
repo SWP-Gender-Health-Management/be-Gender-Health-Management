@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mã Xác Minh Tài Khoản Của Bạn</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji',
+          'Segoe UI Emoji', 'Segoe UI Symbol';
+        line-height: 1.6;
+        color: #333333;
+        background-color: #f4f5f6;
+        margin: 0;
+        padding: 0;
+      }
+      .email-wrapper {
+        width: 100%;
+        background-color: #f4f5f6;
+        padding: 20px 0;
+      }
+      .email-container {
+        max-width: 580px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden; /* Để bo tròn áp dụng cho cả header/footer */
+      }
+      .header {
+        background-color: #007bff; /* Màu chủ đạo của bạn */
+        color: #ffffff;
+        padding: 25px;
+        text-align: center;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+      }
+      .content {
+        padding: 30px;
+        text-align: center; /* Căn giữa nội dung */
+      }
+      .content p {
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #555555;
+      }
+      .passcode-label {
+        font-size: 16px;
+        color: #555555;
+        margin-bottom: 10px;
+      }
+      .passcode {
+        font-size: 36px; /* Kích thước lớn cho mã */
+        font-weight: bold;
+        color: #333333; /* Màu cho mã OTP */
+        letter-spacing: 8px; /* Tăng khoảng cách giữa các số cho dễ đọc */
+        padding: 15px 0;
+        margin: 10px auto 25px auto; /* Căn giữa và tạo khoảng cách */
+        display: inline-block; /* Để có thể căn giữa */
+        border: 1px dashed #cccccc; /* (Tùy chọn) Khung viền cho mã */
+        border-radius: 5px;
+        background-color: #f9f9f9; /* (Tùy chọn) Nền nhẹ cho mã */
+        min-width: 200px; /* Đảm bảo đủ rộng */
+      }
+      .note {
+        font-size: 14px;
+        color: #777777;
+        margin-top: 20px;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 12px;
+        color: #999999;
+        background-color: #f8f9fa;
+        border-top: 1px solid #e0e0e0;
+      }
+      .footer a {
+        color: #007bff;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-wrapper">
+      <div class="email-container">
+        <div class="header">
+          <h1>Mã Xác Minh Tài Khoản</h1>
+        </div>
+        <div class="content">
+          <p>Chào {{USER_NAME}},</p>
+          <p>
+            Vui lòng sử dụng mã xác minh gồm 6 chữ số dưới đây để hoàn tất việc đăng nhập hoặc xác thực yêu cầu của bạn:
+          </p>
+          <div class="passcode-label">Mã đăng nhập của bạn:</div>
+          <div class="passcode">{{OTP_CODE}}</div>
+          <p class="note">Mã này sẽ hết hạn sau {{OTP_EXPIRATION_MINUTES}} phút.</p>
+          <p class="note">
+            Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Vì lý do bảo mật, không chia sẻ mã này với
+            bất kỳ ai.
+          </p>
+        </div>
+        <div class="footer">
+          <p>&copy; {{CURRENT_YEAR}} Tên Ứng Dụng Của Bạn. Bảo lưu mọi quyền.</p>
+          <p>
+            Nếu bạn có bất kỳ câu hỏi nào, vui lòng <a href="mailto:{{SUPPORT_EMAIL}}">liên hệ với bộ phận hỗ trợ</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

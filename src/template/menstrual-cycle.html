@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nhắc Nhở Chu Kỳ Kinh Nguyệt Sắp Tới</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji',
+          'Segoe UI Emoji', 'Segoe UI Symbol';
+        line-height: 1.6;
+        color: #333333;
+        background-color: #f8f9fa; /* Màu nền nhẹ nhàng hơn */
+        margin: 0;
+        padding: 0;
+      }
+      .email-wrapper {
+        width: 100%;
+        background-color: #f8f9fa;
+        padding: 20px 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 10px; /* Bo tròn nhiều hơn */
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .header {
+        background-color: #e83e8c; /* Màu hồng nữ tính, bạn có thể thay đổi */
+        color: #ffffff;
+        padding: 30px 25px;
+        text-align: center;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 600;
+      }
+      .content {
+        padding: 30px 35px;
+        text-align: left; /* Căn trái cho nội dung chính */
+      }
+      .content h2 {
+        color: #343a40;
+        font-size: 20px;
+        margin-top: 0;
+        margin-bottom: 15px;
+      }
+      .content p {
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #495057;
+      }
+      .highlight-info {
+        background-color: #fff3cd; /* Màu vàng nhạt cho thông tin nổi bật */
+        border-left: 4px solid #ffeeba;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .highlight-info p {
+        margin: 0;
+        font-size: 16px;
+        color: #856404;
+      }
+      .highlight-info strong {
+        font-weight: 600;
+      }
+      .tips-section {
+        margin-top: 25px;
+      }
+      .tips-section h3 {
+        font-size: 18px;
+        color: #e83e8c;
+        margin-bottom: 10px;
+      }
+      .tips-section ul {
+        list-style-type: disc; /* Hoặc '✓ ' nếu bạn muốn tùy chỉnh */
+        padding-left: 20px;
+        margin: 0;
+      }
+      .tips-section li {
+        margin-bottom: 8px;
+        color: #495057;
+      }
+      .cta-button-container {
+        text-align: center;
+        margin-top: 25px;
+      }
+      .cta-button {
+        background-color: #e83e8c;
+        color: #ffffff;
+        padding: 12px 25px;
+        text-decoration: none;
+        border-radius: 25px; /* Nút bo tròn hơn */
+        font-weight: bold;
+        font-size: 16px;
+        display: inline-block;
+      }
+      .footer {
+        text-align: center;
+        padding: 25px;
+        font-size: 13px; /* Tăng kích thước chữ footer */
+        color: #6c757d;
+        background-color: #f1f3f5;
+        border-top: 1px solid #dee2e6;
+      }
+      .footer a {
+        color: #e83e8c;
+        text-decoration: none;
+      }
+      .footer p {
+        margin: 5px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-wrapper">
+      <div class="email-container">
+        <div class="header">
+          <h1>Nhắc Nhở Chu Kỳ Sắp Tới</h1>
+        </div>
+        <div class="content">
+          <h2>Chào {{USER_NAME}},</h2>
+          <p>
+            Đây là lời nhắc thân thiện rằng chu kỳ kinh nguyệt của bạn được dự đoán sẽ bắt đầu trong khoảng
+            <strong>{{DAYS_UNTIL_PERIOD}} ngày</strong> nữa, vào khoảng ngày <strong>{{PREDICTED_PERIOD_DATE}}</strong>.
+          </p>
+
+          <div class="highlight-info">
+            <p>Hãy chuẩn bị sẵn sàng và lắng nghe cơ thể của bạn nhé!</p>
+          </div>
+
+          <p>
+            Việc theo dõi chu kỳ có thể giúp bạn hiểu rõ hơn về sức khỏe của mình. Dưới đây là một vài gợi ý nhỏ cho
+            những ngày sắp tới:
+          </p>
+
+          <div class="tips-section">
+            <h3>Mẹo Nhỏ Cho Bạn:</h3>
+            <ul>
+              <li>Mang theo các sản phẩm vệ sinh cần thiết.</li>
+              <li>Uống đủ nước và ăn uống lành mạnh.</li>
+              <li>Nếu bạn thường gặp các triệu chứng tiền kinh nguyệt (PMS), hãy chuẩn bị các biện pháp giảm nhẹ.</li>
+              <li>Lắng nghe cơ thể và nghỉ ngơi khi cần thiết.</li>
+            </ul>
+          </div>
+
+          <!-- {{#if HAS_APP_LINK}}
+          <div class="cta-button-container"> -->
+            <!-- <a href="{{APP_CALENDAR_LINK}}" class="cta-button">Xem Lịch Chu Kỳ Trong Ứng Dụng</a> -->
+          </div>
+          <!-- {{/if}} -->
+
+          <p style="margin-top: 25px">
+            Nếu bạn có bất kỳ thay đổi nào trong chu kỳ hoặc có điều gì bất thường, đừng ngần ngại ghi lại và tham khảo
+            ý kiến bác sĩ nhé.
+          </p>
+        </div>
+        <div class="footer">
+          <p>&copy; {{CURRENT_YEAR}} Tên Ứng Dụng/Dịch Vụ Của Bạn</p>
+          <p>Đây là email tự động. Vui lòng không trả lời trực tiếp email này.</p>
+          <p>Bạn nhận được email này vì bạn đã đăng ký nhận thông báo từ chúng tôi.</p>
+          <!-- <p><a href="{{YOUR_WEBSITE_URL}}">Website</a> | <a href="{{UNSUBSCRIBE_LINK}}">Hủy đăng ký nhận thông báo</a></p> -->
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
