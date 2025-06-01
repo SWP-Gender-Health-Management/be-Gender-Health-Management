@@ -5,6 +5,7 @@ import { initializeApp } from './config/app.config'
 import defaultErrorHandle from './middlewares/error.middleware'
 import accountRoute from './routes/account.route'
 import laborarityRouter from './routes/laborarity.route'
+import consultantPatternRouter from './routes/consultant_pattern.route'
 
 dotenv.config()
 
@@ -19,7 +20,8 @@ initializeApp()
       app.use(express.json())
       // Setup routes
       app.use('/account', accountRoute)
-      // app.use('/laborarity', laborarityRouter)
+      app.use('/laborarity', laborarityRouter)
+      app.use('/consultant_pattern', consultantPatternRouter)
       app.use(defaultErrorHandle)
 
       // Start server

@@ -51,9 +51,9 @@ export const USERS_MESSAGES = {
 }
 
 export const LABORATORIES_MESSAGES = {
-  LABORATORY_NAME_ALREADY_EXISTS: "Laborarity already exists",
-  LABORATORY_NOT_FOUND: "Laborarity not found",
-  LABORATORY_HAS_APPOINTMENTS: "Laborarity has appointment",
+  LABORATORY_NAME_ALREADY_EXISTS: "LABORATORY_NAME_ALREADY_EXISTS",
+  LABORATORY_NOT_FOUND: "LABORATORY_NOT_FOUND",
+  LABORATORY_HAS_APPOINTMENTS: "LABORATORY_HAS_APPOINTMENTS",
   LABORATORY_NAME_INVALID: "LABORATORY_NAME_INVALID",
   LABORATORY_DESCRIPTION_REQUIRED: 'LABORATORY_DESCRIPTION_REQUIRED',
   LABORATORY_PRICE_INVALID: 'LABORATORY_PRICE_INVALID',
@@ -62,4 +62,24 @@ export const LABORATORIES_MESSAGES = {
   LABORATORY_RETRIEVED_SUCCESS: 'LABORATORY_RETRIEVED_SUCCESS',
   LABORATORY_UPDATED_SUCCESS: 'LABORATORY_UPDATED_SUCCESS',
   LABORATORY_DELETED_SUCCESS: 'LABORATORY_DELETED_SUCCESS'
+}
+
+export const CONSULTANT_PATTERNS_MESSAGES = {
+  WORKING_SLOT_NOT_FOUND: 'Working slot not found',
+  CONSULTANT_NOT_FOUND: 'Consultant not found',
+  CONSULTANT_PATTERN_ALREADY_EXISTS: 'Consultant pattern already exists for this slot, consultant, and date',
+  CONSULTANT_PATTERN_NOT_FOUND: 'Consultant pattern not found',
+  CONSULTANT_PATTERN_CANNOT_DELETE: 'Cannot delete booked consultant pattern or one with associated appointments',
+  WORKING_SLOT_ID_INVALID: 'Working slot ID must be a valid UUID',
+  CONSULTANT_ID_INVALID: 'Consultant ID must be a valid UUID',
+  DATE_INVALID: 'Date must be a valid date',
+  IS_BOOKED_INVALID: 'is_booked must be a boolean',
+  CONSULTANT_PATTERN_CREATED_SUCCESS: 'Consultant pattern created successfully',
+  CONSULTANT_PATTERNS_RETRIEVED_SUCCESS: 'Consultant patterns retrieved successfully',
+  CONSULTANT_PATTERN_RETRIEVED_SUCCESS: 'Consultant pattern retrieved successfully',
+  CONSULTANT_PATTERN_UPDATED_SUCCESS: 'Consultant pattern updated successfully',
+  CONSULTANT_PATTERN_DELETED_SUCCESS: 'Consultant pattern deleted successfully',
+  ERROR_FETCHING_CONSULTANT_PATTERN: 'Error fetching consultant pattern',
+  ERROR_UPDATING_CONSULTANT_PATTERN: 'Error updating consultant pattern',
+  ERROR_DELETING_CONSULTANT_PATTERN: 'Error deleting consultant pattern'
 }

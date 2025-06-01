@@ -1,0 +1,171 @@
+import { Repository } from 'typeorm'
+import { AppDataSource } from '~/config/database.config'
+import HTTP_STATUS from '~/constants/httpStatus'
+import { CONSULTANT_PATTERNS_MESSAGES } from '~/constants/message'
+import { ErrorWithStatus } from '~/models/Error'
+import ConsultantPattern, {ConsultantPatternType} from '~/models/Entity/consultant_pattern.entity'
+import WorkingSlot from '~/models/Entity/working_slot.entity'
+import Account from '~/models/Entity/account.entity'
+
+const consultantPatternRepository = AppDataSource.getRepository(ConsultantPattern)
+const workingSlotRepository = AppDataSource.getRepository(WorkingSlot)
+const accountRepository = AppDataSource.getRepository(Account)
+
+export class ConsultantPatternService {
+  // Create a new consultant pattern
+  async createConsultantPattern(data: Partial<ConsultantPatternType>): Promise<ConsultantPattern> {
+    // Validate working slot
+    const workingSlot = await workingSlotRepository.findOne({ where: { slot_id: data.slot_id } })
+    if (!workingSlot) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_PATTERNS_MESSAGES.WORKING_SLOT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    // Validate consultant (account)
+    const consultant = await accountRepository.findOne({ where: { account_id: data.consultant_id } })
+    if (!consultant) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    // Check for duplicate pattern (same slot, consultant, and date)
+    const existingPattern = await consultantPatternRepository.findOne({
+      where: {
+        slot_id: data.slot_id,
+        consultant_id: data.consultant_id,
+        date: data.date
+      }
+    })
+    if (existingPattern) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_ALREADY_EXISTS,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+
+    const consultantPattern = consultantPatternRepository.create({
+      slot_id: data.slot_id,
+      consultant_id: data.consultant_id,
+      date: data.date,
+      is_booked: data.is_booked ?? false
+    })
+
+    return await consultantPatternRepository.save(consultantPattern)
+  }
+
+  // Get all consultant patterns
+  async getAllConsultantPatterns(): Promise<ConsultantPattern[]> {
+    return await consultantPatternRepository.find({
+      relations: ['working_slot', 'consultant']
+    })
+  }
+
+  // Get a consultant pattern by ID
+  async getConsultantPatternById(pattern_id: string): Promise<ConsultantPattern> {
+    const consultantPattern = await consultantPatternRepository.findOne({
+      where: { pattern_id },
+      relations: ['working_slot', 'consultant']
+    })
+
+    if (!consultantPattern) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    return consultantPattern
+  }
+
+  // Get a consultant pattern by ID
+  async getConsultantPatternByConsultantId(consultant_id: string): Promise<ConsultantPattern> {
+    const consultantPattern = await consultantPatternRepository.findOne({
+      where: { consultant_id },
+      relations: ['working_slot', 'consultant']
+    })
+
+    if (!consultantPattern) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    return consultantPattern
+  }
+
+  // Update a consultant pattern
+  async updateConsultantPattern(pattern_id: string, data: Partial<ConsultantPatternType>): Promise<ConsultantPattern> {
+    const consultantPattern = await this.getConsultantPatternById(pattern_id)
+
+    // Validate working slot if provided
+    if (data.slot_id && data.slot_id !== consultantPattern.slot_id) {
+      const workingSlot = await workingSlotRepository.findOne({ where: { slot_id: data.slot_id } })
+      if (!workingSlot) {
+        throw new ErrorWithStatus({
+          message: CONSULTANT_PATTERNS_MESSAGES.WORKING_SLOT_NOT_FOUND,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+    }
+
+    // Validate consultant if provided
+    if (data.consultant_id && data.consultant_id !== consultantPattern.consultant_id) {
+      const consultant = await accountRepository.findOne({ where: { account_id: data.consultant_id } })
+      if (!consultant) {
+        throw new ErrorWithStatus({
+          message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_NOT_FOUND,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+    }
+
+    // Check for duplicate pattern if key fields are updated
+    if (data.slot_id || data.consultant_id || data.date) {
+      const existingPattern = await consultantPatternRepository.findOne({
+        where: {
+          slot_id: data.slot_id || consultantPattern.slot_id,
+          consultant_id: data.consultant_id || consultantPattern.consultant_id,
+          date: data.date || consultantPattern.date
+        }
+      })
+      if (existingPattern && existingPattern.pattern_id !== pattern_id) {
+        throw new ErrorWithStatus({
+          message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_ALREADY_EXISTS,
+          status: HTTP_STATUS.BAD_REQUEST
+        })
+      }
+    }
+
+    Object.assign(consultantPattern, {
+      slot_id: data.slot_id || consultantPattern.slot_id,
+      consultant_id: data.consultant_id || consultantPattern.consultant_id,
+      date: data.date || consultantPattern.date,
+      is_booked: data.is_booked !== undefined ? data.is_booked : consultantPattern.is_booked
+    })
+
+    return await consultantPatternRepository.save(consultantPattern)
+  }
+
+  // Delete a consultant pattern
+  async deleteConsultantPattern(pattern_id: string): Promise<void> {
+    const consultantPattern = await this.getConsultantPatternById(pattern_id)
+
+    // Check if pattern is booked or has associated appointments
+    if (consultantPattern.is_booked || (consultantPattern.consult_appointment && consultantPattern.consult_appointment.length > 0)) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_CANNOT_DELETE,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+
+    await consultantPatternRepository.remove(consultantPattern)
+  }
+}
+
+const consultantPatternService = new ConsultantPatternService();
+export default consultantPatternService;
