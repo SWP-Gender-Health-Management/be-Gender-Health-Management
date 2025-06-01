@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn
 } from 'typeorm'
-import Account from './account.entity'
+import Account from '~/models/Entity/account.entity'
 
 export interface TransactionType {
   transaction_id: string
