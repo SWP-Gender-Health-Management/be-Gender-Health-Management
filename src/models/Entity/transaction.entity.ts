@@ -11,7 +11,6 @@ import Account from './account.entity'
 
 export interface TransactionType {
   transaction_id: string
-  customer_id: string
   method: string
   app_id: string
   date: Timestamp
@@ -24,9 +23,6 @@ export interface TransactionType {
 export default class Transaction implements TransactionType {
   @PrimaryGeneratedColumn('uuid')
   transaction_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  customer_id: string
 
   @Column({ type: 'varchar', length: 20, nullable: false })
   method: string
@@ -46,6 +42,6 @@ export default class Transaction implements TransactionType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (account) => account.transaction)
-  account: Account
+  @ManyToOne(() => Account, (customer: Account) => customer.transaction)
+  customer: Account
 }

@@ -8,7 +8,8 @@ import {
   OneToOne,
   ManyToMany,
   JoinTable,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
+  JoinColumn
 } from 'typeorm'
 import WorkingSlot from './working_slot.entity'
 import Account from './account.entity'
@@ -18,11 +19,6 @@ import Laborarity from './laborarity.entity'
 
 export interface LaboratoryAppointmentType {
   app_id: string
-  customer_id: string
-  slot_id: string
-  lab_id: string
-  result_id: string
-  feed_id: string
   queue_index: number
   description: string
   // created_at: Timestamp
@@ -33,21 +29,6 @@ export interface LaboratoryAppointmentType {
 export default class LaboratoryAppointment implements LaboratoryAppointmentType {
   @PrimaryGeneratedColumn('uuid')
   app_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  customer_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  slot_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  lab_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  result_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  feed_id: string
 
   @Column({ type: 'int', nullable: false })
   queue_index: number
@@ -61,6 +42,7 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
+  //foreign key
   @ManyToOne(() => Account, (customer: Account) => customer.laborarity_appointment)
   customer: Account
 
@@ -82,8 +64,10 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
   laborarity: Laborarity[]
 
   @OneToOne(() => Result, (result: Result) => result.laboratoryAppointment)
+  @JoinColumn({ name: 'result_id' })
   result: Result
 
   @OneToOne(() => Feedback, (feedback: Feedback) => feedback.laboratoryAppointment)
+  @JoinColumn({ name: 'feed_id' })
   feedback: Feedback
 }
