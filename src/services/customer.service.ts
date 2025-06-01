@@ -13,14 +13,10 @@ const userRepository = AppDataSource.getRepository(Account)
 
 class CustomerService {
   async createMenstrualCycle(payload: any) {
-    const [user, menstrual]: [Account | null, MenstrualCycle | null] = await Promise.all([
-      userRepository.findOne({
-        where: { account_id: payload.account_id }
-      }),
-      menstrualCycleRepository.findOne({
-        where: { account_id: payload.account_id }
-      })
-    ])
+    const user = JSON.parse((await redisClient.get(payload.account_id)) as string)
+    const menstrual = await menstrualCycleRepository.findOne({
+      where: { customer: user }
+    })
     if (menstrual) {
       throw new ErrorWithStatus({
         message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_ALREADY_EXISTS,
@@ -35,7 +31,7 @@ class CustomerService {
     }
     const { account_id, start_date, end_date, period, note } = payload
     const menstrualCycle = menstrualCycleRepository.create({
-      account_id,
+      customer: user,
       start_date,
       end_date,
       period: period || 30,
@@ -47,7 +43,7 @@ class CustomerService {
   async predictPeriod(payload: any) {
     const { account_id } = payload
     const menstrualCycle: MenstrualCycle | null = await menstrualCycleRepository.findOne({
-      where: { account_id }
+      where: { customer: { account_id } }
     })
     if (!menstrualCycle) {
       throw new ErrorWithStatus({
@@ -69,8 +65,8 @@ class CustomerService {
         notiDate,
         notiPayload: {
           notificationId: uuidv4(),
-          account_id: menstrualCycle.account_id,
-          email: payload.email,
+          account_id: menstrualCycle.customer.account_id,
+          email: menstrualCycle.customer.email,
           message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_SCHEDULED_NOTIFICATION,
           notificationType: 'Reminder',
           daysUntilPeriod: 2,

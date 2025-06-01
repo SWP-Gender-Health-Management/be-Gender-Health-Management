@@ -44,6 +44,6 @@ export default class MenstrualCycle implements MenstrualCycleType {
   updated_at: Timestamp
 
   @OneToOne(() => Account, (customer: Account) => customer.menstrualCycle)
-  @JoinColumn({ name: 'account_id' })
+  @JoinColumn({ name: 'account_id', referencedColumnName: 'account_id' })
   customer: Account
 }

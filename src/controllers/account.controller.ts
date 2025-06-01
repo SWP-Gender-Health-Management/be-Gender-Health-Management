@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import redisClient from '~/config/redis.config'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/message'
 import { ErrorWithStatus } from '~/models/Error'
@@ -10,16 +11,17 @@ export const registerController = async (req: Request, res: Response, next: Next
   console.log(result)
 
   const { account_id, refreshToken } = result
-  await refreshTokenService.createRefreshToken({ account_id: account_id, token: refreshToken })
+  const account = JSON.parse((await redisClient.get(account_id)) as string)
+  await refreshTokenService.createRefreshToken({ account: account, token: refreshToken })
 
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
-    secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production
-    sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
-    maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string) // Thời gian sống của cookie (tính bằng mili giây)
-    // path: '/', // (Tùy chọn) Đường dẫn mà cookie hợp lệ, '/' là cho toàn bộ domain
-    // domain: 'yourdomain.com', // (Tùy chọn) Chỉ định domain cho cookie
-  })
+  // res.cookie('refreshToken', refreshToken, {
+  //   httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
+  //   secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production
+  //   sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
+  //   maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string) // Thời gian sống của cookie (tính bằng mili giây)
+  //   // path: '/', // (Tùy chọn) Đường dẫn mà cookie hợp lệ, '/' là cho toàn bộ domain
+  //   // domain: 'yourdomain.com', // (Tùy chọn) Chỉ định domain cho cookie
+  // })
   res.status(HTTP_STATUS.CREATED).json({
     message: USERS_MESSAGES.USER_CREATED_SUCCESS,
     result
@@ -29,7 +31,8 @@ export const registerController = async (req: Request, res: Response, next: Next
 export const loginController = async (req: Request, res: Response, next: NextFunction) => {
   const result = await accountService.login(req.body)
   const { refreshToken } = result
-  await refreshTokenService.updateRefreshToken({ account_id: req.body.account_id, token: refreshToken })
+  const account = JSON.parse((await redisClient.get(req.body.account_id)) as string)
+  await refreshTokenService.updateRefreshToken({ account: account, token: refreshToken })
   // res.cookie('refreshToken', refreshToken, {
   //   httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
   //   secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production
@@ -52,7 +55,8 @@ export const changePasswordController = async (req: Request, res: Response, next
       status: 400
     })
   }
-  await refreshTokenService.updateRefreshToken({ account_id: req.body.account_id, token: result.refreshToken })
+  const account = JSON.parse((await redisClient.get(req.body.account_id)) as string)
+  await refreshTokenService.updateRefreshToken({ account: account, token: result.refreshToken })
 
   // res.cookie('refreshToken', result.refreshToken, {
   //   httpOnly: true,

@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
   PrimaryGeneratedColumn,
-  ManyToOne
+  JoinColumn
 } from 'typeorm'
 import Account from './account.entity'
 
@@ -31,6 +31,7 @@ export default class RefreshToken implements RefreshTokenType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (account: Account) => account.refreshToken)
+  @OneToOne(() => Account, (account: Account) => account.refreshToken)
+  @JoinColumn({ name: 'account_id', referencedColumnName: 'account_id' })
   account: Account
 }
