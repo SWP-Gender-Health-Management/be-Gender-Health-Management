@@ -12,25 +12,17 @@ import Account from './account.entity'
 
 export interface StaffPatternType {
   pattern_id: string
-  slot_id: string
-  staff_id: string
   date: Date
   // created_at: Timestamp
   // updated_at: Timestamp
 }
 
-@Entity({ name: 'staff_pattern' }) // Tên bảng trong CSDL
+@Entity({ name: 'staff_pattern' })
 export default class StaffPattern implements StaffPatternType {
   @PrimaryGeneratedColumn('uuid')
   pattern_id: string
 
-  @Column({ type: 'uuid', nullable: false })
-  slot_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  staff_id: string
-
-  @Column({ type: 'date', nullable: false }) // Giả sử 'date' có thể null
+  @Column({ type: 'date', nullable: false })
   date: Date
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })

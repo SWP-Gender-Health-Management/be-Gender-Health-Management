@@ -5,13 +5,13 @@ import {
   Timestamp,
   OneToOne,
   UpdateDateColumn,
-  CreateDateColumn
+  CreateDateColumn,
+  JoinColumn
 } from 'typeorm'
 import Account from './account.entity'
 
 export interface MenstrualCycleType {
   cycle_id: string
-  account_id: string
   start_date: Date
   end_date: Date
   period: number
@@ -24,9 +24,6 @@ export interface MenstrualCycleType {
 export default class MenstrualCycle implements MenstrualCycleType {
   @PrimaryGeneratedColumn('uuid')
   cycle_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  account_id: string
 
   @Column({ type: 'date', nullable: false })
   start_date: Date
@@ -46,6 +43,7 @@ export default class MenstrualCycle implements MenstrualCycleType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @OneToOne(() => Account, (account: Account) => account.menstrualCycle)
-  account: Account
+  @OneToOne(() => Account, (customer: Account) => customer.menstrualCycle)
+  @JoinColumn({ name: 'account_id' })
+  customer: Account
 }
