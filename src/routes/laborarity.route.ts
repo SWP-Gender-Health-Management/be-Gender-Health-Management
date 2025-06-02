@@ -1,5 +1,11 @@
 import { Router } from 'express'
-import laboratoryController, {LaboratoryController} from '~/controllers/laborarity.controller'
+import {
+  createLaboratory,
+  deleteLaboratory,
+  getAllLaboratories,
+  getLaboratoryById,
+  updateLaboratory
+} from '~/controllers/laborarity.controller'
 import { validateAccessToken, restrictTo } from '~/middlewares/account.middleware'
 import { Role } from '~/enum/role.enum'
 import wrapRequestHandler from '~/utils/handle'
@@ -11,37 +17,35 @@ const router = Router()
 //   '/',
 //   validateAccessToken,
 //   restrictTo(Role.ADMIN),
-//   LaboratoryController.validateLaboratoryInput,
-//   wrapRequestHandler(laboratoryController.createLaboratory)
+//   wrapRequestHandler(createLaboratory)
 // )
 router.post(
   '/',
-  wrapRequestHandler(laboratoryController.create)
+  wrapRequestHandler(createLaboratory)
 )
 
 // Get all laboratories (admin or user)
-// router.get('/', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), laboratoryController.getAllLaboratories)
-router.get('/', wrapRequestHandler(laboratoryController.getAll) )
+// router.get('/', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), getAllLaboratories)
+router.get('/', wrapRequestHandler(getAllLaboratories) )
 
 // Get a laboratory by ID (admin or user)
-// router.get('/:lab_id', validateAccessToken, restrictTo(Role.ADMIN), wrapRequestHandler(laboratoryController.getLaboratoryById))
-router.get('/:lab_id', wrapRequestHandler(laboratoryController.getById))
+// router.get('/:lab_id', validateAccessToken, restrictTo(Role.ADMIN), wrapRequestHandler(getLaboratoryById))
+router.get('/:lab_id', wrapRequestHandler(getLaboratoryById))
 
 // Update a laboratory (admin only)
 // router.put(
 //   '/:lab_id',
 //   validateAccessToken,
 //   restrictTo(Role.ADMIN),
-//   LaboratoryController.validateLaboratoryInput,
-//   wrapRequestHandler(laboratoryController.updateLaboratory)
+//   wrapRequestHandler(updateLaboratory)
 // )
 router.put(
   '/:lab_id',
-  wrapRequestHandler(laboratoryController.update)
+  wrapRequestHandler(updateLaboratory)
 )
 
 // Delete a laboratory (admin only)
-// router.delete('/:lab_id', validateAccessToken, restrictTo(Role.ADMIN), wrapRequestHandler(laboratoryController.deleteLaboratory))
-router.delete('/:lab_id', wrapRequestHandler(laboratoryController.delete))
+// router.delete('/:lab_id', validateAccessToken, restrictTo(Role.ADMIN), wrapRequestHandler(deleteLaboratory))
+router.delete('/:lab_id', wrapRequestHandler(deleteLaboratory))
 
 export default router

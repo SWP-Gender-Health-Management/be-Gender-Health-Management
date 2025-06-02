@@ -6,6 +6,7 @@ import { ErrorWithStatus } from '~/models/Error'
 import ConsultantPattern, { ConsultantPatternType } from '~/models/Entity/consultant_pattern.entity'
 import WorkingSlot from '~/models/Entity/working_slot.entity'
 import Account from '~/models/Entity/account.entity'
+import { Role } from '~/enum/role.enum'
 
 const consultantPatternRepository = AppDataSource.getRepository(ConsultantPattern)
 const workingSlotRepository = AppDataSource.getRepository(WorkingSlot)
@@ -26,7 +27,7 @@ export class ConsultantPatternService {
 
     // Validate consultant (account)
     const consultant = await accountRepository.findOne({ where: { account_id: data.consultant_id } })
-    if (!consultant) {
+    if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_NOT_FOUND,
         status: HTTP_STATUS.NOT_FOUND
@@ -151,7 +152,7 @@ export class ConsultantPatternService {
     // Validate consultant if provided
     if (data.consultant_id && data.consultant_id !== consultantPattern.consultant.account_id) {
       consultant = await accountRepository.findOne({ where: { account_id: data.consultant_id } })
-      if (!consultant) {
+      if (!consultant || consultant.role !== Role.CONSULTANT) {
         throw new ErrorWithStatus({
           message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_NOT_FOUND,
           status: HTTP_STATUS.NOT_FOUND

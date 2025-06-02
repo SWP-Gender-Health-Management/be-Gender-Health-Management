@@ -6,8 +6,9 @@ import defaultErrorHandle from './middlewares/error.middleware'
 import accountRoute from './routes/account.route'
 import customerRoute from './routes/customer.route'
 import workingSlotRoute from './routes/working_slot.route'
-import laborarityRouter from './routes/laborarity.route'
-import consultantPatternRouter from './routes/consultant_pattern.route'
+import laborarityRoute from './routes/laborarity.route'
+import consultantPatternRoute from './routes/consultant_pattern.route'
+import consultAppointmentRoute from './routes/consult_appointment.route'
 
 dotenv.config()
 
@@ -28,9 +29,14 @@ initializeApp()
       // route customer
       app.use('/customer', customerRoute)
       // route working slot
-      app.use('/working-slot', workingSlotRoute)
-      app.use('/laborarity', laborarityRouter)
-      app.use('/consultant_pattern', consultantPatternRouter)
+      app.use('/working_slot', workingSlotRoute)
+      // route laborarity 
+      app.use('/laborarity', laborarityRoute)
+      // route consultant pattern
+      app.use('/consultant_pattern', consultantPatternRoute)
+      // route consult appointment
+      app.use('/consult_appointment', consultAppointmentRoute)
+
       app.use(defaultErrorHandle)
 
       // Start server
