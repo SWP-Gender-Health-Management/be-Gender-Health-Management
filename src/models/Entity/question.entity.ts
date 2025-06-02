@@ -6,14 +6,13 @@ import {
   Column,
   CreateDateColumn,
   PrimaryGeneratedColumn,
-  Entity
+  Entity,
+  JoinColumn
 } from 'typeorm'
 import Account from './account.entity'
 import Reply from './reply.entity'
 export interface QuestionType {
   ques_id: string
-  reply_id: string
-  created_by: string
   content: string
 }
 
@@ -21,12 +20,6 @@ export interface QuestionType {
 export default class Question implements QuestionType {
   @PrimaryGeneratedColumn('uuid')
   ques_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  reply_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  created_by: string
 
   @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   content: string
@@ -40,9 +33,10 @@ export default class Question implements QuestionType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (account: Account) => account.question)
-  account: Account
+  @ManyToOne(() => Account, (consultant: Account) => consultant.question)
+  consultant: Account
 
   @OneToOne(() => Reply, (reply: Reply) => reply.question)
+  @JoinColumn({ name: 'reply_id' })
   reply: Reply
 }

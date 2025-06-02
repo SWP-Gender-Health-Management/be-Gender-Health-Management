@@ -6,7 +6,9 @@ import {
   Timestamp,
   ManyToOne,
   UpdateDateColumn,
-  OneToMany
+  OneToMany,
+  OneToOne,
+  JoinColumn
 } from 'typeorm'
 import WorkingSlot from './working_slot.entity'
 import Account from './account.entity'
@@ -14,8 +16,6 @@ import ConsultAppointment from './consult_appointment.entity'
 
 export interface ConsultantPatternType {
   pattern_id: string
-  slot_id: string
-  consultant_id: string
   date: Date
   is_booked: boolean
   // created_at: Timestamp
@@ -26,12 +26,6 @@ export interface ConsultantPatternType {
 export default class ConsultantPattern implements ConsultantPatternType {
   @PrimaryGeneratedColumn('uuid')
   pattern_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  slot_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  consultant_id: string
 
   @Column({ type: 'date', nullable: false })
   date: Date
@@ -45,15 +39,14 @@ export default class ConsultantPattern implements ConsultantPatternType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
+  //foreign key
   @ManyToOne(() => WorkingSlot, (working_slot) => working_slot.consultant_pattern)
   working_slot: WorkingSlot
 
   @ManyToOne(() => Account, (consultant) => consultant.consultant_pattern)
   consultant: Account
 
-  @OneToMany(
-    () => ConsultAppointment,
-    (consultAppointment: ConsultAppointment) => consultAppointment.consultant_pattern
-  )
-  consult_appointment: ConsultAppointment[]
+  @OneToOne(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.consultant_pattern)
+  @JoinColumn({ name: 'app_id' })
+  consult_appointment: ConsultAppointment
 }

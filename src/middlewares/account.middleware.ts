@@ -181,6 +181,7 @@ export const validatePassCode = validate(
 export const validateUpdateAccount = validate(
   checkSchema({
     full_name: {
+      notEmpty: false,
       isString: true,
       trim: true,
       isLength: {
@@ -189,6 +190,7 @@ export const validateUpdateAccount = validate(
       }
     },
     phone: {
+      notEmpty: false,
       isString: true,
       trim: true,
       isLength: {
@@ -197,16 +199,26 @@ export const validateUpdateAccount = validate(
       }
     },
     dob: {
-      isDate: true,
-      errorMessage: USERS_MESSAGES.DOB_INVALID
+      notEmpty: false,
+      isString: true,
+      errorMessage: USERS_MESSAGES.DOB_INVALID,
+      custom: {
+        options: (value) => {
+          const dob = new Date(value)
+          const currentDate = new Date()
+          if (dob > currentDate) {
+            throw new Error(USERS_MESSAGES.DOB_INVALID)
+          }
+          value = dob
+          return true
+        }
+      }
     },
     gender: {
+      notEmpty: false,
       isString: true,
       trim: true,
-      isLength: {
-        options: { min: 1, max: 1 },
-        errorMessage: USERS_MESSAGES.GENDER_INVALID
-      }
+      errorMessage: USERS_MESSAGES.GENDER_INVALID
     }
   })
 )

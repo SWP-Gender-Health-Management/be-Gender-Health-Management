@@ -5,13 +5,13 @@ import {
   OneToOne,
   UpdateDateColumn,
   CreateDateColumn,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
+  JoinColumn
 } from 'typeorm'
 import Account from './account.entity'
 
 export interface RefreshTokenType {
   token_id: string
-  account_id: string
   token: string
   // created_at: Timestamp
   // updated_at: Timestamp
@@ -21,9 +21,6 @@ export interface RefreshTokenType {
 export default class RefreshToken implements RefreshTokenType {
   @PrimaryGeneratedColumn('uuid')
   token_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  account_id: string
 
   @Column({ type: 'text', nullable: false })
   token: string
@@ -35,5 +32,6 @@ export default class RefreshToken implements RefreshTokenType {
   updated_at: Timestamp
 
   @OneToOne(() => Account, (account: Account) => account.refreshToken)
+  @JoinColumn({ name: 'account_id', referencedColumnName: 'account_id' })
   account: Account
 }

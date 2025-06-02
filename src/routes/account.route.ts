@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import passport from 'passport'
 // import { accessTokenAuth } from '~/config/passport.config'
 import {
   changePasswordController,
@@ -18,8 +17,7 @@ import {
   validateLogin,
   validatePassCode,
   validateRegister,
-  validateUpdateAccount,
-  validateVerifyEmail
+  validateUpdateAccount
 } from '~/middlewares/account.middleware'
 import wrapRequestHandler from '~/utils/handle'
 

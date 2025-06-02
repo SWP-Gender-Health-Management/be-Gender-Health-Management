@@ -74,10 +74,10 @@ export default class Account implements AccountType {
   @OneToOne(() => RefreshToken, (refreshToken: RefreshToken) => refreshToken.account)
   refreshToken: RefreshToken
 
-  @OneToMany(() => Transaction, (transaction: Transaction) => transaction.account)
+  @OneToMany(() => Transaction, (transaction: Transaction) => transaction.customer)
   transaction: Transaction[]
 
-  @OneToOne(() => MenstrualCycle, (menstrualCycle: MenstrualCycle) => menstrualCycle.account)
+  @OneToOne(() => MenstrualCycle, (menstrualCycle: MenstrualCycle) => menstrualCycle.customer)
   menstrualCycle: MenstrualCycle
 
   @OneToMany(() => Blog, (blog: Blog) => blog.account)
@@ -95,9 +95,9 @@ export default class Account implements AccountType {
   )
   laborarity_appointment: LaboratoryAppointment[]
 
-  @OneToMany(() => Reply, (reply: Reply) => reply.account)
+  @OneToMany(() => Reply, (reply: Reply) => reply.consultant)
   reply: Reply[]
 
-  @OneToMany(() => Question, (question: Question) => question.account)
+  @OneToMany(() => Question, (question: Question) => question.consultant)
   question: Question[]
 }

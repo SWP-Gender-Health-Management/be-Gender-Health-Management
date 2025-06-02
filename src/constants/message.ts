@@ -46,22 +46,34 @@ export const USERS_MESSAGES = {
   EMAIL_VERIFIED_TOKEN_EXPIRED: 'Email verified token expired',
   USER_LOGGED_OUT_SUCCESS: 'User logged out successfully',
   SEND_EMAIL_VERIFIED_SUCCESS: 'Send email verified successfully',
-  PERMISSION_DENIED: 'Not allowed to access',
-  
+  YOU_ARE_NOT_FEMALE: 'You are not female'
 }
 
-export const LABORATORIES_MESSAGES = {
-  LABORATORY_NAME_ALREADY_EXISTS: "LABORATORY_NAME_ALREADY_EXISTS",
-  LABORATORY_NOT_FOUND: "LABORATORY_NOT_FOUND",
-  LABORATORY_HAS_APPOINTMENTS: "LABORATORY_HAS_APPOINTMENTS",
-  LABORATORY_NAME_INVALID: "LABORATORY_NAME_INVALID",
-  LABORATORY_DESCRIPTION_REQUIRED: 'LABORATORY_DESCRIPTION_REQUIRED',
-  LABORATORY_PRICE_INVALID: 'LABORATORY_PRICE_INVALID',
-  LABORATORY_CREATED_SUCCESS: 'LABORATORY_CREATED_SUCCESS',
-  LABORATORIES_RETRIEVED_SUCCESS: 'LABORATORIES_RETRIEVED_SUCCESS',
-  LABORATORY_RETRIEVED_SUCCESS: 'LABORATORY_RETRIEVED_SUCCESS',
-  LABORATORY_UPDATED_SUCCESS: 'LABORATORY_UPDATED_SUCCESS',
-  LABORATORY_DELETED_SUCCESS: 'LABORATORY_DELETED_SUCCESS'
+export const CUSTOMER_MESSAGES = {
+  CREATE_MENSTRUAL_CYCLE_SUCCESS: 'Menstrual cycle created successfully',
+  PREDICT_PERIOD_SUCCESS: 'Period predicted successfully',
+  START_DATE_GREATER_THAN_END_DATE: 'Start date must be before end date',
+  END_DATE_GREATER_THAN_CURRENT_DATE: 'End date must be greater than current date',
+  PERIOD_INVALID: 'Period must be a number',
+  START_DATE_INVALID: 'Start date is invalid',
+  END_DATE_INVALID: 'End date is invalid',
+  NOTE_INVALID: 'Note is invalid',
+  MENSTRUAL_CYCLE_NOT_FOUND: 'Menstrual cycle not found',
+  MENSTRUAL_CYCLE_UPDATED: 'Menstrual cycle updated successfully',
+  MENSTRUAL_CYCLE_SCHEDULED_NOTIFICATION: 'Menstrual cycle scheduled notification',
+  MENSTRUAL_CYCLE_ALREADY_EXISTS: 'Menstrual cycle already exists'
+}
+
+export const WORKING_SLOT_MESSAGES = {
+  NAME_INVALID: 'Name is invalid',
+  START_AT_INVALID: 'Start at is invalid',
+  END_AT_INVALID: 'End at is invalid',
+  TYPE_INVALID: 'Type is invalid',
+  WORKING_SLOT_CREATED_SUCCESS: 'Working slot created successfully',
+  WORKING_SLOT_UPDATED_SUCCESS: 'Working slot updated successfully',
+  WORKING_SLOT_DELETED_SUCCESS: 'Working slot deleted successfully',
+  WORKING_SLOT_NOT_FOUND: 'Working slot not found',
+  GET_SLOT_SUCCESS: 'Get slot successfully'
 }
 
 export const CONSULTANT_PATTERNS_MESSAGES = {
@@ -83,3 +95,4 @@ export const CONSULTANT_PATTERNS_MESSAGES = {
   ERROR_UPDATING_CONSULTANT_PATTERN: 'Error updating consultant pattern',
   ERROR_DELETING_CONSULTANT_PATTERN: 'Error deleting consultant pattern'
 }
+
