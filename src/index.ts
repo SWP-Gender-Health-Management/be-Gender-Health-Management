@@ -9,6 +9,9 @@ import workingSlotRoute from './routes/working_slot.route'
 import laborarityRoute from './routes/laborarity.route'
 import consultantPatternRoute from './routes/consultant_pattern.route'
 import consultAppointmentRoute from './routes/consult_appointment.route'
+import questionRoute from './routes/question.route'
+import replyRoute from './routes/reply.route'
+
 
 dotenv.config()
 
@@ -36,7 +39,11 @@ initializeApp()
       app.use('/consultant_pattern', consultantPatternRoute)
       // route consult appointment
       app.use('/consult_appointment', consultAppointmentRoute)
-
+      // route question
+      app.use('/question', questionRoute);
+      // route reply
+      app.use('/reply', replyRoute);
+      
       app.use(defaultErrorHandle)
 
       // Start server

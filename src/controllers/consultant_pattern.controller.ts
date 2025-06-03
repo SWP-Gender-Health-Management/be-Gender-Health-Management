@@ -33,7 +33,7 @@ export const getAllConsultantPatterns = async (req: Request, res: Response, next
 }
 
 // Get a consultant pattern by ID
-export const getByIdConsultantPattern = async (req: Request, res: Response, next: NextFunction) => {
+export const getConsultantPatternById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await consultantPatternService.getConsultantPatternById(req.params.pattern_id)
     res.status(HTTP_STATUS.OK).json({

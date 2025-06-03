@@ -3,7 +3,7 @@ import {
   createConsultantPattern,
   deleteConsultantPattern,
   getAllConsultantPatterns,
-  getByIdConsultantPattern,
+  getConsultantPatternById,
   updateConsultantPattern
 }  from '~/controllers/consultant_pattern.controller'
 import { validateAccessToken, restrictTo } from '~/middlewares/account.middleware'
@@ -28,7 +28,7 @@ router.post(
 router.get('/', wrapRequestHandler(getAllConsultantPatterns))
 
 // router.get('/:pattern_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), consultantPatternController.getById)
-router.get('/:pattern_id', wrapRequestHandler(getByIdConsultantPattern))
+router.get('/:pattern_id', wrapRequestHandler(getConsultantPatternById))
 
 // router.put(
 //   '/:pattern_id',

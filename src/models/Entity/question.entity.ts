@@ -33,8 +33,8 @@ export default class Question implements QuestionType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (consultant: Account) => consultant.question)
-  consultant: Account
+  @ManyToOne(() => Account, (customer: Account) => customer.question)
+  customer: Account
 
   @OneToOne(() => Reply, (reply: Reply) => reply.question)
   @JoinColumn({ name: 'reply_id' })

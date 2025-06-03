@@ -119,3 +119,29 @@ export const CONSULTANT_APPOINTMENTS_MESSAGES = {
   CUSTOMER_NOT_FOUND: 'Customer not found',
   CONSULT_APPOINTMENT_CANNOT_DELETE: 'Cannot delete consult appointment with associated feedback'
 }
+
+export const QUESTION_MESSAGES = {
+  QUESTION_CREATED_SUCCESS: 'Question created successfully',
+  QUESTIONS_RETRIEVED_SUCCESS: 'Questions retrieved successfully',
+  QUESTION_RETRIEVED_SUCCESS: 'Question retrieved successfully',
+  QUESTION_UPDATED_SUCCESS: 'Question updated successfully',
+  QUESTION_DELETED_SUCCESS: 'Question deleted successfully',
+  CUSTOMER_NOT_FOUND: 'Customer not found or invalid role',
+  QUESTION_NOT_FOUND: 'Question not found',
+  CONTENT_REQUIRED: 'Question content is required and cannot be empty',
+  QUESTION_CANNOT_DELETE: 'Cannot delete question with associated reply',
+  QUESTION_ALREADY_REPLIED: 'Question already have been replied'
+}
+
+export const REPLY_MESSAGES = {
+  REPLY_CREATED_SUCCESS: 'Reply created successfully',
+  REPLIES_RETRIEVED_SUCCESS: 'Replies retrieved successfully',
+  REPLY_RETRIEVED_SUCCESS: 'Reply retrieved successfully',
+  REPLY_UPDATED_SUCCESS: 'Reply updated successfully',
+  REPLY_DELETED_SUCCESS: 'Reply deleted successfully',
+  CONSULTANT_NOT_FOUND: 'Consultant not found or invalid role',
+  QUESTION_NOT_FOUND: 'Question not found',
+  CONTENT_REQUIRED: 'Reply content is required and cannot be empty',
+  REPLY_ALREADY_EXISTS: 'A reply already exists for this question',
+  REPLY_NOT_FOUND: "Can not found matched reply"
+}
