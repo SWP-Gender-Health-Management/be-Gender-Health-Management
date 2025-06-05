@@ -7,6 +7,7 @@ import Reply, { ReplyType } from '~/models/Entity/reply.entity'
 import Account from '~/models/Entity/account.entity'
 import Question from '~/models/Entity/question.entity'
 import { Role } from '~/enum/role.enum'
+import questionService from './question.service'
 
 const replyRepository = AppDataSource.getRepository(Reply)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -55,7 +56,14 @@ export class ReplyService {
       content: data.content
     })
 
-    return await replyRepository.save(reply)
+    // Save the reply
+    const savedReply = await replyRepository.save(reply)
+
+    // Assign the reply to the question and save the question
+    question.reply = savedReply
+    await questionRepository.save(question)
+
+    return savedReply
   }
 
   // Get all replies
