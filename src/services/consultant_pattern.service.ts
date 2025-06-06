@@ -198,7 +198,7 @@ export class ConsultantPatternService {
         status: HTTP_STATUS.BAD_REQUEST
       })
     }
-
+    
     await consultantPatternRepository.remove(consultantPattern)
   }
 }

@@ -38,5 +38,5 @@ export default class Question implements QuestionType {
 
   @OneToOne(() => Reply, (reply: Reply) => reply.question)
   @JoinColumn({ name: 'reply_id' })
-  reply: Reply
+  reply: Reply | null
 }

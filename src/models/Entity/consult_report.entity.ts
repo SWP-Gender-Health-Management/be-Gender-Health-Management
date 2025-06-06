@@ -9,7 +9,7 @@ import {
 } from 'typeorm'
 import ConsultAppointment from './consult_appointment.entity'
 
-export interface ReportType {
+export interface ConsultReportType {
   report_id: string
   name: string
   description: string
@@ -17,15 +17,17 @@ export interface ReportType {
   // updated_at: Timestamp
 }
 
-@Entity({ name: 'result' })
-export default class Report implements ReportType {
+@Entity({ name: 'consult_report' })
+export default class ConsultReport implements ConsultReportType {
   @PrimaryGeneratedColumn('uuid')
   report_id: string
 
-  @Column({ type: 'varchar', length: 1000, nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
+  // @Column({ type: 'varchar', length: 1000, nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
+  @Column({ type: 'varchar', length: 1000, nullable: false})
   name: string
 
-  @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
+  // @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
+  @Column({ type: 'text', nullable: false })
   description: string
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })

@@ -175,6 +175,19 @@ export class ReplyService {
   // Delete a reply
   async deleteReply(reply_id: string): Promise<void> {
     const reply = await this.getReplyById(reply_id)
+
+    // Find the associated question and remove the reply reference
+    const question = await questionRepository.findOne({
+      where: { reply: { reply_id: reply_id } },
+      relations: ['reply']
+    })
+
+    if (question) {
+      question.reply = null;
+      await questionRepository.save(question)
+    }
+
+    // Delete the reply
     await replyRepository.remove(reply)
   }
 }

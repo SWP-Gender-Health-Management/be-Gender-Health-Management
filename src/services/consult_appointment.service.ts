@@ -64,7 +64,7 @@ export class ConsultAppointmentService {
   // Get all consult appointments
   async getAllConsultAppointments(): Promise<ConsultAppointment[]> {
     return await consultAppointmentRepository.find({
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer']
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
   }
 
@@ -72,7 +72,7 @@ export class ConsultAppointmentService {
   async getConsultAppointmentById(app_id: string): Promise<ConsultAppointment> {
     const consultAppointment = await consultAppointmentRepository.findOne({
       where: { app_id },
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer']
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
 
     if (!consultAppointment) {
@@ -97,7 +97,7 @@ export class ConsultAppointmentService {
 
     const consultAppointments = await consultAppointmentRepository.find({
       where: { customer },
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer']
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
 
     if (!consultAppointments.length) {
@@ -122,7 +122,7 @@ export class ConsultAppointmentService {
 
     const consultAppointment = await consultAppointmentRepository.findOne({
       where: { consultant_pattern: consultantPattern },
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer']
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback', 'report', 'feedback']
     })
 
     if (!consultAppointment) {

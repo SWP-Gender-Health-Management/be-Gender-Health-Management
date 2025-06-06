@@ -145,3 +145,16 @@ export const REPLY_MESSAGES = {
   REPLY_ALREADY_EXISTS: 'A reply already exists for this question',
   REPLY_NOT_FOUND: "Can not found matched reply"
 }
+
+export const CONSULT_REPORT_MESSAGES = {
+  REPORT_CREATED_SUCCESS: 'Consult report created successfully',
+  REPORTS_RETRIEVED_SUCCESS: 'Consult reports retrieved successfully',
+  REPORT_RETRIEVED_SUCCESS: 'Consult report retrieved successfully',
+  REPORT_UPDATED_SUCCESS: 'Consult report updated successfully',
+  REPORT_DELETED_SUCCESS: 'Consult report deleted successfully',
+  CONSULT_APPOINTMENT_NOT_FOUND: 'Consult appointment not found',
+  NAME_REQUIRED: 'Report name is required and cannot be empty',
+  DESCRIPTION_REQUIRED: 'Report description is required and cannot be empty',
+  REPORT_ALREADY_EXISTS: 'A report already exists for this consult appointment',
+  REPORT_NOT_FOUND: 'Consult report not found'
+}

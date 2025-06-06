@@ -11,6 +11,7 @@ import consultantPatternRoute from './routes/consultant_pattern.route'
 import consultAppointmentRoute from './routes/consult_appointment.route'
 import questionRoute from './routes/question.route'
 import replyRoute from './routes/reply.route'
+import consultReportRoute from './routes/consult_report.route'
 
 
 dotenv.config()
@@ -43,6 +44,8 @@ initializeApp()
       app.use('/question', questionRoute);
       // route reply
       app.use('/reply', replyRoute);
+      // route consult report
+      app.use('/consult_report', consultReportRoute);
       
       app.use(defaultErrorHandle)
 
