@@ -1,4 +1,5 @@
 import {
+  PrimaryColumn,
   Entity,
   PrimaryGeneratedColumn,
   Column,
