@@ -22,7 +22,8 @@ const app = express()
 
 // app.use(passport.initialize())
 app.use(cors({
-  origin: process.env.FE_PORT
+  origin: process.env.FE_ADDRESS,
+  credentials: true //for using cookie/token
 }))
 
 // Initialize app (database and passport)

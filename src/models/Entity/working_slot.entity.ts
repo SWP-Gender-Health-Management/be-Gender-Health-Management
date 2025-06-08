@@ -29,10 +29,14 @@ export default class WorkingSlot implements WorkingSlotType {
   @Column({ type: 'varchar', length: 1000, nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   name: string
 
-  @Column({ type: 'time', nullable: false })
+  // @Column({ type: 'time', nullable: false })
+  // start_at: string
+  @Column({ type: 'time', nullable: true })
   start_at: string
 
-  @Column({ type: 'time', nullable: false })
+  // @Column({ type: 'time', nullable: false })
+  // end_at: string
+  @Column({ type: 'time', nullable: true })
   end_at: string
 
   @Column({ type: 'enum', nullable: false, enum: TypeAppointment })
