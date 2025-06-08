@@ -41,7 +41,7 @@ export const loginController = async (req: Request, res: Response, next: NextFun
   //   // path: '/', // (Tùy chọn) Đường dẫn mà cookie hợp lệ, '/' là cho toàn bộ domain
   //   // domain: 'yourdomain.com', // (Tùy chọn) Chỉ định domain cho cookie
   // })
-  res.status(HTTP_STATUS.NOT_FOUND).json({
+  res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_LOGGED_IN_SUCCESS,
     result
   })

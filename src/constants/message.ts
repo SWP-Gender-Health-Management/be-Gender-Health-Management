@@ -158,3 +158,18 @@ export const CONSULT_REPORT_MESSAGES = {
   REPORT_ALREADY_EXISTS: 'A report already exists for this consult appointment',
   REPORT_NOT_FOUND: 'Consult report not found'
 }
+
+export const FEEDBACK_MESSAGES = {
+  FEEDBACK_CREATED_SUCCESS: 'Feedback created successfully',
+  FEEDBACKS_RETRIEVED_SUCCESS: 'Feedbacks retrieved successfully',
+  FEEDBACK_RETRIEVED_SUCCESS: 'Feedback retrieved successfully',
+  FEEDBACK_UPDATED_SUCCESS: 'Feedback updated successfully',
+  FEEDBACK_DELETED_SUCCESS: 'Feedback deleted successfully',
+  CONSULT_APPOINTMENT_NOT_FOUND: 'Consult appointment not found',
+  LABORATORY_APPOINTMENT_NOT_FOUND: 'Laboratory appointment not found',
+  APPOINTMENT_NOT_PROVIDED: 'Either consult appointment or laboratory appointment must be provided',
+  CONTENT_REQUIRED: 'Feedback content is required and cannot be empty',
+  RATING_INVALID: 'Rating must be a number between 1 and 5',
+  FEEDBACK_ALREADY_EXISTS: 'A feedback already exists for this appointment',
+  FEEDBACK_NOT_FOUND: 'Feedback not found'
+}

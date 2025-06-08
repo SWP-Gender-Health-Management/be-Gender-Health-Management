@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 import express from 'express'
 import dotenv from 'dotenv'
+import cors from 'cors'
 import { initializeApp } from './config/app.config'
 import defaultErrorHandle from './middlewares/error.middleware'
 import accountRoute from './routes/account.route'
@@ -12,6 +13,7 @@ import consultAppointmentRoute from './routes/consult_appointment.route'
 import questionRoute from './routes/question.route'
 import replyRoute from './routes/reply.route'
 import consultReportRoute from './routes/consult_report.route'
+import feedbackRoute from './routes/feedback.route'
 
 
 dotenv.config()
@@ -19,6 +21,9 @@ dotenv.config()
 const app = express()
 
 // app.use(passport.initialize())
+app.use(cors({
+  origin: process.env.FE_PORT
+}))
 
 // Initialize app (database and passport)
 initializeApp()
@@ -46,6 +51,8 @@ initializeApp()
       app.use('/reply', replyRoute);
       // route consult report
       app.use('/consult_report', consultReportRoute);
+      // route feedback
+      //app.use('/feedback', feedbackRoute);
       
       app.use(defaultErrorHandle)
 
