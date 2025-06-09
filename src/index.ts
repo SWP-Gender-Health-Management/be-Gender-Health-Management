@@ -2,6 +2,8 @@ import 'reflect-metadata'
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger';
 import { initializeApp } from './config/app.config'
 import defaultErrorHandle from './middlewares/error.middleware'
 import accountRoute from './routes/account.route'
@@ -20,11 +22,17 @@ dotenv.config()
 
 const app = express()
 
+// Middleware để parse JSON
+app.use(express.json());
+
 // app.use(passport.initialize())
 app.use(cors({
   origin: process.env.FE_ADDRESS,
   credentials: true //for using cookie/token
 }))
+
+// Add Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Initialize app (database and passport)
 initializeApp()
@@ -53,7 +61,7 @@ initializeApp()
       // route consult report
       app.use('/consult_report', consultReportRoute);
       // route feedback
-      //app.use('/feedback', feedbackRoute);
+      app.use('/feedback', feedbackRoute);
       
       app.use(defaultErrorHandle)
 
