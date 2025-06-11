@@ -5,7 +5,7 @@ import workingSlotService from '~/services/working_slot.service'
 
 /**
  * @swagger
- * /api/working-slots/add-slot:
+ * /working-slots/add-slot:
  *   post:
  *     summary: Add a working slot
  *     description: Creates a new working slot with specified name, time, and type (consult or laboratory).
@@ -67,7 +67,7 @@ export const addSlotController = async (req: Request, res: Response, next: NextF
 
 /**
  * @swagger
- * /api/working-slots/get-slot-by-type:
+ * /working-slots/get-slot-by-type:
  *   get:
  *     summary: Get working slots by type
  *     description: Retrieves working slots filtered by type (consult or laboratory).
@@ -122,7 +122,7 @@ export const getSlotByTypeController = async (req: Request, res: Response, next:
 
 /**
  * @swagger
- * /api/working-slots/get-all-slot:
+ * /working-slots/get-all-slot:
  *   get:
  *     summary: Get all working slots
  *     description: Retrieves a list of all working slots.
@@ -154,7 +154,7 @@ export const getSlotController = async (req: Request, res: Response, next: NextF
 
 /**
  * @swagger
- * /api/working-slots/update-slot:
+ * /working-slots/update-slot:
  *   put:
  *     summary: Update a working slot
  *     description: Updates an existing working slot by ID.
@@ -230,7 +230,7 @@ export const updateSlotController = async (req: Request, res: Response, next: Ne
 
 /**
  * @swagger
- * /api/working-slots/delete-slot:
+ * /working-slots/delete-slot:
  *   delete:
  *     summary: Delete a working slot
  *     description: Deletes a working slot by ID.

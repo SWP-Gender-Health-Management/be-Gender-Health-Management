@@ -8,7 +8,7 @@ import laboratoryService from '~/services/laborarity.service'
 
 /**
  * @swagger
- * /api/create-laboratory:
+ * /laborarity/create-laboratory:
  *   post:
  *     summary: Create a new laboratory
  *     description: Creates a new laboratory with a unique name. Requires admin role.
@@ -73,7 +73,7 @@ export const createLaboratory = async (req: Request, res: Response, next: NextFu
 
 /**
  * @swagger
- * /api/get-all-laboratories:
+ * /laborarity/get-all-laboratories:
  *   get:
  *     summary: Get all laboratories
  *     description: Retrieves a list of all laboratories. Requires admin or customer role.
@@ -113,7 +113,7 @@ export const getAllLaboratories = async (req: Request, res: Response, next: Next
 
 /**
  * @swagger
- * /api/get-laboratory-by-id/{lab_id}:
+ * /laborarity/get-laboratory-by-id/{lab_id}:
  *   get:
  *     summary: Get a laboratory by ID
  *     description: Retrieves a laboratory by its ID. Requires admin role.
@@ -168,7 +168,7 @@ export const getLaboratoryById = async (req: Request, res: Response, next: NextF
 
 /**
  * @swagger
- * /api/update-laboratory/{lab_id}:
+ * /laborarity/update-laboratory/{lab_id}:
  *   put:
  *     summary: Update a laboratory
  *     description: Updates an existing laboratory. Requires admin role.
@@ -250,7 +250,7 @@ export const updateLaboratory = async (req: Request, res: Response, next: NextFu
 
 /**
  * @swagger
- * /api/delete-laboratory/{lab_id}:
+ * /laborarity/delete-laboratory/{lab_id}:
  *   delete:
  *     summary: Delete a laboratory
  *     description: Deletes a laboratory by its ID. Cannot delete if associated with appointments. Requires admin role.

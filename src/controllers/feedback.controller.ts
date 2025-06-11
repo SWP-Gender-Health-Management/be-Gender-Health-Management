@@ -5,7 +5,7 @@ import feedbackService from '~/services/feedback.service'
 
 /**
  * @swagger
- * /api/create-feedback:
+ * /feedback/create-feedback:
  *   post:
  *     summary: Create a new feedback
  *     description: Creates a feedback for either a consult appointment or a laboratory appointment. Only one appointment type can be provided. Requires customer role.
@@ -83,7 +83,7 @@ export const createFeedback = async (req: Request, res: Response, next: NextFunc
 
 /**
  * @swagger
- * /api/get-all-feedbacks:
+ * /feedback/get-all-feedbacks:
  *   get:
  *     summary: Get all feedbacks
  *     description: Retrieves a list of all feedbacks with their relations (consult_appointment, laboratoryAppointment). Requires admin, consultant, or customer role.
@@ -123,7 +123,7 @@ export const getAllFeedbacks = async (req: Request, res: Response, next: NextFun
 
 /**
  * @swagger
- * /api/get-by-id-feedback/{feed_id}:
+ * /feedback/get-by-id-feedback/{feed_id}:
  *   get:
  *     summary: Get a feedback by ID
  *     description: Retrieves a feedback by its ID with its relations (consult_appointment, laboratoryAppointment). Requires admin, consultant, or customer role.
@@ -178,7 +178,7 @@ export const getByIdFeedback = async (req: Request, res: Response, next: NextFun
 
 /**
  * @swagger
- * /api/get-by-id-feedback/consult/{app_id}:
+ * /feedback/get-by-id-feedback/consult/{app_id}:
  *   get:
  *     summary: Get feedback by consult appointment ID
  *     description: Retrieves a feedback associated with a consult appointment ID with its relations (consult_appointment, laboratoryAppointment). Requires admin, consultant, or customer role.
@@ -233,7 +233,7 @@ export const getFeedbackByConsultAppointmentId = async (req: Request, res: Respo
 
 /**
  * @swagger
- * /api/get-by-id-feedback/lab/{lab_id}:
+ * /feedback/get-by-id-feedback/lab/{lab_id}:
  *   get:
  *     summary: Get feedback by laboratory appointment ID
  *     description: Retrieves a feedback associated with a laboratory appointment ID with its relations (consult_appointment, laboratoryAppointment). Requires admin, consultant, or customer role.
@@ -288,7 +288,7 @@ export const getFeedbackByLaboratoryAppointmentId = async (req: Request, res: Re
 
 /**
  * @swagger
- * /api/update-feedback/{feed_id}:
+ * /feedback/update-feedback/{feed_id}:
  *   put:
  *     summary: Update a feedback
  *     description: Updates an existing feedback. Only customers can update their own feedback. Requires customer role.
@@ -373,7 +373,7 @@ export const updateFeedback = async (req: Request, res: Response, next: NextFunc
 
 /**
  * @swagger
- * /api/delete-feedback/{feed_id}:
+ * /feedback/delete-feedback/{feed_id}:
  *   delete:
  *     summary: Delete a feedback
  *     description: Deletes a feedback by its ID. Requires admin or customer role.

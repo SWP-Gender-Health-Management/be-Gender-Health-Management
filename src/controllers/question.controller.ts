@@ -5,7 +5,7 @@ import questionService from '~/services/question.service'
 
 /**
  * @swagger
- * /api/create-question:
+ * /question/create-question:
  *   post:
  *     summary: Create a new question
  *     description: Creates a new question by a customer. Requires customer role.
@@ -80,7 +80,7 @@ export const createQuestion = async (req: Request, res: Response, next: NextFunc
 
 /**
  * @swagger
- * /api/get-all-questions:
+ * /question/get-all-questions:
  *   get:
  *     summary: Get all questions
  *     description: Retrieves a list of all questions with their relations (customer, reply). Requires admin or customer role.
@@ -120,7 +120,7 @@ export const getAllQuestions = async (req: Request, res: Response, next: NextFun
 
 /**
  * @swagger
- * /api/get-question-by-id/{ques_id}:
+ * /question/get-question-by-id/{ques_id}:
  *   get:
  *     summary: Get a question by ID
  *     description: Retrieves a question by its ID with its relations (customer, reply). Requires admin or customer role.
@@ -175,7 +175,7 @@ export const getQuestionById = async (req: Request, res: Response, next: NextFun
 
 /**
  * @swagger
- * /api/get-question-by-id/customer/{customer_id}:
+ * /question/get-question-by-id/customer/{customer_id}:
  *   get:
  *     summary: Get questions by customer ID
  *     description: Retrieves all questions associated with a customer ID with their relations (customer, reply). Requires admin or customer role.
@@ -232,7 +232,7 @@ export const getQuestionsByCustomerId = async (req: Request, res: Response, next
 
 /**
  * @swagger
- * /api/update-question/{ques_id}:
+ * /question/update-question/{ques_id}:
  *   put:
  *     summary: Update a question
  *     description: Updates an existing question. Cannot update status to true if question has a reply. Requires customer role.
@@ -314,7 +314,7 @@ export const updateQuestion = async (req: Request, res: Response, next: NextFunc
 
 /**
  * @swagger
- * /api/delete-question/{ques_id}:
+ * /question/delete-question/{ques_id}:
  *   delete:
  *     summary: Delete a question
  *     description: Deletes a question by its ID. Cannot delete if question has a reply. Requires admin or customer role.

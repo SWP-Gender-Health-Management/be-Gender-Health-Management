@@ -5,7 +5,7 @@ import replyService from '~/services/reply.service'
 
 /**
  * @swagger
- * /api/create-reply:
+ * /reply/create-reply:
  *   post:
  *     summary: Create a new reply
  *     description: Creates a reply for a question by a consultant. Each question can have only one reply. Requires consultant role.
@@ -80,7 +80,7 @@ export const createReply = async (req: Request, res: Response, next: NextFunctio
 
 /**
  * @swagger
- * /api/get-all-replies:
+ * /reply/get-all-replies:
  *   get:
  *     summary: Get all replies
  *     description: Retrieves a list of all replies with their relations (consultant, question). Requires admin, consultant, or customer role.
@@ -120,7 +120,7 @@ export const getAllReplies = async (req: Request, res: Response, next: NextFunct
 
 /**
  * @swagger
- * /api/get-reply-by-id/{reply_id}:
+ * /reply/get-reply-by-id/{reply_id}:
  *   get:
  *     summary: Get a reply by ID
  *     description: Retrieves a reply by its ID with its relations (consultant, question). Requires admin, consultant, or customer role.
@@ -175,7 +175,7 @@ export const getReplyById = async (req: Request, res: Response, next: NextFuncti
 
 /**
  * @swagger
- * /api/get-reply-by-id/consultant/{consultant_id}:
+ * /reply/get-reply-by-id/consultant/{consultant_id}:
  *   get:
  *     summary: Get replies by consultant ID
  *     description: Retrieves all replies associated with a consultant ID with their relations (consultant, question). Requires admin or consultant role.
@@ -232,7 +232,7 @@ export const getRepliesByConsultantId = async (req: Request, res: Response, next
 
 /**
  * @swagger
- * /api/get-reply-by-id/question/{ques_id}:
+ * /reply/get-reply-by-id/question/{ques_id}:
  *   get:
  *     summary: Get reply by question ID
  *     description: Retrieves a reply associated with a question ID with its relations (consultant, question). Requires admin, consultant, or customer role.
@@ -287,7 +287,7 @@ export const getReplyByQuestionId = async (req: Request, res: Response, next: Ne
 
 /**
  * @swagger
- * /api/update-reply/{reply_id}:
+ * /reply/update-reply/{reply_id}:
  *   put:
  *     summary: Update a reply
  *     description: Updates an existing reply. Requires consultant role.
@@ -366,7 +366,7 @@ export const updateReply = async (req: Request, res: Response, next: NextFunctio
 
 /**
  * @swagger
- * /api/delete-reply/{reply_id}:
+ * /reply/delete-reply/{reply_id}:
  *   delete:
  *     summary: Delete a reply
  *     description: Deletes a reply by its ID and removes its reference from the associated question. Requires admin or consultant role.

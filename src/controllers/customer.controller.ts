@@ -5,7 +5,7 @@ import customerService from '~/services/customer.service'
 
 /**
  * @swagger
- * /api/customer/track-period:
+ * /customer/track-period:
  *   post:
  *     summary: Track menstrual cycle
  *     description: Creates a new menstrual cycle record for a female customer. Requires authentication.
@@ -74,7 +74,7 @@ export const trackPeriodController = async (req: Request, res: Response, next: N
 
 /**
  * @swagger
- * /api/customer/predict-period:
+ * /customer/predict-period:
  *   get:
  *     summary: Predict menstrual cycle
  *     description: Predicts the next menstrual cycle dates based on the customer's existing cycle. Requires authentication.
@@ -138,7 +138,7 @@ export const predictPeriodController = async (req: Request, res: Response, next:
 
 /**
  * @swagger
- * /api/customer/update-menstrual-cycle:
+ * /customer/update-menstrual-cycle:
  *   put:
  *     summary: Update menstrual cycle
  *     description: Updates an existing menstrual cycle record for a customer. Requires authentication.
@@ -211,7 +211,7 @@ export const updateMenstrualCycleController = async (req: Request, res: Response
 
 /**
  * @swagger
- * /api/customer/create-notification:
+ * /customer/create-notification:
  *   post:
  *     summary: Create menstrual cycle notification
  *     description: Creates a notification for a menstrual cycle based on prediction data stored in Redis. Requires authentication.

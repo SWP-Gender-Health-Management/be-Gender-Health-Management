@@ -5,7 +5,7 @@ import consultReportService from '~/services/consult_report.service'
 
 /**
  * @swagger
- * /api/create-consult-report:
+ * /consult_report/create-consult-report:
  *   post:
  *     summary: Create a new consult report
  *     description: Creates a new consult report for a consult appointment. Requires consultant role.
@@ -80,7 +80,7 @@ export const createConsultReport = async (req: Request, res: Response, next: Nex
 
 /**
  * @swagger
- * /api/get-all-consult-reports:
+ * /consult_report/get-all-consult-reports:
  *   get:
  *     summary: Get all consult reports
  *     description: Retrieves a list of all consult reports with their relation to consult_appointment. Requires admin, consultant, or customer role.
@@ -120,7 +120,7 @@ export const getAllConsultReports = async (req: Request, res: Response, next: Ne
 
 /**
  * @swagger
- * /api/get-consult-report-by-id/{report_id}:
+ * /consult_report/get-consult-report-by-id/{report_id}:
  *   get:
  *     summary: Get a consult report by ID
  *     description: Retrieves a consult report by its ID with its relation to consult_appointment. Requires admin, consultant, or customer role.
@@ -175,7 +175,7 @@ export const getConsultReportById = async (req: Request, res: Response, next: Ne
 
 /**
  * @swagger
- * /api/get-consult-report-by-id/appointment/{app_id}:
+ * /consult_report/get-consult-report-by-id/appointment/{app_id}:
  *   get:
  *     summary: Get consult report by consult appointment ID
  *     description: Retrieves a consult report associated with a consult appointment ID with its relation to consult_appointment. Requires admin, consultant, or customer role.
@@ -230,7 +230,7 @@ export const getConsultReportByAppointmentId = async (req: Request, res: Respons
 
 /**
  * @swagger
- * /api/update-consult-report/{report_id}:
+ * /consult_report/update-consult-report/{report_id}:
  *   put:
  *     summary: Update a consult report
  *     description: Updates an existing consult report. Requires consultant role.
@@ -312,7 +312,7 @@ export const updateConsultReport = async (req: Request, res: Response, next: Nex
 
 /**
  * @swagger
- * /api/delete-consult-report/{report_id}:
+ * /consult_report/delete-consult-report/{report_id}:
  *   delete:
  *     summary: Delete a consult report
  *     description: Deletes a consult report by its ID. Requires admin or consultant role.
