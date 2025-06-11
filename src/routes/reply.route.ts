@@ -14,43 +14,35 @@ import wrapRequestHandler from '~/utils/handle'
 
 const router = Router()
 
-// router.post(
-//   '/',
-//   validateAccessToken,
-//   restrictTo(Role.CONSULTANT),
-//   ReplyController.validateReplyInput,
-//   replyController.create
-// )
 router.post(
-  '/',
+  '/create-reply',
+  validateAccessToken,
+  restrictTo(Role.CONSULTANT),
   wrapRequestHandler(createReply)
 )
 
-// router.get('/', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), replyController.getAll)
-router.get('/', wrapRequestHandler(getAllReplies))
 
-// router.get('/:reply_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), replyController.getById)
-router.get('/:reply_id', wrapRequestHandler(getReplyById))
+router.get('/get-all-replies', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getAllReplies))
 
-// router.get('/consultant/:consultant_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), replyController.getByConsultantId)
-router.get('/consultant/:consultant_id', wrapRequestHandler(getRepliesByConsultantId))
 
-// router.get('/question/:ques_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), replyController.getByQuestionId)
-router.get('/question/:ques_id', wrapRequestHandler(getReplyByQuestionId))
+router.get('/get-reply-by-id/:reply_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getReplyById))
 
-// router.put(
-//   '/:reply_id',
-//   validateAccessToken,
-//   restrictTo(Role.CONSULTANT),
-//   ReplyController.validateReplyInput,
-//   replyController.update
-// )
+
+router.get('/get-reply-by-id/consultant/:consultant_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getRepliesByConsultantId))
+
+
+router.get('/get-reply-by-id/question/:ques_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getReplyByQuestionId))
+
+
 router.put(
-  '/:reply_id',
+  '/update-reply/:reply_id',
+  validateAccessToken,
+  restrictTo(Role.CONSULTANT),
   wrapRequestHandler(updateReply)
 )
 
-// router.delete('/:reply_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), replyController.delete)
-router.delete('/:reply_id', wrapRequestHandler(deleteReply))
+
+router.delete('/delete-reply/:reply_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(deleteReply))
+
 
 export default router

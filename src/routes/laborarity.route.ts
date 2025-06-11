@@ -12,40 +12,34 @@ import wrapRequestHandler from '~/utils/handle'
 
 const router = Router()
 
-// Create a new laboratory (admin only)
-// router.post(
-//   '/',
-//   validateAccessToken,
-//   restrictTo(Role.ADMIN),
-//   wrapRequestHandler(createLaboratory)
-// )
+//Create a new laboratory (admin only)
 router.post(
-  '/',
+  '/create-laboratory',
+  validateAccessToken,
+  restrictTo(Role.ADMIN),
   wrapRequestHandler(createLaboratory)
 )
 
-// Get all laboratories (admin or user)
-// router.get('/', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), getAllLaboratories)
-router.get('/', wrapRequestHandler(getAllLaboratories) )
+
+//Get all laboratories (admin or user)
+router.get('/get-all-laboratories', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(getAllLaboratories))
+
 
 // Get a laboratory by ID (admin or user)
-// router.get('/:lab_id', validateAccessToken, restrictTo(Role.ADMIN), wrapRequestHandler(getLaboratoryById))
-router.get('/:lab_id', wrapRequestHandler(getLaboratoryById))
+router.get('/get-laboratory-by-id/:lab_id', validateAccessToken, restrictTo(Role.ADMIN), wrapRequestHandler(getLaboratoryById))
+
 
 // Update a laboratory (admin only)
-// router.put(
-//   '/:lab_id',
-//   validateAccessToken,
-//   restrictTo(Role.ADMIN),
-//   wrapRequestHandler(updateLaboratory)
-// )
 router.put(
-  '/:lab_id',
+  '/update-laboratory/:lab_id',
+  validateAccessToken,
+  restrictTo(Role.ADMIN),
   wrapRequestHandler(updateLaboratory)
 )
 
+
 // Delete a laboratory (admin only)
-// router.delete('/:lab_id', validateAccessToken, restrictTo(Role.ADMIN), wrapRequestHandler(deleteLaboratory))
-router.delete('/:lab_id', wrapRequestHandler(deleteLaboratory))
+router.delete('/delete-laboratory/:lab_id', validateAccessToken, restrictTo(Role.ADMIN), wrapRequestHandler(deleteLaboratory))
+
 
 export default router
