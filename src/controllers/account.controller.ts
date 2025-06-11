@@ -32,7 +32,7 @@ export const loginController = async (req: Request, res: Response, next: NextFun
   const result = await accountService.login(req.body)
   const { refreshToken } = result
   const account = JSON.parse((await redisClient.get(req.body.account_id)) as string)
-  await refreshTokenService.updateRefreshToken({ account: account, token: refreshToken })
+  // await refreshTokenService.updateRefreshToken({ account: account, token: refreshToken })
   // res.cookie('refreshToken', refreshToken, {
   //   httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
   //   secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production

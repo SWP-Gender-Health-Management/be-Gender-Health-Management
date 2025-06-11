@@ -1,14 +1,14 @@
 import 'reflect-metadata'
 import type { StringValue } from 'ms'
-import { hashPassword, verifyPassword } from '~/utils/crypto'
-import { signToken, verifyToken } from '~/utils/jwt'
+import { hashPassword, verifyPassword } from '../utils/crypto.js'
+import { signToken, verifyToken } from '../utils/jwt.js'
 import { config } from 'dotenv'
-import { sendMail } from './email.service'
-import { AppDataSource } from '~/config/database.config'
-import Account from '~/models/Entity/account.entity'
-import { ErrorWithStatus } from '~/models/Error'
-import { USERS_MESSAGES } from '~/constants/message'
-import redisClient from '~/config/redis.config'
+import { sendMail } from './email.service.js'
+import { AppDataSource } from '../config/database.config.js'
+import Account from '../models/Entity/account.entity.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import { USERS_MESSAGES } from '../constants/message.js'
+import redisClient from '../config/redis.config.js'
 
 config()
 const accountRepository = AppDataSource.getRepository(Account)
@@ -118,10 +118,6 @@ class AccountService {
     return { accessToken, refreshToken }
   }
 
-  // async getAccountsList(id: any) {}
-
-  // async updateAccount(id: any) {}
-
   async verifyEmail(payload: any) {
     const { account_id, secretPasscode } = payload
     const userToken = await redisClient.get(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${account_id}`)
@@ -150,7 +146,7 @@ class AccountService {
       accountRepository.update(account_id, { is_verified: true }),
       redisClient.del(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${account_id}`)
     ])
-    const user: Account = await accountRepository.findOne({ where: { account_id } })
+    const user: Account | null = await accountRepository.findOne({ where: { account_id } })
     await redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
     return {
       message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS

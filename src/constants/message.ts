@@ -46,7 +46,8 @@ export const USERS_MESSAGES = {
   EMAIL_VERIFIED_TOKEN_EXPIRED: 'Email verified token expired',
   USER_LOGGED_OUT_SUCCESS: 'User logged out successfully',
   SEND_EMAIL_VERIFIED_SUCCESS: 'Send email verified successfully',
-  YOU_ARE_NOT_FEMALE: 'You are not female'
+  YOU_ARE_NOT_FEMALE: 'You are not female',
+  PASSWORD_INVALID_OLD: 'Password is invalid'
 }
 
 export const CUSTOMER_MESSAGES = {
@@ -61,7 +62,17 @@ export const CUSTOMER_MESSAGES = {
   MENSTRUAL_CYCLE_NOT_FOUND: 'Menstrual cycle not found',
   MENSTRUAL_CYCLE_UPDATED: 'Menstrual cycle updated successfully',
   MENSTRUAL_CYCLE_SCHEDULED_NOTIFICATION: 'Menstrual cycle scheduled notification',
-  MENSTRUAL_CYCLE_ALREADY_EXISTS: 'Menstrual cycle already exists'
+  MENSTRUAL_CYCLE_ALREADY_EXISTS: 'Menstrual cycle already exists',
+  LABORARITY_ID_INVALID: 'Laborarity id is invalid',
+  SLOT_ID_INVALID: 'Slot id is invalid',
+  DATE_INVALID: 'Date is invalid',
+  ACCOUNT_ID_INVALID: 'Account id is invalid',
+  LABORARITY_APPOINTMENT_CREATED_SUCCESS: 'Laborarity appointment created successfully',
+  LABORARITY_NOT_ENOUGH_STAFF: 'Laborarity not enough staff',
+  LABORARITY_NOT_ENOUGH_STAFF_FOR_SLOT: 'Laborarity not enough staff for slot',
+  WORKING_SLOT_INVALID: 'Working slot is invalid',
+  GET_CUSTOMER_SUCCESS: 'Get customer successfully',
+  AMOUNT_INVALID: 'Amount is invalid'
 }
 
 export const WORKING_SLOT_MESSAGES = {
@@ -74,4 +85,52 @@ export const WORKING_SLOT_MESSAGES = {
   WORKING_SLOT_DELETED_SUCCESS: 'Working slot deleted successfully',
   WORKING_SLOT_NOT_FOUND: 'Working slot not found',
   GET_SLOT_SUCCESS: 'Get slot successfully'
+}
+
+export const STAFF_PATTERN_MESSAGES = {
+  DATE_INVALID: 'Date is invalid',
+  WORKING_SLOT_ID_INVALID: 'Working slot id is invalid',
+  ACCOUNT_ID_INVALID: 'Account id is invalid',
+  STAFF_PATTERN_DELETED_SUCCESS: 'Staff pattern deleted successfully',
+  STAFF_PATTERN_NOT_FOUND: 'Staff pattern not found',
+  ADD_STAFF_PATTERN_SUCCESS: 'Add staff pattern successfully',
+  GET_STAFF_PATTERN_SUCCESS: 'Get staff pattern successfully',
+  GET_ALL_STAFF_PATTERN_SUCCESS: 'Get all staff pattern successfully',
+  UPDATE_STAFF_PATTERN_SUCCESS: 'Update staff pattern successfully'
+}
+
+export const ADMIN_MESSAGES = {
+  ADMIN_CREATED_SUCCESS: 'Admin created successfully',
+  MANAGER_CREATED_SUCCESS: 'Manager created successfully',
+  STAFF_CREATED_SUCCESS: 'Staff created successfully',
+  CONSULTANT_CREATED_SUCCESS: 'Consultant created successfully',
+  CUSTOMER_CREATED_SUCCESS: 'Customer created successfully',
+  FULL_NAME_REQUIRED: 'Full name is required',
+  EMAIL_REQUIRED: 'Email is required',
+  PASSWORD_REQUIRED: 'Password is required',
+  EMAIL_ALREADY_EXISTS: 'Email already exists'
+}
+
+export const LABORARITY_MESSAGES = {
+  NAME_REQUIRED: 'Laborarity name is required',
+  DESCRIPTION_REQUIRED: 'Laborarity description is required',
+  PRICE_REQUIRED: 'Laborarity price is required',
+  SPECIMEN_REQUIRED: 'Laborarity specimen is required',
+  LABORARITY_CREATED_SUCCESS: 'Laborarity created successfully',
+  LABORARITY_NOT_FOUND: 'Laborarity not found'
+}
+
+export const TRANSACTION_MESSAGES = {
+  APP_ID_INVALID: 'App ID is invalid',
+  AMOUNT_INVALID: 'Amount is invalid',
+  METHOD_INVALID: 'Method is invalid',
+  DATE_INVALID: 'Date is invalid',
+  DESCRIPTION_INVALID: 'Description is invalid',
+  ACCOUNT_ID_INVALID: 'Account ID is invalid',
+  TRANSACTION_CREATED_SUCCESS: 'Transaction created successfully',
+  PAYMENT_LINK_CREATED_SUCCESS: 'Payment link created successfully',
+  TRANSACTION_ALREADY_PAID: 'Transaction already paid',
+  TRANSACTION_NOT_FOUND: 'Transaction not found',
+  TRANSACTION_PAID_SUCCESS: 'Transaction paid successfully',
+  TRANSACTION_FAILED: 'Transaction failed'
 }

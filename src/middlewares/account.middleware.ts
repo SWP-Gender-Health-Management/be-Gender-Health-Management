@@ -1,11 +1,11 @@
 import { checkSchema } from 'express-validator'
-import redisClient from '~/config/redis.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { USERS_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import accountService from '~/services/account.service'
-import { verifyToken } from '~/utils/jwt'
-import { validate } from '~/utils/validations'
+import redisClient from '~/config/redis.config.js'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { USERS_MESSAGES } from '~/constants/message.js'
+import { ErrorWithStatus } from '~/models/Error.js'
+import accountService from '~/services/account.service.js'
+import { verifyToken } from '~/utils/jwt.js'
+import { validate } from '~/utils/validations.js'
 
 export const validateRegister = validate(
   checkSchema({
@@ -129,7 +129,10 @@ export const validateChangePassword = validate(
         options: async (value, { req }) => {
           const isPasswordValid = await accountService.checkPassword(req.body.email, value)
           if (!isPasswordValid) {
-            throw new Error(USERS_MESSAGES.PASSWORD_INVALID)
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.PASSWORD_INVALID_OLD,
+              status: HTTP_STATUS.BAD_REQUEST
+            })
           }
           return true
         }

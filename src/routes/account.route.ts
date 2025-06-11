@@ -10,7 +10,7 @@ import {
   updateAccountController,
   verifyEmailController,
   viewAccountController
-} from '~/controllers/account.controller'
+} from '~/controllers/account.controller.js'
 import {
   validateAccessToken,
   validateChangePassword,
@@ -18,8 +18,8 @@ import {
   validatePassCode,
   validateRegister,
   validateUpdateAccount
-} from '~/middlewares/account.middleware'
-import wrapRequestHandler from '~/utils/handle'
+} from '../middlewares/account.middleware.js'
+import wrapRequestHandler from '~/utils/handle.js'
 
 const accountRoute = Router()
 
