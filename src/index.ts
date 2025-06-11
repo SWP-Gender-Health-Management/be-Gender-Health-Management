@@ -22,9 +22,6 @@ dotenv.config()
 
 const app = express()
 
-// Middleware để parse JSON
-app.use(express.json());
-
 // app.use(passport.initialize())
 app.use(cors({
   origin: process.env.FE_ADDRESS,

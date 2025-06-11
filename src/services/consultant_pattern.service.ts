@@ -139,7 +139,7 @@ export class ConsultantPatternService {
     let workingSlot;
     let consultant;
     // Validate working slot if provided
-    if (data.slot_id && data.slot_id !== consultantPattern.working_slot.slot_id) {
+    if (data.slot_id &&(!consultantPattern.working_slot || data.slot_id !== consultantPattern.working_slot.slot_id)) {
       workingSlot = await workingSlotRepository.findOne({ where: { slot_id: data.slot_id } })
       if (!workingSlot) {
         throw new ErrorWithStatus({
@@ -150,7 +150,7 @@ export class ConsultantPatternService {
     }
 
     // Validate consultant if provided
-    if (data.consultant_id && data.consultant_id !== consultantPattern.consultant.account_id) {
+    if (data.consultant_id && (!consultantPattern.consultant || data.consultant_id !== consultantPattern.consultant.account_id)) {
       consultant = await accountRepository.findOne({ where: { account_id: data.consultant_id } })
       if (!consultant || consultant.role !== Role.CONSULTANT) {
         throw new ErrorWithStatus({
@@ -176,8 +176,8 @@ export class ConsultantPatternService {
         })
       }
     }
-
-    Object.assign(consultantPattern, {
+    console.log(consultant);
+    await Object.assign(consultantPattern, {
       working_slot: workingSlot || consultantPattern.working_slot,
       consultant: consultant || consultantPattern.consultant,
       date: data.date || consultantPattern.date,

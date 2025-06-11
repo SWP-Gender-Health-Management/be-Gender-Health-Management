@@ -3,7 +3,7 @@ import {
   createConsultReport,
   deleteConsultReport,
   getAllConsultReports,
-  getByIdConsultReport,
+  getConsultReportById,
   getConsultReportByAppointmentId,
   updateConsultReport
 } from '~/controllers/consult_report.controller'
@@ -13,40 +13,32 @@ import wrapRequestHandler from '~/utils/handle'
 
 const router = Router()
 
-// router.post(
-//   '/',
-//   validateAccessToken,
-//   restrictTo(Role.CONSULTANT),
-//   ConsultReportController.validateConsultReportInput,
-//   consultReportController.create
-// )
 router.post(
-  '/',
+  '/create-consult-report',
+  validateAccessToken,
+  restrictTo(Role.CONSULTANT),
   wrapRequestHandler(createConsultReport)
 )
 
-// router.get('/', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), consultReportController.getAll)
-router.get('/', wrapRequestHandler(getAllConsultReports))
 
-// router.get('/:report_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), consultReportController.getById)
-router.get('/:report_id', wrapRequestHandler(getByIdConsultReport))
+router.get('/get-all-consult-reports', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getAllConsultReports))
 
-// router.get('/appointment/:app_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), consultReportController.getByAppointmentId)
-router.get('/appointment/:app_id', wrapRequestHandler(getConsultReportByAppointmentId))
 
-// router.put(
-//   '/:report_id',
-//   validateAccessToken,
-//   restrictTo(Role.CONSULTANT),
-//   ConsultReportController.validateConsultReportInput,
-//   consultReportController.update
-// )
+router.get('/get-consult-report-by-id/:report_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getConsultReportById))
+
+
+router.get('/get-consult-report-by-id/appointment/:app_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getConsultReportByAppointmentId))
+
+
 router.put(
-  '/:report_id',
+  'update-consult-report/:report_id',
+  validateAccessToken,
+  restrictTo(Role.CONSULTANT),
   wrapRequestHandler(updateConsultReport)
 )
 
-// router.delete('/:report_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), consultReportController.delete)
-router.delete('/:report_id', wrapRequestHandler(deleteConsultReport))
+
+router.delete('/delete-consult-report/:report_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(deleteConsultReport))
+
 
 export default router

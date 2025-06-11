@@ -13,40 +13,29 @@ import wrapRequestHandler from '~/utils/handle'
 
 const router = Router()
 
-// router.post(
-//   '/',
-//   validateAccessToken,
-//   restrictTo(Role.CUSTOMER),
-//   QuestionController.validateQuestionInput,
-//   questionController.create
-// )
 router.post(
-  '/',
+  '/create-question',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER),
   wrapRequestHandler(createQuestion)
 )
 
-// router.get('/', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), questionController.getAll)
-router.get('/', wrapRequestHandler(getAllQuestions))
+router.get('/get-all-questions', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(getAllQuestions))
 
-// router.get('/:ques_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), questionController.getById)
-router.get('/:ques_id', wrapRequestHandler(getQuestionById))
 
-// router.get('/customer/:customer_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), questionController.getByCustomerId)
-router.get('/customer/:customer_id', wrapRequestHandler(getQuestionsByCustomerId))
+router.get('/get-question-by-id/:ques_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(getQuestionById))
 
-// router.put(
-//   '/:ques_id',
-//   validateAccessToken,
-//   restrictTo(Role.CUSTOMER),
-//   QuestionController.validateQuestionInput,
-//   questionController.update
-// )
+
+router.get('/get-question-by-id/customer/:customer_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(getQuestionsByCustomerId))
+
 router.put(
-  '/:ques_id',
+  '/update-question/:ques_id',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER),
   wrapRequestHandler(updateQuestion)
 )
 
-// router.delete('/:ques_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), questionController.delete)
-router.delete('/:ques_id', wrapRequestHandler(deleteQuestion))
+router.delete('/delete-question/:ques_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(deleteQuestion))
+
 
 export default router

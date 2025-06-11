@@ -14,43 +14,35 @@ import wrapRequestHandler from '~/utils/handle'
 
 const router = Router()
 
-// router.post(
-//   '/',
-//   validateAccessToken,
-//   restrictTo(Role.CUSTOMER),
-//   FeedbackController.validateFeedbackInput,
-//   feedbackController.create
-// )
 router.post(
-  '/',
+  '/create-feedback',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER),
   wrapRequestHandler(createFeedback)
 )
 
-// router.get('/', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), feedbackController.getAll)
-router.get('/', wrapRequestHandler(getAllFeedbacks))
 
-// router.get('/:feed_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), feedbackController.getById)
-router.get('/:feed_id', wrapRequestHandler(getByIdFeedback))
+router.get('/get-all-feedbacks', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getAllFeedbacks))
 
-// router.get('/consult/:app_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), feedbackController.getByConsultAppointmentId)
-router.get('/consult/:app_id', wrapRequestHandler(getFeedbackByConsultAppointmentId))
 
-// router.get('/lab/:lab_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), feedbackController.getByLaboratoryAppointmentId)
-router.get('/lab/:lab_id', wrapRequestHandler(getFeedbackByLaboratoryAppointmentId))
+router.get('/get-by-id-feedback/:feed_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getByIdFeedback))
 
-// router.put(
-//   '/:feed_id',
-//   validateAccessToken,
-//   restrictTo(Role.CUSTOMER),
-//   FeedbackController.validateFeedbackInput,
-//   feedbackController.update
-// )
+
+router.get('/get-by-id-feedback/consult/:app_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getFeedbackByConsultAppointmentId))
+
+
+router.get('/get-by-id-feedback/lab/:lab_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getFeedbackByLaboratoryAppointmentId))
+
+
 router.put(
-  '/:feed_id',
-  wrapRequestHandler(updateFeedback)
+  '/update-feedback/:feed_id',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER),
+ wrapRequestHandler(updateFeedback)
 )
 
-// router.delete('/:feed_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), feedbackController.delete)
-router.delete('/:feed_id', wrapRequestHandler(deleteFeedback))
+
+router.delete('/delete-feedback/:feed_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(deleteFeedback))
+
 
 export default router
