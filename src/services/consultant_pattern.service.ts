@@ -60,9 +60,17 @@ export class ConsultantPatternService {
   }
 
   // Get all consultant patterns
-  async getAllConsultantPatterns(filter: any): Promise<ConsultantPattern[]> {
+  async getAllConsultantPatterns(filter: any, pageVar: any): Promise<ConsultantPattern[]> {
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
     return await consultantPatternRepository.find({
-      where: {...filter},
+      where: { ...filter },
+      skip,
+      take: limit,
       relations: ['working_slot', 'consultant']
     })
   }
@@ -85,7 +93,8 @@ export class ConsultantPatternService {
   }
 
   // Get a consultant pattern by Consultant ID
-  async getConsultantPatternByConsultantId(consultant_id: string, filter: any): Promise<ConsultantPattern[]> {
+  async getConsultantPatternByConsultantId(consultant_id: string, filter: any, pageVar: any): Promise<ConsultantPattern[]> {
+    
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } });
     if (!consultant) {
       throw new ErrorWithStatus({
@@ -94,8 +103,17 @@ export class ConsultantPatternService {
       })
     }
 
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
     const consultantPattern = await consultantPatternRepository.find({
       where: { consultant: consultant, ...filter },
+      skip,
+      take: limit,
       relations: ['working_slot', 'consultant']
     });
 
@@ -110,7 +128,7 @@ export class ConsultantPatternService {
   }
 
   // Get a consultant pattern by Slot ID
-  async getConsultantPatternBySlotId(slot_id: string, filter:any): Promise<ConsultantPattern[]> {
+  async getConsultantPatternBySlotId(slot_id: string, filter: any, pageVar:any): Promise<ConsultantPattern[]> {
     const workingSlot = await workingSlotRepository.findOne({ where: { slot_id } });
     if (!workingSlot) {
       throw new ErrorWithStatus({
@@ -119,8 +137,17 @@ export class ConsultantPatternService {
       })
     }
 
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
     const consultantPattern = await consultantPatternRepository.find({
       where: { working_slot: workingSlot, ...filter },
+      skip,
+      take: limit,
       relations: ['working_slot', 'consultant']
     });
 
@@ -140,7 +167,7 @@ export class ConsultantPatternService {
     let workingSlot;
     let consultant;
     // Validate working slot if provided
-    if (data.slot_id &&(!consultantPattern.working_slot || data.slot_id !== consultantPattern.working_slot.slot_id)) {
+    if (data.slot_id && (!consultantPattern.working_slot || data.slot_id !== consultantPattern.working_slot.slot_id)) {
       workingSlot = await workingSlotRepository.findOne({ where: { slot_id: data.slot_id } })
       if (!workingSlot) {
         throw new ErrorWithStatus({
@@ -199,7 +226,7 @@ export class ConsultantPatternService {
         status: HTTP_STATUS.BAD_REQUEST
       })
     }
-    
+
     await consultantPatternRepository.remove(consultantPattern)
   }
 }

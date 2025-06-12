@@ -111,9 +111,18 @@ export class FeedbackService {
   }
 
   // Get all feedbacks
-  async getAllFeedbacks(filter: any): Promise<Feedback[]> {
+  async getAllFeedbacks(filter: any, pageVar: any): Promise<Feedback[]> {
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
     return await feedbackRepository.find({
       where: {...filter},
+      skip,
+      take: limit,
       relations: ['consult_appointment', 'laboratoryAppointment']
     })
   }

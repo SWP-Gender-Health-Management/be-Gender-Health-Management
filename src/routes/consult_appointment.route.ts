@@ -17,16 +17,16 @@ const router = Router()
 // Create a new consult appointment (customer only)
 router.post(
   '/create-consult-appointment',
-  // validateAccessToken,
-  // restrictTo(Role.CUSTOMER),
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER),
   wrapRequestHandler(createConsultAppointment)
 )
 
 // Get all consult appointments (admin or consultant)
 router.get(
   '/get-all-consult-appointments',
-  // validateAccessToken,
-  // restrictTo(Role.ADMIN, Role.CONSULTANT),
+  validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CONSULTANT),
   wrapRequestHandler(getAllConsultAppointments)
 )
 

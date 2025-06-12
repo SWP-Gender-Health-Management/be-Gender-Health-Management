@@ -101,7 +101,7 @@ export const createLaboratory = async (req: Request, res: Response, next: NextFu
 // Get all laboratories
 export const getAllLaboratories = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await laboratoryService.getAllLaboratories(req.body)
+    const result = await laboratoryService.getAllLaboratories(req.body, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: LABORATORIES_MESSAGES.LABORATORIES_RETRIEVED_SUCCESS,
       result

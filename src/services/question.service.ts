@@ -34,9 +34,18 @@ export class QuestionService {
   }
 
   // Get all questions
-  async getAllQuestions(filter: any): Promise<Question[]> {
+  async getAllQuestions(filter: any, pageVar: any): Promise<Question[]> {
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
     return await questionRepository.find({
       where: {...filter},
+      skip,
+      take: limit,
       relations: ['customer', 'reply']
     })
   }
@@ -59,7 +68,7 @@ export class QuestionService {
   }
 
   // Get questions by Customer ID
-  async getQuestionsByCustomerId(customer_id: string, filter:any): Promise<Question[]> {
+  async getQuestionsByCustomerId(customer_id: string, filter:any, pageVar: any): Promise<Question[]> {
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -68,8 +77,17 @@ export class QuestionService {
       })
     }
 
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
     const questions = await questionRepository.find({
       where: { customer: customer, ...filter},
+      skip,
+      take: limit,
       relations: ['customer', 'reply']
     })
 
