@@ -60,8 +60,9 @@ export class ConsultantPatternService {
   }
 
   // Get all consultant patterns
-  async getAllConsultantPatterns(): Promise<ConsultantPattern[]> {
+  async getAllConsultantPatterns(filter: any): Promise<ConsultantPattern[]> {
     return await consultantPatternRepository.find({
+      where: {...filter},
       relations: ['working_slot', 'consultant']
     })
   }
@@ -84,7 +85,7 @@ export class ConsultantPatternService {
   }
 
   // Get a consultant pattern by Consultant ID
-  async getConsultantPatternByConsultantId(consultant_id: string): Promise<ConsultantPattern[]> {
+  async getConsultantPatternByConsultantId(consultant_id: string, filter: any): Promise<ConsultantPattern[]> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } });
     if (!consultant) {
       throw new ErrorWithStatus({
@@ -94,7 +95,7 @@ export class ConsultantPatternService {
     }
 
     const consultantPattern = await consultantPatternRepository.find({
-      where: { consultant: consultant },
+      where: { consultant: consultant, ...filter },
       relations: ['working_slot', 'consultant']
     });
 
@@ -109,7 +110,7 @@ export class ConsultantPatternService {
   }
 
   // Get a consultant pattern by Slot ID
-  async getConsultantPatternBySlotId(slot_id: string): Promise<ConsultantPattern[]> {
+  async getConsultantPatternBySlotId(slot_id: string, filter:any): Promise<ConsultantPattern[]> {
     const workingSlot = await workingSlotRepository.findOne({ where: { slot_id } });
     if (!workingSlot) {
       throw new ErrorWithStatus({
@@ -119,7 +120,7 @@ export class ConsultantPatternService {
     }
 
     const consultantPattern = await consultantPatternRepository.find({
-      where: { working_slot: workingSlot },
+      where: { working_slot: workingSlot, ...filter },
       relations: ['working_slot', 'consultant']
     });
 

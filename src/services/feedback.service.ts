@@ -111,8 +111,9 @@ export class FeedbackService {
   }
 
   // Get all feedbacks
-  async getAllFeedbacks(): Promise<Feedback[]> {
+  async getAllFeedbacks(filter: any): Promise<Feedback[]> {
     return await feedbackRepository.find({
+      where: {...filter},
       relations: ['consult_appointment', 'laboratoryAppointment']
     })
   }

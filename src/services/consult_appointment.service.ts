@@ -62,8 +62,9 @@ export class ConsultAppointmentService {
   }
 
   // Get all consult appointments
-  async getAllConsultAppointments(): Promise<ConsultAppointment[]> {
+  async getAllConsultAppointments(filter: any): Promise<ConsultAppointment[]> {
     return await consultAppointmentRepository.find({
+      where: {...filter},
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
   }
@@ -86,7 +87,7 @@ export class ConsultAppointmentService {
   }
 
   // Get consult appointments by Customer ID
-  async getConsultAppointmentsByCustomerId(customer_id: string): Promise<ConsultAppointment[]> {
+  async getConsultAppointmentsByCustomerId(customer_id: string, filter:any): Promise<ConsultAppointment[]> {
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -96,7 +97,7 @@ export class ConsultAppointmentService {
     }
 
     const consultAppointments = await consultAppointmentRepository.find({
-      where: { customer },
+      where: { customer, ...filter },
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
 
@@ -138,7 +139,6 @@ export class ConsultAppointmentService {
   // Update a consult appointment
   async updateConsultAppointment(app_id: string, data: any): Promise<ConsultAppointment> {
     const consultAppointment = await this.getConsultAppointmentById(app_id)
-
     // Validate consultant pattern if provided
     let consultantPattern
     if (data.pattern_id && data.pattern_id !== consultAppointment.consultant_pattern.pattern_id) {

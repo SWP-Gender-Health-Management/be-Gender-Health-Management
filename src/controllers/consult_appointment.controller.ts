@@ -108,7 +108,7 @@ export const createConsultAppointment = async (req: Request, res: Response, next
 // Get all consult appointments
 export const getAllConsultAppointments = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultAppointmentService.getAllConsultAppointments()
+    const result = await consultAppointmentService.getAllConsultAppointments(req.body)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
       result
@@ -220,7 +220,7 @@ export const getConsultAppointmentById = async (req: Request, res: Response, nex
 // Get consult appointments by Customer ID
 export const getConsultAppointmentsByCustomerId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultAppointmentService.getConsultAppointmentsByCustomerId(req.params.customer_id)
+    const result = await consultAppointmentService.getConsultAppointmentsByCustomerId(req.params.customer_id, req.body)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
       result

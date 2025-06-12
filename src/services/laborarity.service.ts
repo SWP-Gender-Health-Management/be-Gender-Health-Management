@@ -31,8 +31,9 @@ export class LaboratoryService {
   }
 
   // Get all laboratories
-  async getAllLaboratories(): Promise<Laboratory[]> {
+  async getAllLaboratories(filter: any): Promise<Laboratory[]> {
     return await laboratoryRepository.find({
+      where: {...filter}
     })
   }
 

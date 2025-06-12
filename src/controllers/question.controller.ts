@@ -108,7 +108,7 @@ export const createQuestion = async (req: Request, res: Response, next: NextFunc
 // Get all questions
 export const getAllQuestions = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await questionService.getAllQuestions()
+    const result = await questionService.getAllQuestions(req.body)
     res.status(HTTP_STATUS.OK).json({
       message: QUESTION_MESSAGES.QUESTIONS_RETRIEVED_SUCCESS,
       result
@@ -220,7 +220,7 @@ export const getQuestionById = async (req: Request, res: Response, next: NextFun
 // Get questions by Customer ID
 export const getQuestionsByCustomerId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await questionService.getQuestionsByCustomerId(req.params.customer_id)
+    const result = await questionService.getQuestionsByCustomerId(req.params.customer_id, req.body)
     res.status(HTTP_STATUS.OK).json({
       message: QUESTION_MESSAGES.QUESTIONS_RETRIEVED_SUCCESS,
       result

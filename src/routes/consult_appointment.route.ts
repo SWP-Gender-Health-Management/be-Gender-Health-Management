@@ -25,8 +25,8 @@ router.post(
 // Get all consult appointments (admin or consultant)
 router.get(
   '/get-all-consult-appointments',
-  validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN, Role.CONSULTANT),
   wrapRequestHandler(getAllConsultAppointments)
 )
 

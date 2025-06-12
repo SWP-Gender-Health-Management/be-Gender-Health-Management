@@ -67,8 +67,9 @@ export class ReplyService {
   }
 
   // Get all replies
-  async getAllReplies(): Promise<Reply[]> {
+  async getAllReplies(filter: any): Promise<Reply[]> {
     return await replyRepository.find({
+      where: {...filter},
       relations: ['consultant', 'question']
     })
   }
@@ -91,7 +92,7 @@ export class ReplyService {
   }
 
   // Get replies by Consultant ID
-  async getRepliesByConsultantId(consultant_id: string): Promise<Reply[]> {
+  async getRepliesByConsultantId(consultant_id: string, filter: any): Promise<Reply[]> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
@@ -101,7 +102,7 @@ export class ReplyService {
     }
 
     const replies = await replyRepository.find({
-      where: { consultant: consultant },
+      where: { consultant: consultant, ...filter },
       relations: ['consultant', 'question']
     })
 

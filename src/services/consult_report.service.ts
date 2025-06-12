@@ -65,8 +65,9 @@ export class ConsultReportService {
   }
 
   // Get all consult reports
-  async getAllConsultReports(): Promise<ConsultReport[]> {
+  async getAllConsultReports(filter: any): Promise<ConsultReport[]> {
     return await consultReportRepository.find({
+      where: {...filter},
       relations: ['consult_appointment']
     })
   }

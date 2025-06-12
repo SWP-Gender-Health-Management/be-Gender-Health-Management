@@ -34,8 +34,9 @@ export class QuestionService {
   }
 
   // Get all questions
-  async getAllQuestions(): Promise<Question[]> {
+  async getAllQuestions(filter: any): Promise<Question[]> {
     return await questionRepository.find({
+      where: {...filter},
       relations: ['customer', 'reply']
     })
   }
@@ -58,7 +59,7 @@ export class QuestionService {
   }
 
   // Get questions by Customer ID
-  async getQuestionsByCustomerId(customer_id: string): Promise<Question[]> {
+  async getQuestionsByCustomerId(customer_id: string, filter:any): Promise<Question[]> {
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -68,7 +69,7 @@ export class QuestionService {
     }
 
     const questions = await questionRepository.find({
-      where: { customer: customer },
+      where: { customer: customer, ...filter},
       relations: ['customer', 'reply']
     })
 
