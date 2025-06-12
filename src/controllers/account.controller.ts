@@ -564,7 +564,7 @@ export const logoutController = async (req: Request, res: Response, next: NextFu
  *       401:
  *         description: Unauthorized (invalid token)
  */
-export const getAccountFromRedis = async (req: Request, res: Response, next: NextFunction) => {
+export const getAccountIDFromRedis = async (req: Request, res: Response, next: NextFunction) => {
   const result = await accountService.getAccountIdFromRedis(req.body);
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_GET_ACCOUNT_ID_SUCCESS,
