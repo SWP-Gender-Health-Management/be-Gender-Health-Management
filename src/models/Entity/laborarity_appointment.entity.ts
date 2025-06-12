@@ -9,18 +9,23 @@ import {
   ManyToMany,
   JoinTable,
   PrimaryGeneratedColumn,
-  JoinColumn
+  JoinColumn,
+  OneToMany
 } from 'typeorm'
-import WorkingSlot from './working_slot.entity'
-import Account from './account.entity'
-import Result from './result.entity'
-import Feedback from './feedback.entity'
-import Laborarity from './laborarity.entity'
+import WorkingSlot from '../Entity/working_slot.entity.js'
+import Account from '../Entity/account.entity.js'
+import Result from '../Entity/result.entity.js'
+import Feedback from '../Entity/feedback.entity.js'
+import Laborarity from '../Entity/laborarity.entity.js'
+import Transaction from '../Entity/transaction.entity.js'
+import { StatusAppointment } from '../../enum/statusAppointment.enum.js'
 
 export interface LaboratoryAppointmentType {
   app_id: string
   queue_index: number
   description: string
+  date: string
+  status: StatusAppointment
   // created_at: Timestamp
   // updated_at: Timestamp
 }
@@ -35,6 +40,12 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
 
   @Column({ type: 'text', nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
   description: string
+
+  @Column({ type: 'time', nullable: true })
+  date: string
+
+  @Column({ type: 'enum', enum: StatusAppointment, default: StatusAppointment.PENDING })
+  status: StatusAppointment
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
@@ -63,9 +74,8 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
   })
   laborarity: Laborarity[]
 
-  @OneToOne(() => Result, (result: Result) => result.laboratoryAppointment)
-  @JoinColumn({ name: 'result_id' })
-  result: Result
+  @OneToMany(() => Result, (result: Result) => result.laboratoryAppointment)
+  result: Result[]
 
   @OneToOne(() => Feedback, (feedback: Feedback) => feedback.laboratoryAppointment)
   @JoinColumn({ name: 'feed_id' })

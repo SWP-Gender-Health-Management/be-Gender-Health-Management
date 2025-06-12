@@ -1,6 +1,6 @@
 // src/services/notificationScheduler.service.ts
-import redisClient from '~/config/redis.config'
-import { NotificationPayload } from '~/worker/notificationWorker'
+import redisClient from '../config/redis.config.js'
+import { NotificationPayload } from '../worker/notificationWorker.js'
 
 const SCHEDULED_NOTIFICATIONS_KEY = 'MENSTRUAL CYCLE SCHEDULED NOTIFICATIONS' // Key của Sorted Set trong Redis
 
