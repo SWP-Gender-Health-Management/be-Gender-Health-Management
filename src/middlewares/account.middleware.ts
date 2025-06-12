@@ -110,8 +110,16 @@ export const validateAccessToken = validate(
           }
           const decoded = await verifyToken({ token, secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string })
           console.log(decoded)
-          req.body.email = decoded.email
-          req.body.account_id = decoded.account_id
+          
+          // req.body.email = decoded.email
+          // req.body.account_id = decoded.account_id
+
+          req.body = {
+            ...req.body,
+            email: decoded.email,
+            account_id: decoded.account_id
+          }
+          
           return true
         }
       }
