@@ -222,6 +222,11 @@ class AccountService {
     const user: Account = JSON.parse((await redisClient.get(account_id)) as string)
     return user
   }
+
+  async getAccountIdFromRedis(data: any) {
+    const {account_id} = data
+    return account_id;
+  }
 }
 const accountService = new AccountService()
 export default accountService

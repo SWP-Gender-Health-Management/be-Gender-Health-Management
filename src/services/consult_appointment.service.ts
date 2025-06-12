@@ -62,9 +62,17 @@ export class ConsultAppointmentService {
   }
 
   // Get all consult appointments
-  async getAllConsultAppointments(filter: any): Promise<ConsultAppointment[]> {
+  async getAllConsultAppointments(filter: any, pageVar: any): Promise<ConsultAppointment[]> {
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
     return await consultAppointmentRepository.find({
       where: {...filter},
+      skip,
+      take: limit,
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
   }
@@ -87,7 +95,13 @@ export class ConsultAppointmentService {
   }
 
   // Get consult appointments by Customer ID
-  async getConsultAppointmentsByCustomerId(customer_id: string, filter:any): Promise<ConsultAppointment[]> {
+  async getConsultAppointmentsByCustomerId(customer_id: string, filter:any, pageVar: any): Promise<ConsultAppointment[]> {
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -95,9 +109,10 @@ export class ConsultAppointmentService {
         status: HTTP_STATUS.NOT_FOUND
       })
     }
-
     const consultAppointments = await consultAppointmentRepository.find({
       where: { customer, ...filter },
+      skip,
+      take: limit,
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
 

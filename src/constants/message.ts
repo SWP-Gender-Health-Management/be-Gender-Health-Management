@@ -14,6 +14,7 @@ export const HTTP_MESSAGE = {
 }
 
 export const USERS_MESSAGES = {
+  USER_GET_ACCOUNT_ID_SUCCESS: 'Get account ID success',
   VALIDATION_ERROR: 'Validation error',
   USER_NOT_FOUND: 'User not found',
   USER_ALREADY_EXISTS: 'User already exists',

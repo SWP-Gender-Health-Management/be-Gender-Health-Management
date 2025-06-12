@@ -15,9 +15,9 @@ import wrapRequestHandler from '~/utils/handle';
 const router = Router();
 
 router.post(
-  '/create-onsultant-attern',
-  validateAccessToken,
-  restrictTo(Role.ADMIN),
+  '/create-consultant-pattern',
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN),
   wrapRequestHandler(createConsultantPattern)
 );
 

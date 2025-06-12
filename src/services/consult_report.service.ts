@@ -65,9 +65,17 @@ export class ConsultReportService {
   }
 
   // Get all consult reports
-  async getAllConsultReports(filter: any): Promise<ConsultReport[]> {
+  async getAllConsultReports(filter: any, pageVar: any): Promise<ConsultReport[]> {
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
     return await consultReportRepository.find({
       where: {...filter},
+      skip,
+      take: limit,
       relations: ['consult_appointment']
     })
   }
