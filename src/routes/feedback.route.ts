@@ -22,16 +22,16 @@ router.post(
 )
 
 
-router.get('/get-all-feedbacks', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getAllFeedbacks))
+router.get('/get-all-feedbacks', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getAllFeedbacks))
 
 
-router.get('/get-by-id-feedback/:feed_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getByIdFeedback))
+router.get('/get-by-id-feedback/:feed_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getByIdFeedback))
 
 
-router.get('/get-by-id-feedback/consult/:app_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getFeedbackByConsultAppointmentId))
+router.get('/get-by-id-feedback/consult/:app_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getFeedbackByConsultAppointmentId))
 
 
-router.get('/get-by-id-feedback/lab/:lab_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getFeedbackByLaboratoryAppointmentId))
+router.get('/get-by-id-feedback/lab/:lab_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getFeedbackByLaboratoryAppointmentId))
 
 
 router.put(

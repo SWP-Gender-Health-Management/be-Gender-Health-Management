@@ -47,7 +47,8 @@ export const USERS_MESSAGES = {
   EMAIL_VERIFIED_TOKEN_EXPIRED: 'Email verified token expired',
   USER_LOGGED_OUT_SUCCESS: 'User logged out successfully',
   SEND_EMAIL_VERIFIED_SUCCESS: 'Send email verified successfully',
-  YOU_ARE_NOT_FEMALE: 'You are not female'
+  YOU_ARE_NOT_FEMALE: 'You are not female',
+  PERMISSION_DENIED: 'You are not allow to access'
 }
 
 export const CUSTOMER_MESSAGES = {

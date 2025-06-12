@@ -21,13 +21,13 @@ router.post(
 )
 
 
-router.get('/get-all-consult-reports', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getAllConsultReports))
+router.get('/get-all-consult-reports', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getAllConsultReports))
 
 
-router.get('/get-consult-report-by-id/:report_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getConsultReportById))
+router.get('/get-consult-report-by-id/:report_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getConsultReportById))
 
 
-router.get('/get-consult-report-by-id/appointment/:app_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER), wrapRequestHandler(getConsultReportByAppointmentId))
+router.get('/get-consult-report-by-id/appointment/:app_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getConsultReportByAppointmentId))
 
 
 router.put(
