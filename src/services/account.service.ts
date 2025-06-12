@@ -223,9 +223,9 @@ class AccountService {
     return user
   }
 
-  async getAccountIdFromRedis(data: any) {
+  async getAccountFromRedis(data: any) {
     const {account_id} = data
-    return account_id;
+    return await this.getAccountById(account_id);
   }
 }
 const accountService = new AccountService()

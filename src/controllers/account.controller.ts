@@ -541,10 +541,10 @@ export const logoutController = async (req: Request, res: Response, next: NextFu
 
 /**
  * @swagger
- * /account//get-account-from-redis:
+ * /account/get-account-from-redis:
  *   post:
- *     summary: Get account ID from Redis cache
- *     description: Get account ID from Redis cache.
+ *     summary: Get account from Redis cache
+ *     description: Get account from Redis cache.
  *     tags: [Accounts]
  *     security:
  *       - bearerAuth: []
@@ -561,11 +561,13 @@ export const logoutController = async (req: Request, res: Response, next: NextFu
  *                 message:
  *                   type: string
  *                   description: Success message
+ *                 result:
+ *                   type: string          
  *       401:
  *         description: Unauthorized (invalid token)
  */
-export const getAccountIDFromRedis = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.getAccountIdFromRedis(req.body);
+export const getAccountFromRedis = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await accountService.getAccountFromRedis(req.body);
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_GET_ACCOUNT_ID_SUCCESS,
     result

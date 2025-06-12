@@ -10,7 +10,7 @@ import {
   updateAccountController,
   verifyEmailController,
   viewAccountController,
-  getAccountIDFromRedis
+  getAccountFromRedis
 } from '~/controllers/account.controller'
 import {
   validateAccessToken,
@@ -130,6 +130,6 @@ accountRoute.post('/view-account', validateAccessToken, wrapRequestHandler(viewA
 */
 accountRoute.post('/logout', validateAccessToken, wrapRequestHandler(logoutController))
 
-accountRoute.get('/get-account-from-redis',validateAccessToken, wrapRequestHandler(getAccountIDFromRedis))
+accountRoute.get('/get-account-from-redis',validateAccessToken, wrapRequestHandler(getAccountFromRedis))
 
 export default accountRoute
