@@ -7,10 +7,10 @@ import {
   Timestamp,
   UpdateDateColumn
 } from 'typeorm'
-import ConsultantPattern from './consultant_pattern.entity'
-import LaboratoryAppointment from './laborarity_appointment.entity'
-import StaffPattern from './staff_pattern.entity'
-import { TypeAppointment } from '~/enum/type_appointment.enum'
+import ConsultantPattern from '~/models/Entity/consultant_pattern.entity.js'
+import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity.js'
+import StaffPattern from '~/models/Entity/staff_pattern.entity.js'
+import { TypeAppointment } from '~/enum/type_appointment.enum.js'
 export interface WorkingSlotType {
   slot_id: string
   name: string
@@ -29,10 +29,10 @@ export default class WorkingSlot implements WorkingSlotType {
   @Column({ type: 'varchar', length: 1000, nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   name: string
 
-  @Column({ type: 'time', nullable: false })
+  @Column({ type: 'time', nullable: true })
   start_at: string
 
-  @Column({ type: 'time', nullable: false })
+  @Column({ type: 'time', nullable: true })
   end_at: string
 
   @Column({ type: 'enum', nullable: false, enum: TypeAppointment })

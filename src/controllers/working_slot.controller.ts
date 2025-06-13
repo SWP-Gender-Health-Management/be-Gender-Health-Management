@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import HTTP_STATUS from '~/constants/httpStatus.js'
 import { WORKING_SLOT_MESSAGES } from '~/constants/message.js'
-import workingSlotService from '~/services/workig_slot.service.js'
+import workingSlotService from '~/services/working_slot.service.js'
 
 export const addSlotController = async (req: Request, res: Response, next: NextFunction) => {
   const { name, start_at, end_at, type } = req.body
