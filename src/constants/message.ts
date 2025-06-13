@@ -47,7 +47,8 @@ export const USERS_MESSAGES = {
   USER_LOGGED_OUT_SUCCESS: 'User logged out successfully',
   SEND_EMAIL_VERIFIED_SUCCESS: 'Send email verified successfully',
   YOU_ARE_NOT_FEMALE: 'You are not female',
-  PASSWORD_INVALID_OLD: 'Password is invalid'
+  PASSWORD_INVALID_OLD: 'Password is invalid',
+  AUTHORIZATION_INVALID: 'Authorization is invalid'
 }
 
 export const CUSTOMER_MESSAGES = {
@@ -112,12 +113,15 @@ export const ADMIN_MESSAGES = {
 }
 
 export const LABORARITY_MESSAGES = {
+  APPOINTMENT_ID_INVALID: 'Appointment id is invalid',
+  STATUS_INVALID: 'Status is invalid',
   NAME_REQUIRED: 'Laborarity name is required',
   DESCRIPTION_REQUIRED: 'Laborarity description is required',
   PRICE_REQUIRED: 'Laborarity price is required',
   SPECIMEN_REQUIRED: 'Laborarity specimen is required',
   LABORARITY_CREATED_SUCCESS: 'Laborarity created successfully',
-  LABORARITY_NOT_FOUND: 'Laborarity not found'
+  LABORARITY_NOT_FOUND: 'Laborarity not found',
+  APPOINTMENT_STATUS_UPDATED_SUCCESS: 'Appointment status updated successfully'
 }
 
 export const TRANSACTION_MESSAGES = {
@@ -133,4 +137,20 @@ export const TRANSACTION_MESSAGES = {
   TRANSACTION_NOT_FOUND: 'Transaction not found',
   TRANSACTION_PAID_SUCCESS: 'Transaction paid successfully',
   TRANSACTION_FAILED: 'Transaction failed'
+}
+
+export const RESULT_MESSAGES = {
+  APP_ID_INVALID: 'App ID is invalid',
+  RESULT_INVALID: 'Result is invalid',
+  RESULT_CONCLUSION_INVALID: 'Result conclusion is invalid',
+  RESULT_NAME_INVALID: 'Result name is invalid',
+  RESULT_UNIT_INVALID: 'Result unit is invalid',
+  RESULT_NORMAL_RANGE_INVALID: 'Result normal range is invalid',
+  RESULT_CREATED_SUCCESS: 'Result created successfully',
+  RESULT_CREATE_FAILED: 'Result create failed',
+  RESULT_CREATE_NOT_ENOUGH_DATA: 'Result create not enough data'
+}
+
+export const STAFF_MESSAGES = {
+  STAFF_ID_INVALID: 'Staff id is invalid'
 }

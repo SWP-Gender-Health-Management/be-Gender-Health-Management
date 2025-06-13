@@ -48,7 +48,7 @@ export const loginController = async (req: Request, res: Response, next: NextFun
 }
 
 export const changePasswordController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.changePassword(req.body)
+  const result = await accounttService.changePassword(req.body)
   if (!result) {
     throw new ErrorWithStatus({
       message: USERS_MESSAGES.CHANGE_PASSWORD_FAILED,

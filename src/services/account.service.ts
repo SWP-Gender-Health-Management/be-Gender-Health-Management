@@ -83,6 +83,7 @@ class AccountService {
       redisClient.set(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${user.account_id}`, emailVerifiedToken, 'EX', 60 * 60),
       redisClient.set(user.account_id, JSON.stringify(user), 'EX', 60 * 60)
     ])
+    
     return {
       account_id: user.account_id,
       accessToken,
