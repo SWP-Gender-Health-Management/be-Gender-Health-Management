@@ -24,7 +24,7 @@ export interface LaboratoryAppointmentType {
   app_id: string
   queue_index: number
   description: string
-  date: string
+  date: Date
   status: StatusAppointment
   // created_at: Timestamp
   // updated_at: Timestamp
@@ -41,8 +41,8 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
   @Column({ type: 'text', nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
   description: string
 
-  @Column({ type: 'time', nullable: true })
-  date: string
+  @Column({ type: 'date', nullable: true })
+  date: Date
 
   @Column({ type: 'enum', enum: StatusAppointment, default: StatusAppointment.PENDING })
   status: StatusAppointment
@@ -54,10 +54,12 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
   updated_at: Timestamp
 
   //foreign key
-  @ManyToOne(() => Account, (customer: Account) => customer.laborarity_appointment)
+  @ManyToOne(() => Account, (customer: Account) => customer.labAppointment)
+  @JoinColumn({ name: 'customer_id' })
   customer: Account
 
   @ManyToOne(() => WorkingSlot, (working_slot: WorkingSlot) => working_slot.laborarity_appointment)
+  @JoinColumn({ name: 'slot_id' })
   working_slot: WorkingSlot
 
   @ManyToMany(() => Laborarity, (laborarity: Laborarity) => laborarity.laboratoryAppointment)

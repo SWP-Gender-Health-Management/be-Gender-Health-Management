@@ -147,13 +147,12 @@ class CustomerService {
   async createLaborarityAppointment(payload: any) {
     const { account_id, slot_id, date, lab_id } = payload
 
-    const appointmentDate = new Date(date)
     const [staff, queueIndex] = await Promise.all([
       staffService.countStaff({ date, slot_id }),
       appointmentRepository.count({
         where: {
           working_slot: { slot_id: slot_id as string },
-          date: appointmentDate.toISOString()
+          date: new Date(date)
         }
       })
     ])
@@ -165,10 +164,10 @@ class CustomerService {
     }
 
     const appointment = appointmentRepository.create({
-      customer: { account_id: account_id as string },
-      working_slot: { slot_id: slot_id as string },
+      customer: { account_id: account_id },
+      working_slot: { slot_id: slot_id },
       laborarity: lab_id.map((id: string) => ({ lab_id: id })), // add từng lab trong lab_id vào
-      date: appointmentDate.toISOString(),
+      date: new Date(date),
       queue_index: queueIndex + 1
     })
     let amount = 0

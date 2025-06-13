@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -90,11 +91,8 @@ export default class Account implements AccountType {
   @OneToMany(() => ConsultantPattern, (consultantPattern: ConsultantPattern) => consultantPattern.consultant)
   consultant_pattern: ConsultantPattern[]
 
-  @OneToMany(
-    () => LaboratoryAppointment,
-    (laboratoryAppointment: LaboratoryAppointment) => laboratoryAppointment.customer
-  )
-  laborarity_appointment: LaboratoryAppointment[]
+  @OneToMany(() => LaboratoryAppointment, (labAppointment: LaboratoryAppointment) => labAppointment.customer)
+  labAppointment: LaboratoryAppointment[]
 
   @OneToMany(() => Reply, (reply: Reply) => reply.consultant)
   reply: Reply[]

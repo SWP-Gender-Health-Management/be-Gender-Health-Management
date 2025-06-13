@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express'
-import redisClient from '~/config/redis.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { USERS_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import accountService from '~/services/account.service'
-import refreshTokenService from '~/services/refresh_token.service'
+import redisClient from '~/config/redis.config.js'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { USERS_MESSAGES } from '~/constants/message.js'
+import { ErrorWithStatus } from '~/models/Error.js'
+import accountService from '~/services/account.service.js'
+import refreshTokenService from '~/services/refresh_token.service.js'
 
 export const registerController = async (req: Request, res: Response, next: NextFunction) => {
   const result = await accountService.createAccount(req.body)
@@ -32,7 +32,7 @@ export const loginController = async (req: Request, res: Response, next: NextFun
   const result = await accountService.login(req.body)
   const { refreshToken } = result
   const account = JSON.parse((await redisClient.get(req.body.account_id)) as string)
-  // await refreshTokenService.updateRefreshToken({ account: account, token: refreshToken })
+  await refreshTokenService.updateRefreshToken({ account: account, token: refreshToken })
   // res.cookie('refreshToken', refreshToken, {
   //   httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
   //   secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production
@@ -41,14 +41,14 @@ export const loginController = async (req: Request, res: Response, next: NextFun
   //   // path: '/', // (Tùy chọn) Đường dẫn mà cookie hợp lệ, '/' là cho toàn bộ domain
   //   // domain: 'yourdomain.com', // (Tùy chọn) Chỉ định domain cho cookie
   // })
-  res.status(HTTP_STATUS.NOT_FOUND).json({
+  res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_LOGGED_IN_SUCCESS,
     result
   })
 }
 
 export const changePasswordController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accounttService.changePassword(req.body)
+  const result = await accountService.changePassword(req.body)
   if (!result) {
     throw new ErrorWithStatus({
       message: USERS_MESSAGES.CHANGE_PASSWORD_FAILED,

@@ -10,14 +10,14 @@ import wrapRequestHandler from '~/utils/handle.js'
 
 const transactionRouter = express.Router()
 
-transactionRouter.get(
-  '/payos/create-consult-transaction',
+transactionRouter.post(
+  '/create-consult-transaction',
   validateCreateTransaction,
   wrapRequestHandler(createConsultTransactionController)
 )
 
-transactionRouter.get(
-  '/payos/create-laborarity-transaction',
+transactionRouter.post(
+  '/create-laborarity-transaction',
   validateCreateTransaction,
   wrapRequestHandler(createLaborarityTransactionController)
 )

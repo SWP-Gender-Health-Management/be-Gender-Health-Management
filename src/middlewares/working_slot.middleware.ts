@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { checkSchema } from 'express-validator'
-import { WORKING_SLOT_MESSAGES } from '~/constants/message'
-import { validate } from '~/utils/validations'
+import { WORKING_SLOT_MESSAGES } from '~/constants/message.js'
+import { validate } from '~/utils/validations.js'
 
 export const validateSlot = validate(
   checkSchema({
@@ -48,27 +48,24 @@ export const validateUpdateSlot = validate(
     name: {
       isString: true,
       trim: true,
-      notEmpty: true,
-      isLength: {
-        options: { min: 1, max: 255 },
-        errorMessage: WORKING_SLOT_MESSAGES.NAME_INVALID
-      }
+      notEmpty: false,
+      errorMessage: WORKING_SLOT_MESSAGES.NAME_INVALID
     },
     start_at: {
       isString: true,
       trim: true,
-      notEmpty: true,
+      notEmpty: false,
       errorMessage: WORKING_SLOT_MESSAGES.START_AT_INVALID
     },
     end_at: {
       isString: true,
       trim: true,
-      notEmpty: true,
+      notEmpty: false,
       errorMessage: WORKING_SLOT_MESSAGES.END_AT_INVALID
     },
     type: {
-      isInt: true,
-      notEmpty: true,
+      isString: true,
+      notEmpty: false,
       errorMessage: WORKING_SLOT_MESSAGES.TYPE_INVALID
     }
   })

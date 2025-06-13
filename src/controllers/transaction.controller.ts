@@ -1,17 +1,14 @@
 import { NextFunction, Request, Response } from 'express'
 import HTTP_STATUS from '~/constants/httpStatus.js'
 import { TRANSACTION_MESSAGES } from '~/constants/message.js'
-import { ErrorWithStatus } from '~/models/Error.js'
 import transactionService from '~/services/transaction.service.js'
 
 export const createConsultTransactionController = async (req: Request, res: Response, next: NextFunction) => {
-  const { amount, date, description, account_id, app_id } = req.query
+  const { amount, description, app_id } = req.query
   const transaction = await transactionService.createConsultTransaction(
     app_id as string,
     Number(amount),
-    date as string,
-    description as string,
-    account_id as string
+    description as string
   )
   res.status(HTTP_STATUS.OK).json({
     message: TRANSACTION_MESSAGES.TRANSACTION_CREATED_SUCCESS,
@@ -20,13 +17,12 @@ export const createConsultTransactionController = async (req: Request, res: Resp
 }
 
 export const createLaborarityTransactionController = async (req: Request, res: Response, next: NextFunction) => {
-  const { amount, date, description, account_id, app_id } = req.query
+  const { amount, description, app_id, orderCode } = req.body
   const transaction = await transactionService.createLaborarityTransaction(
     app_id as string,
+    Number(orderCode),
     Number(amount),
-    date as string,
-    description as string,
-    account_id as string
+    description as string
   )
   res.status(HTTP_STATUS.OK).json({
     message: TRANSACTION_MESSAGES.TRANSACTION_CREATED_SUCCESS,
