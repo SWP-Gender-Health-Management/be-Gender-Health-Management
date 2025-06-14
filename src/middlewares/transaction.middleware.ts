@@ -10,6 +10,7 @@ export const validateCreateTransaction = validate(
       errorMessage: TRANSACTION_MESSAGES.APP_ID_INVALID
     },
     amount: {
+      isString: true,
       notEmpty: true,
       errorMessage: TRANSACTION_MESSAGES.AMOUNT_INVALID
     },
