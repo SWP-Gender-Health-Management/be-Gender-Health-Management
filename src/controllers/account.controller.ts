@@ -73,6 +73,23 @@ export const changePasswordController = async (req: Request, res: Response, next
   })
 }
 
+export const sendPasscodeResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await accountService.sendEmailResetPassword(req.body)
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.SEND_PASSCODE_RESET_PASSWORD_SUCCESS,
+    result
+  })
+}
+
+export const verifyPasscodeResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
+  const { secretPasscode, account_id } = req.body
+  const result = await accountService.verifyPasscodeResetPassword(secretPasscode, account_id)
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.VERIFY_PASSCODE_RESET_PASSWORD_SUCCESS,
+    result
+  })
+}
+
 export const verifyEmailController = async (req: Request, res: Response, next: NextFunction) => {
   await accountService.verifyEmail(req.body)
   res.status(HTTP_STATUS.OK).json({

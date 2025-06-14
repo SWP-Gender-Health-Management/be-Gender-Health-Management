@@ -167,6 +167,30 @@ export const validateChangePassword = validate(
   })
 )
 
+export const validateEmail = validate(
+  checkSchema({
+    email: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: USERS_MESSAGES.EMAIL_NOT_EXIST,
+      custom: {
+        options: async (value, { req }) => {
+          const user = await accountService.checkEmailExist(value)
+          if (!user) {
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.EMAIL_NOT_EXIST,
+              status: HTTP_STATUS.BAD_REQUEST
+            })
+          }
+          req.body.account = user
+          return true
+        }
+      }
+    }
+  })
+)
+
 export const validatePassCode = validate(
   checkSchema({
     secretPasscode: {

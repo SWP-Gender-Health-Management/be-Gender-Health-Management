@@ -7,6 +7,7 @@ import {
   logoutController,
   registerController,
   sendEmailVerifiedController,
+  sendPasscodeResetPasswordController,
   updateAccountController,
   verifyEmailController,
   viewAccountController
@@ -14,6 +15,7 @@ import {
 import {
   validateAccessToken,
   validateChangePassword,
+  validateEmail,
   validateLogin,
   validatePassCode,
   validateRegister,
@@ -62,6 +64,30 @@ accountRoute.post(
   validateChangePassword,
   wrapRequestHandler(changePasswordController)
 )
+
+/*
+  Description: send passcode to email to reset password
+  Path: /send-passcode-reset-password
+  Method: POST
+  Body: {
+    email: string
+  }
+*/
+accountRoute.post(
+  '/send-passcode-reset-password',
+  validateEmail,
+  wrapRequestHandler(sendPasscodeResetPasswordController)
+)
+
+/*
+  Description: verify passcode to reset password
+  Path: /verify-passcode-reset-password
+  Method: POST
+  Body: {
+    secretPasscode: string
+  }
+*/
+// accountRoute.post('/verify-passcode-reset-password', wrapRequestHandler(verifyPasscodeResetPasswordController))
 
 /*
   Description: verify email
