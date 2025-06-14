@@ -5,7 +5,7 @@ import { validate } from '~/utils/validations.js'
 export const validateCreateTransaction = validate(
   checkSchema({
     app_id: {
-      isString: true,
+      isUUID: true,
       notEmpty: true,
       errorMessage: TRANSACTION_MESSAGES.APP_ID_INVALID
     },
