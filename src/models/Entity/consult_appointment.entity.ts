@@ -6,17 +6,16 @@ import {
   Timestamp,
   OneToOne,
   UpdateDateColumn,
-  CreateDateColumn
+  CreateDateColumn,
+  JoinColumn,
+  Transaction
 } from 'typeorm'
-import Account from './account.entity'
-import Feedback from './feedback.entity'
-import ConsultantPattern from './consultant_pattern.entity'
-import { StatusAppointment } from '~/enum/statusAppointment.enum'
+import Account from '~/models/Entity/account.entity.js'
+import Feedback from '~/models/Entity/feedback.entity.js'
+import ConsultantPattern from '~/models/Entity/consultant_pattern.entity.js'
+import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
 export interface ConsultAppointmentType {
   app_id: string
-  customer_id: string
-  pattern_id: string
-  feed_id: string
   status: string
   description: string
   // created_at: Timestamp
@@ -25,17 +24,9 @@ export interface ConsultAppointmentType {
 
 @Entity({ name: 'consult_appointment' })
 export default class ConsultAppointment implements ConsultAppointmentType {
+  //field
   @PrimaryGeneratedColumn('uuid')
   app_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  customer_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  pattern_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  feed_id: string
 
   @Column({ type: 'enum', nullable: false, enum: StatusAppointment, default: StatusAppointment.PENDING })
   status: string
@@ -49,12 +40,15 @@ export default class ConsultAppointment implements ConsultAppointmentType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (account: Account) => account.consult_appointment)
+  //foreign key
+  @ManyToOne(() => Account, (customer: Account) => customer.consult_appointment)
   customer: Account
 
-  @ManyToOne(() => ConsultantPattern, (consultant_pattern: ConsultantPattern) => consultant_pattern.consult_appointment)
+  @OneToOne(() => ConsultantPattern, (consultant_pattern: ConsultantPattern) => consultant_pattern.consult_appointment)
+  @JoinColumn({ name: 'pattern_id' })
   consultant_pattern: ConsultantPattern
 
   @OneToOne(() => Feedback, (feedback: Feedback) => feedback.consult_appointment)
+  @JoinColumn({ name: 'feed_id' })
   feedback: Feedback
 }

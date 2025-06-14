@@ -7,31 +7,27 @@ import {
   UpdateDateColumn,
   CreateDateColumn
 } from 'typeorm'
-import WorkingSlot from './working_slot.entity'
-import Account from './account.entity'
+import WorkingSlot from '~/models/Entity/working_slot.entity'
+import Account from '~/models/Entity/account.entity'
 
 export interface StaffPatternType {
   pattern_id: string
-  slot_id: string
-  staff_id: string
   date: Date
+  is_active: boolean
   // created_at: Timestamp
   // updated_at: Timestamp
 }
 
-@Entity({ name: 'staff_pattern' }) // Tên bảng trong CSDL
+@Entity({ name: 'staff_pattern' })
 export default class StaffPattern implements StaffPatternType {
   @PrimaryGeneratedColumn('uuid')
   pattern_id: string
 
-  @Column({ type: 'uuid', nullable: false })
-  slot_id: string
-
-  @Column({ type: 'uuid', nullable: false })
-  staff_id: string
-
-  @Column({ type: 'date', nullable: false }) // Giả sử 'date' có thể null
+  @Column({ type: 'date', nullable: false })
   date: Date
+
+  @Column({ type: 'boolean', nullable: false, default: true })
+  is_active: boolean
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp

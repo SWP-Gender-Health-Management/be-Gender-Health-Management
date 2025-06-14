@@ -1,7 +1,5 @@
 import { DataSource } from 'typeorm'
 import dotenv from 'dotenv'
-import Account from '~/models/Entity/account.entity'
-import RefreshToken from '~/models/Entity/refresh_token.entity'
 
 import { config } from 'dotenv'
 
@@ -21,7 +19,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  synchronize: true,
+  synchronize: false,
   logging: true,
   entities: ['src/models/Entity/*.entity.ts'],
   migrations: ['src/migration/*.ts'],

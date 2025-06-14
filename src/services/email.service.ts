@@ -1,8 +1,13 @@
 // src/services/emailService.ts (ví dụ)
 import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
+import path from 'path'
+import fs from 'fs'
+import { fileURLToPath } from 'url'
 
 dotenv.config()
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 async function createTransporter() {
   // Nếu dùng Gmail, bạn nên sử dụng biến môi trường cho email và mật khẩu ứng dụng
@@ -35,19 +40,39 @@ interface MailOptions {
   to: string // Địa chỉ người nhận
   subject: string // Tiêu đề email
   text?: string // Nội dung dạng text thuần
-  html?: string // Nội dung dạng HTML (ưu tiên hơn text nếu cả hai cùng có)
+  htmlPath: string // Nội dung dạng HTML (ưu tiên hơn text nếu cả hai cùng có)
+  placeholders?: { [key: string]: string }
 }
 
-export async function sendMail(options: MailOptions) {
+export async function sendMail(
+  to: string, // Địa chỉ người nhận
+  subject: string, // Tiêu đề email
+  text?: string, // Nội dung dạng text thuần
+  htmlPath?: string, // Nội dung dạng HTML (ưu tiên hơn text nếu cả hai cùng có)
+  placeholders?: { [key: string]: string }
+) {
   try {
     const transporter = await createTransporter() // Hoặc bạn có thể khởi tạo transporter một lần và tái sử dụng
+    // console.log('htmlPath', htmlPath)
+    const absolutePath = path.join(__dirname, '..', htmlPath as string) // Giả sử templates nằm ngoài thư mục services
+    // console.log('absolutePath', absolutePath)
+    let htmlContent = fs.readFileSync(absolutePath, 'utf-8')
+    // console.log('htmlContent', htmlContent)
+    if (placeholders) {
+      for (const key in placeholders) {
+        // Tạo một RegExp để thay thế tất cả các lần xuất hiện của placeholder
+        // Ví dụ: /{{USER_NAME}}/g
+        const regex = new RegExp(`{{${key}}}`, 'g')
+        htmlContent = htmlContent.replace(regex, placeholders[key])
+      }
+    }
 
     const mailOptions = {
       from: `Gender Health Management: ${process.env.EMAIL_USER}`, // Địa chỉ người gửi (phải khớp với user trong auth)
-      to: options.to,
-      subject: options.subject,
-      text: options.text,
-      html: options.html
+      to,
+      subject,
+      text,
+      html: htmlContent
     }
 
     const info = await transporter.sendMail(mailOptions)

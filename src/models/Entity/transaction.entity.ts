@@ -5,16 +5,17 @@ import {
   ManyToOne,
   Timestamp,
   UpdateDateColumn,
-  CreateDateColumn
+  CreateDateColumn,
+  Generated
 } from 'typeorm'
-import Account from './account.entity'
+import Account from './account.entity.js'
+import { TransactionStatus } from '~/enum/transaction.enum.js'
 
 export interface TransactionType {
   transaction_id: string
-  customer_id: string
-  method: string
-  app_id: string
-  date: Timestamp
+  order_code: number
+  amount: number
+  status: TransactionStatus
   description: string
   // created_at: Timestamp
   // updated_at: Timestamp
@@ -25,17 +26,18 @@ export default class Transaction implements TransactionType {
   @PrimaryGeneratedColumn('uuid')
   transaction_id: string
 
-  @Column({ type: 'uuid', nullable: false })
-  customer_id: string
+  @Generated('increment')
+  @Column({ type: 'int', nullable: true })
+  order_code: number
 
-  @Column({ type: 'varchar', length: 20, nullable: false })
-  method: string
-
-  @Column({ type: 'uuid', nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   app_id: string
 
-  @Column({ type: 'timestamptz' })
-  date: Timestamp
+  @Column({ type: 'float', nullable: false })
+  amount: number
+
+  @Column({ type: 'enum', enum: TransactionStatus, default: TransactionStatus.PENDING })
+  status: TransactionStatus
 
   @Column({ type: 'text', nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
   description: string
@@ -46,6 +48,6 @@ export default class Transaction implements TransactionType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (account) => account.transaction)
-  account: Account
+  @ManyToOne(() => Account, (customer: Account) => customer.transaction)
+  customer: Account
 }

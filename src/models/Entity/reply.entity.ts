@@ -6,14 +6,14 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   CreateDateColumn,
-  OneToOne
+  OneToOne,
+  JoinColumn
 } from 'typeorm'
-import Account from './account.entity'
-import Question from './question.entity'
+import Account from '~/models/Entity/account.entity'
+import Question from '~/models/Entity/question.entity'
 
 export interface ReplyType {
   reply_id: string
-  consultant_id: string
   content: string
   // created_at: Timestamp
   // updated_at: Timestamp
@@ -24,9 +24,6 @@ export default class Reply implements ReplyType {
   @PrimaryGeneratedColumn('uuid')
   reply_id: string
 
-  @Column({ type: 'uuid', nullable: false })
-  consultant_id: string
-
   @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   content: string
 
@@ -36,9 +33,10 @@ export default class Reply implements ReplyType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (account: Account) => account.reply)
-  account: Account
+  @ManyToOne(() => Account, (consultant: Account) => consultant.reply)
+  consultant: Account
 
   @OneToOne(() => Question, (question: Question) => question.reply)
+  @JoinColumn({ name: 'ques_id' })
   question: Question
 }

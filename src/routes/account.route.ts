@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import passport from 'passport'
 // import { accessTokenAuth } from '~/config/passport.config'
 import {
   changePasswordController,
@@ -8,20 +7,21 @@ import {
   logoutController,
   registerController,
   sendEmailVerifiedController,
+  sendPasscodeResetPasswordController,
   updateAccountController,
   verifyEmailController,
   viewAccountController
-} from '~/controllers/account.controller'
+} from '~/controllers/account.controller.js'
 import {
   validateAccessToken,
   validateChangePassword,
+  validateEmail,
   validateLogin,
   validatePassCode,
   validateRegister,
-  validateUpdateAccount,
-  validateVerifyEmail
-} from '~/middlewares/account.middleware'
-import wrapRequestHandler from '~/utils/handle'
+  validateUpdateAccount
+} from '../middlewares/account.middleware.js'
+import wrapRequestHandler from '~/utils/handle.js'
 
 const accountRoute = Router()
 
@@ -64,6 +64,30 @@ accountRoute.post(
   validateChangePassword,
   wrapRequestHandler(changePasswordController)
 )
+
+/*
+  Description: send passcode to email to reset password
+  Path: /send-passcode-reset-password
+  Method: POST
+  Body: {
+    email: string
+  }
+*/
+accountRoute.post(
+  '/send-passcode-reset-password',
+  validateEmail,
+  wrapRequestHandler(sendPasscodeResetPasswordController)
+)
+
+/*
+  Description: verify passcode to reset password
+  Path: /verify-passcode-reset-password
+  Method: POST
+  Body: {
+    secretPasscode: string
+  }
+*/
+// accountRoute.post('/verify-passcode-reset-password', wrapRequestHandler(verifyPasscodeResetPasswordController))
 
 /*
   Description: verify email

@@ -1,11 +1,11 @@
 import { checkSchema } from 'express-validator'
-import redisClient from '~/config/redis.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { USERS_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import accountService from '~/services/account.service'
-import { verifyToken } from '~/utils/jwt'
-import { validate } from '~/utils/validations'
+import redisClient from '~/config/redis.config.js'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { USERS_MESSAGES } from '~/constants/message.js'
+import { ErrorWithStatus } from '~/models/Error.js'
+import accountService from '~/services/account.service.js'
+import { verifyToken } from '~/utils/jwt.js'
+import { validate } from '~/utils/validations.js'
 
 export const validateRegister = validate(
   checkSchema({
@@ -108,9 +108,9 @@ export const validateAccessToken = validate(
             })
           }
           const decoded = await verifyToken({ token, secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string })
-          console.log(decoded)
           req.body.email = decoded.email
           req.body.account_id = decoded.account_id
+          req.body.role = decoded.role
           return true
         }
       }
@@ -129,7 +129,10 @@ export const validateChangePassword = validate(
         options: async (value, { req }) => {
           const isPasswordValid = await accountService.checkPassword(req.body.email, value)
           if (!isPasswordValid) {
-            throw new Error(USERS_MESSAGES.PASSWORD_INVALID)
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.PASSWORD_INVALID_OLD,
+              status: HTTP_STATUS.BAD_REQUEST
+            })
           }
           return true
         }
@@ -164,6 +167,30 @@ export const validateChangePassword = validate(
   })
 )
 
+export const validateEmail = validate(
+  checkSchema({
+    email: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: USERS_MESSAGES.EMAIL_NOT_EXIST,
+      custom: {
+        options: async (value, { req }) => {
+          const user = await accountService.checkEmailExist(value)
+          if (!user) {
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.EMAIL_NOT_EXIST,
+              status: HTTP_STATUS.BAD_REQUEST
+            })
+          }
+          req.body.account = user
+          return true
+        }
+      }
+    }
+  })
+)
+
 export const validatePassCode = validate(
   checkSchema({
     secretPasscode: {
@@ -180,6 +207,7 @@ export const validatePassCode = validate(
 export const validateUpdateAccount = validate(
   checkSchema({
     full_name: {
+      notEmpty: false,
       isString: true,
       trim: true,
       isLength: {
@@ -188,6 +216,7 @@ export const validateUpdateAccount = validate(
       }
     },
     phone: {
+      notEmpty: false,
       isString: true,
       trim: true,
       isLength: {
@@ -196,16 +225,26 @@ export const validateUpdateAccount = validate(
       }
     },
     dob: {
-      isDate: true,
-      errorMessage: USERS_MESSAGES.DOB_INVALID
+      notEmpty: false,
+      isString: true,
+      errorMessage: USERS_MESSAGES.DOB_INVALID,
+      custom: {
+        options: (value) => {
+          const dob = new Date(value)
+          const currentDate = new Date()
+          if (dob > currentDate) {
+            throw new Error(USERS_MESSAGES.DOB_INVALID)
+          }
+          value = dob
+          return true
+        }
+      }
     },
     gender: {
+      notEmpty: false,
       isString: true,
       trim: true,
-      isLength: {
-        options: { min: 1, max: 1 },
-        errorMessage: USERS_MESSAGES.GENDER_INVALID
-      }
+      errorMessage: USERS_MESSAGES.GENDER_INVALID
     }
   })
 )

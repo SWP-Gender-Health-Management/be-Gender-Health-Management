@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn
 } from 'typeorm'
-import Account from './account.entity'
+import Account from '~/models/Entity/account.entity'
 import { Major } from '~/enum/major.enum'
 
 export interface BlogType {
@@ -16,7 +16,6 @@ export interface BlogType {
   title: string
   content: string
   status: boolean
-  created_by: string
   // created_at: Timestamp
   // updated_at: Timestamp
 }
@@ -38,15 +37,13 @@ export default class Blog implements BlogType {
   @Column({ type: 'boolean', default: false })
   status: boolean
 
-  @Column({ type: 'uuid', nullable: false })
-  created_by: string
-
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
+  //foreign key
   @ManyToOne(() => Account, (account) => account.blog)
   account: Account
 }
