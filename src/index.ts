@@ -9,10 +9,8 @@ import workingSlotRoute from './routes/working_slot.route.js'
 import staffPatternRoute from './routes/staff-pattern.route.js'
 import adminRoute from './routes/admin.route.js'
 import laborarityRoute from './routes/laborarity.route.js'
-import paymentRoutes from './routes/transaction.route.js'
 import transactionRoute from './routes/transaction.route.js'
-import { receiveHookController } from './controllers/transaction.controller.js'
-import wrapRequestHandler from './utils/handle.js'
+import staffRoute from './routes/staff.route.js'
 dotenv.config()
 
 const app = express()
@@ -27,14 +25,14 @@ initializeApp()
       // Setup routes
       console.log(new Date().toISOString())
       app.use(express.urlencoded({ extended: true })) // Để parse URL-encoded body
-      // route payment
-      app.use('/payment', paymentRoutes) // Gắn payment router
       // route account
       app.use('/account', accountRoute)
       // route admin
       app.use('/admin', adminRoute)
       // route customer
       app.use('/customer', customerRoute)
+      //route staff
+      app.use('/staff', staffRoute)
       // route working slot
       app.use('/working-slot', workingSlotRoute)
       // route staff pattern

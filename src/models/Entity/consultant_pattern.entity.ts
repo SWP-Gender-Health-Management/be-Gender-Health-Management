@@ -10,9 +10,9 @@ import {
   OneToOne,
   JoinColumn
 } from 'typeorm'
-import WorkingSlot from './working_slot.entity'
-import Account from './account.entity'
-import ConsultAppointment from './consult_appointment.entity'
+import WorkingSlot from '~/models/Entity/working_slot.entity'
+import Account from '~/models/Entity/account.entity'
+import ConsultAppointment from '~/models/Entity/consult_appointment.entity'
 
 export interface ConsultantPatternType {
   pattern_id: string

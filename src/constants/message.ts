@@ -48,7 +48,10 @@ export const USERS_MESSAGES = {
   SEND_EMAIL_VERIFIED_SUCCESS: 'Send email verified successfully',
   YOU_ARE_NOT_FEMALE: 'You are not female',
   PASSWORD_INVALID_OLD: 'Password is invalid',
-  AUTHORIZATION_INVALID: 'Authorization is invalid'
+  AUTHORIZATION_INVALID: 'Authorization is invalid',
+  EMAIL_NOT_EXIST: 'Email is not exist',
+  SEND_PASSCODE_RESET_PASSWORD_SUCCESS: 'Send passcode reset password successfully',
+  VERIFY_PASSCODE_RESET_PASSWORD_SUCCESS: 'Verify passcode reset password successfully'
 }
 
 export const CUSTOMER_MESSAGES = {

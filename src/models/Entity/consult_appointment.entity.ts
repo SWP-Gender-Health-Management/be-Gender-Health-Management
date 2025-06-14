@@ -7,12 +7,13 @@ import {
   OneToOne,
   UpdateDateColumn,
   CreateDateColumn,
-  JoinColumn
+  JoinColumn,
+  Transaction
 } from 'typeorm'
-import Account from './account.entity'
-import Feedback from './feedback.entity'
-import ConsultantPattern from './consultant_pattern.entity'
-import { StatusAppointment } from '~/enum/statusAppointment.enum'
+import Account from '~/models/Entity/account.entity.js'
+import Feedback from '~/models/Entity/feedback.entity.js'
+import ConsultantPattern from '~/models/Entity/consultant_pattern.entity.js'
+import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
 export interface ConsultAppointmentType {
   app_id: string
   status: string

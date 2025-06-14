@@ -26,7 +26,7 @@ export default class Transaction implements TransactionType {
   @PrimaryGeneratedColumn('uuid')
   transaction_id: string
 
-  // @Generated('increment')
+  @Generated('increment')
   @Column({ type: 'int', nullable: true })
   order_code: number
 
