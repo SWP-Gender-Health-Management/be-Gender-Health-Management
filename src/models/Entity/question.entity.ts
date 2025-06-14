@@ -9,8 +9,8 @@ import {
   Entity,
   JoinColumn
 } from 'typeorm'
-import Account from './account.entity'
-import Reply from './reply.entity'
+import Account from '~/models/Entity/account.entity'
+import Reply from '~/models/Entity/reply.entity'
 export interface QuestionType {
   ques_id: string
   content: string
