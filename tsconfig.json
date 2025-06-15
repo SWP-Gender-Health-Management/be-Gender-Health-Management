@@ -14,8 +14,7 @@
     "strictPropertyInitialization": false, // Có thể cần thiết nếu bạn không khởi tạo thuộc tính entity trong constructor
     "paths": {
       "~/*": ["src/*"] // Đường dẫn tương đối cho các import (alias)
-    },
-    "emitDecoratorMetadata": true
+    }
   },
   "files": ["src/type.d.ts"], // Các file dùng để defined global type cho dự án
   "include": ["src/**/*"] // Đường dẫn include cho các file cần build

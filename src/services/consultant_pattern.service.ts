@@ -1,12 +1,12 @@
 import { Repository } from 'typeorm'
-import { AppDataSource } from '~/config/database.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { CONSULTANT_PATTERNS_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import ConsultantPattern, { ConsultantPatternType } from '~/models/Entity/consultant_pattern.entity'
-import WorkingSlot from '~/models/Entity/working_slot.entity'
-import Account from '~/models/Entity/account.entity'
-import { Role } from '~/enum/role.enum'
+import { AppDataSource } from '../config/database.config.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { CONSULTANT_PATTERNS_MESSAGES } from '../constants/message.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import ConsultantPattern, { ConsultantPatternType } from '../models/Entity/consultant_pattern.entity.js'
+import WorkingSlot from '../models/Entity/working_slot.entity.js'
+import Account from '../models/Entity/account.entity.js'
+import { Role } from '../enum/role.enum.js'
 
 const consultantPatternRepository = AppDataSource.getRepository(ConsultantPattern)
 const workingSlotRepository = AppDataSource.getRepository(WorkingSlot)
@@ -17,7 +17,7 @@ export class ConsultantPatternService {
   async createConsultantPattern(data: any): Promise<ConsultantPattern> {
     // Validate working slot
 
-    const workingSlot = await workingSlotRepository.findOne({ where: { slot_id: data.slot_id } });
+    const workingSlot = await workingSlotRepository.findOne({ where: { slot_id: data.slot_id } })
     if (!workingSlot) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.WORKING_SLOT_NOT_FOUND,
@@ -115,7 +115,7 @@ export class ConsultantPatternService {
       skip,
       take: limit,
       relations: ['working_slot', 'consultant']
-    });
+    })
 
     if (!consultantPattern) {
       throw new ErrorWithStatus({
@@ -124,7 +124,7 @@ export class ConsultantPatternService {
       })
     }
 
-    return consultantPattern;
+    return consultantPattern
   }
 
   // Get a consultant pattern by Slot ID
@@ -149,7 +149,7 @@ export class ConsultantPatternService {
       skip,
       take: limit,
       relations: ['working_slot', 'consultant']
-    });
+    })
 
     if (!consultantPattern) {
       throw new ErrorWithStatus({
@@ -158,14 +158,14 @@ export class ConsultantPatternService {
       })
     }
 
-    return consultantPattern;
+    return consultantPattern
   }
 
   // Update a consultant pattern
   async updateConsultantPattern(pattern_id: string, data: any): Promise<ConsultantPattern> {
-    const consultantPattern = await this.getConsultantPatternById(pattern_id);
-    let workingSlot;
-    let consultant;
+    const consultantPattern = await this.getConsultantPatternById(pattern_id)
+    let workingSlot
+    let consultant
     // Validate working slot if provided
     if (data.slot_id && (!consultantPattern.working_slot || data.slot_id !== consultantPattern.working_slot.slot_id)) {
       workingSlot = await workingSlotRepository.findOne({ where: { slot_id: data.slot_id } })
@@ -178,7 +178,10 @@ export class ConsultantPatternService {
     }
 
     // Validate consultant if provided
-    if (data.consultant_id && (!consultantPattern.consultant || data.consultant_id !== consultantPattern.consultant.account_id)) {
+    if (
+      data.consultant_id &&
+      (!consultantPattern.consultant || data.consultant_id !== consultantPattern.consultant.account_id)
+    ) {
       consultant = await accountRepository.findOne({ where: { account_id: data.consultant_id } })
       if (!consultant || consultant.role !== Role.CONSULTANT) {
         throw new ErrorWithStatus({
@@ -204,7 +207,7 @@ export class ConsultantPatternService {
         })
       }
     }
-    console.log(consultant);
+    console.log(consultant)
     await Object.assign(consultantPattern, {
       working_slot: workingSlot || consultantPattern.working_slot,
       consultant: consultant || consultantPattern.consultant,
@@ -220,7 +223,7 @@ export class ConsultantPatternService {
     const consultantPattern = await this.getConsultantPatternById(pattern_id)
 
     // Check if pattern is booked or has associated appointments
-    if (consultantPattern.is_booked || (consultantPattern.consult_appointment)) {
+    if (consultantPattern.is_booked || consultantPattern.consult_appointment) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_CANNOT_DELETE,
         status: HTTP_STATUS.BAD_REQUEST
@@ -231,5 +234,5 @@ export class ConsultantPatternService {
   }
 }
 
-const consultantPatternService = new ConsultantPatternService();
-export default consultantPatternService;
+const consultantPatternService = new ConsultantPatternService()
+export default consultantPatternService

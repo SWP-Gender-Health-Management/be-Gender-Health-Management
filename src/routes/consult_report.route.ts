@@ -6,14 +6,22 @@ import {
   getConsultReportById,
   getConsultReportByAppointmentId,
   updateConsultReport
-} from '~/controllers/consult_report.controller'
-import { validateAccessToken, restrictTo } from '~/middlewares/account.middleware'
-import { Role } from '~/enum/role.enum'
-import wrapRequestHandler from '~/utils/handle'
+} from '../controllers/consult_report.controller.js'
+import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
+import { Role } from '../enum/role.enum.js'
+import wrapRequestHandler from '../utils/handle.js'
 
-const router = Router()
+const consultReportRoute = Router()
 
-router.post(
+/*
+  Description: Create a new consult report (consultant only)
+  Method: POST
+  Path: /create-consult-report
+  Body: {
+    
+  }
+*/
+consultReportRoute.post(
   '/create-consult-report',
   validateAccessToken,
   restrictTo(Role.CONSULTANT),
@@ -37,8 +45,19 @@ router.put(
   wrapRequestHandler(updateConsultReport)
 )
 
+/*
+  Description: Delete a consult report (admin only)
+  Method: DELETE
+  Path: /delete-consult-report/:report_id
+  Body: {
+    
+  }
+*/
+consultReportRoute.delete(
+  '/delete-consult-report/:report_id',
+  validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  wrapRequestHandler(deleteConsultReport)
+)
 
-router.delete('/delete-consult-report/:report_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(deleteConsultReport))
-
-
-export default router
+export default consultReportRoute

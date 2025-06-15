@@ -2,22 +2,24 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Timestamp,
   UpdateDateColumn
 } from 'typeorm'
-import RefreshToken from './refresh_token.entity'
-import MenstrualCycle from './menstrual_cycle.entity'
-import Blog from './blog.entity'
-import Transaction from './transaction.entity'
-import ConsultAppointment from './consult_appointment.entity'
-import ConsultantPattern from './consultant_pattern.entity'
-import LaboratoryAppointment from './laborarity_appointment.entity'
-import Reply from './reply.entity'
-import { Role } from '~/enum/role.enum'
-import Question from './question.entity'
+import { Role } from '../../enum/role.enum.js'
+import RefreshToken from './refresh_token.entity.js'
+import MenstrualCycle from './menstrual_cycle.entity.js'
+import Blog from './blog.entity.js'
+import Transaction from './transaction.entity.js'
+import ConsultAppointment from './consult_appointment.entity.js'
+import ConsultantPattern from './consultant_pattern.entity.js'
+import LaboratoryAppointment from './laborarity_appointment.entity.js'
+import Reply from './reply.entity.js'
+import Question from './question.entity.js'
+
 export interface AccountType {
   account_id: string
   full_name?: string | null
@@ -71,13 +73,14 @@ export default class Account implements AccountType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
+  // foreign key
   @OneToOne(() => RefreshToken, (refreshToken: RefreshToken) => refreshToken.account)
   refreshToken: RefreshToken
 
   @OneToMany(() => Transaction, (transaction: Transaction) => transaction.customer)
   transaction: Transaction[]
 
-  @OneToOne(() => MenstrualCycle, (menstrualCycle: MenstrualCycle) => menstrualCycle.customer)
+  @OneToOne(() => MenstrualCycle, (menstrualCycle: MenstrualCycle) => menstrualCycle.account)
   menstrualCycle: MenstrualCycle
 
   @OneToMany(() => Blog, (blog: Blog) => blog.account)
@@ -89,15 +92,12 @@ export default class Account implements AccountType {
   @OneToMany(() => ConsultantPattern, (consultantPattern: ConsultantPattern) => consultantPattern.consultant)
   consultant_pattern: ConsultantPattern[]
 
-  @OneToMany(
-    () => LaboratoryAppointment,
-    (laboratoryAppointment: LaboratoryAppointment) => laboratoryAppointment.customer
-  )
-  laborarity_appointment: LaboratoryAppointment[]
+  @OneToMany(() => LaboratoryAppointment, (labAppointment: LaboratoryAppointment) => labAppointment.customer)
+  labAppointment: LaboratoryAppointment[]
 
   @OneToMany(() => Reply, (reply: Reply) => reply.consultant)
   reply: Reply[]
 
-  @OneToMany(() => Question, (question: Question) => question.consultant)
+  @OneToMany(() => Question, (question: Question) => question.customer)
   question: Question[]
 }

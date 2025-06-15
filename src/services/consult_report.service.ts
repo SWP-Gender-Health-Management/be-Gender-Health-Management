@@ -1,10 +1,10 @@
 import { Repository } from 'typeorm'
-import { AppDataSource } from '~/config/database.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { CONSULT_REPORT_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import ConsultReport, { ConsultReportType } from '~/models/Entity/consult_report.entity'
-import ConsultAppointment from '~/models/Entity/consult_appointment.entity'
+import { AppDataSource } from '../config/database.config.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { CONSULT_REPORT_MESSAGES } from '../constants/message.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import ConsultReport, { ConsultReportType } from '../models/Entity/consult_report.entity.js'
+import ConsultAppointment from '../models/Entity/consult_appointment.entity.js'
 
 const consultReportRepository = AppDataSource.getRepository(ConsultReport)
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)

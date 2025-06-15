@@ -1,6 +1,6 @@
 import cron from 'node-cron'
-import redisClient from '~/config/redis.config'
-import { sendMail } from '~/services/email.service'
+import redisClient from '../config/redis.config.js'
+import { sendMail } from '../services/email.service.js'
 
 const SCHEDULED_NOTIFICATIONS_KEY = 'MENSTRUAL CYCLE SCHEDULED NOTIFICATIONS' // Key của Sorted Set trong Redis
 const CRON_EXPRESSION = '0 0 * * * *' // Chạy mỗi 60 phút để kiểm tra (điều chỉnh cho phù hợp)

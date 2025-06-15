@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from 'express'
 import {
   createConsultantPattern,
   deleteConsultantPattern,
@@ -7,60 +7,116 @@ import {
   getConsultantPatternByConsultantId, // Thêm import
   getConsultantPatternBySlotId, // Thêm import
   updateConsultantPattern
-} from '~/controllers/consultant_pattern.controller';
-import { validateAccessToken, restrictTo } from '~/middlewares/account.middleware';
-import { Role } from '~/enum/role.enum';
-import wrapRequestHandler from '~/utils/handle';
+} from '../controllers/consultant_pattern.controller.js'
+import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
+import { Role } from '../enum/role.enum.js'
+import wrapRequestHandler from '../utils/handle.js'
 
-const router = Router();
+const consultantPatternRoute = Router()
 
-router.post(
-  '/create-consultant-pattern',
-  // validateAccessToken,
-  // restrictTo(Role.ADMIN),
+/*
+  Description: Create a new consultant pattern (admin only)
+  Method: POST
+  Path: /create-consultant-pattern
+  Body: {
+    
+  }
+*/
+consultantPatternRoute.post(
+  '/create-onsultant-attern',
+  validateAccessToken,
+  restrictTo(Role.ADMIN),
   wrapRequestHandler(createConsultantPattern)
-);
+)
 
-router.get(
+/*
+  Description: Get all consultant patterns (admin only)
+  Method: GET
+  Path: /get-all-consultant-patterns
+  Body: {
+    
+  }
+*/
+consultantPatternRoute.get(
   '/get-all-consultant-patterns',
   // validateAccessToken,
   // restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getAllConsultantPatterns)
-);
+)
 
-router.get(
+/*
+  Description: Get a consultant pattern by ID (admin only)
+  Method: GET
+  Path: /get-consultant-pattern-by-id/:pattern_id
+  Body: {
+    
+  }
+*/
+consultantPatternRoute.get(
   '/get-consultant-pattern-by-id/:pattern_id',
   validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getConsultantPatternById)
-);
+)
 
-router.get(
-  '/get-consultant-pattern-by-id/consultant/:consultant_id', 
+/*
+  Description: Get a consultant pattern by consultant ID (admin only)
+  Method: GET
+  Path: /get-consultant-pattern-by-id/consultant/:consultant_id
+  Body: {
+    
+  }
+*/
+consultantPatternRoute.get(
+  '/get-consultant-pattern-by-id/consultant/:consultant_id',
   validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getConsultantPatternByConsultantId)
-);
+)
 
-router.get(
-  '/get-consultant-pattern-by-id/slot/:slot_id', 
+/*
+  Description: Get a consultant pattern by slot ID (admin only)
+  Method: GET
+  Path: /get-consultant-pattern-by-id/slot/:slot_id
+  Body: {
+    
+  }
+*/
+consultantPatternRoute.get(
+  '/get-consultant-pattern-by-id/slot/:slot_id',
   validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getConsultantPatternBySlotId)
-);
+)
 
-router.put(
+/*
+  Description: Update a consultant pattern (admin only)
+  Method: PUT
+  Path: /update-consultant-pattern/:pattern_id
+  Body: {
+    
+  }
+*/
+consultantPatternRoute.put(
   '/update-consultant-pattern/:pattern_id',
   // validateAccessToken,
   // restrictTo(Role.ADMIN),
   wrapRequestHandler(updateConsultantPattern)
-);
+)
 
-router.delete(
+/*
+  Description: Delete a consultant pattern (admin only)
+  Method: DELETE
+  Path: /delete-consultant-pattern/:pattern_id
+  Body: {
+    
+  }
+*/
+consultantPatternRoute.delete(
   '/delete-consultant-pattern/:pattern_id',
   validateAccessToken,
   restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteConsultantPattern)
-);
+)
 
-export default router;
+export default consultantPatternRoute

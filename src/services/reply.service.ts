@@ -1,13 +1,11 @@
-import { Repository } from 'typeorm'
-import { AppDataSource } from '~/config/database.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { REPLY_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import Reply, { ReplyType } from '~/models/Entity/reply.entity'
-import Account from '~/models/Entity/account.entity'
-import Question from '~/models/Entity/question.entity'
-import { Role } from '~/enum/role.enum'
-import questionService from './question.service'
+import { AppDataSource } from '../config/database.config.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { REPLY_MESSAGES } from '../constants/message.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import Reply from '../models/Entity/reply.entity.js'
+import Account from '../models/Entity/account.entity.js'
+import Question from '../models/Entity/question.entity.js'
+import { Role } from '../enum/role.enum.js'
 
 const replyRepository = AppDataSource.getRepository(Reply)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -202,7 +200,7 @@ export class ReplyService {
     })
 
     if (question) {
-      question.reply = null;
+      question.reply = null
       await questionRepository.save(question)
     }
 

@@ -1,11 +1,11 @@
 import { Repository } from 'typeorm'
-import { AppDataSource } from '~/config/database.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { FEEDBACK_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import Feedback, { FeedbackType } from '~/models/Entity/feedback.entity'
-import ConsultAppointment from '~/models/Entity/consult_appointment.entity'
-import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity'
+import { AppDataSource } from '../config/database.config.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { FEEDBACK_MESSAGES } from '../constants/message.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import Feedback, { FeedbackType } from '../models/Entity/feedback.entity.js'
+import ConsultAppointment from '../models/Entity/consult_appointment.entity.js'
+import LaboratoryAppointment from '../models/Entity/laborarity_appointment.entity.js'
 
 const feedbackRepository = AppDataSource.getRepository(Feedback)
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)

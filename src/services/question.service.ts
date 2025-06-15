@@ -1,12 +1,11 @@
-import { Repository } from 'typeorm'
-import { AppDataSource } from '~/config/database.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { QUESTION_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import Question, { QuestionType } from '~/models/Entity/question.entity'
-import Account from '~/models/Entity/account.entity'
-import Reply from '~/models/Entity/reply.entity'
-import { Role } from '~/enum/role.enum'
+import { AppDataSource } from '../config/database.config.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { QUESTION_MESSAGES } from '../constants/message.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import Question from '../models/Entity/question.entity.js'
+import Account from '../models/Entity/account.entity.js'
+import Reply from '../models/Entity/reply.entity.js'
+import { Role } from '../enum/role.enum.js'
 
 const questionRepository = AppDataSource.getRepository(Question)
 const accountRepository = AppDataSource.getRepository(Account)

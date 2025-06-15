@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express'
-import redisClient from '~/config/redis.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { USERS_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import accountService from '~/services/account.service'
-import refreshTokenService from '~/services/refresh_token.service'
+import redisClient from '~/config/redis.config.js'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { USERS_MESSAGES } from '~/constants/message.js'
+import { ErrorWithStatus } from '~/models/Error.js'
+import accountService from '~/services/account.service.js'
+import refreshTokenService from '~/services/refresh_token.service.js'
 
 /**
  * @swagger
@@ -241,6 +241,23 @@ export const changePasswordController = async (req: Request, res: Response, next
 
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.PASSWORD_CHANGED_SUCCESS,
+    result
+  })
+}
+
+export const sendPasscodeResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await accountService.sendEmailResetPassword(req.body)
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.SEND_PASSCODE_RESET_PASSWORD_SUCCESS,
+    result
+  })
+}
+
+export const verifyPasscodeResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
+  const { secretPasscode, account_id } = req.body
+  const result = await accountService.verifyPasscodeResetPassword(secretPasscode, account_id)
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.VERIFY_PASSCODE_RESET_PASSWORD_SUCCESS,
     result
   })
 }

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { FEEDBACK_MESSAGES } from '~/constants/message'
-import feedbackService from '~/services/feedback.service'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { FEEDBACK_MESSAGES } from '~/constants/message.js'
+import feedbackService from '~/services/feedback.service.js'
 
 /**
  * @swagger
