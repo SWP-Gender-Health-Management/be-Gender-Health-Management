@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer'
-import Result from '~/models/Entity/result.entity.js'
+import Result from '../models/Entity/result.entity.js'
 import { formatDate } from './date-fns.js'
 
 // Hàm tạo nội dung HTML từ dữ liệu

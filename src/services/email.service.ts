@@ -1,4 +1,3 @@
-// src/services/emailService.ts (ví dụ)
 import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
 import path from 'path'

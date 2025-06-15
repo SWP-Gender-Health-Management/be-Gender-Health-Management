@@ -9,16 +9,17 @@ import {
   Timestamp,
   UpdateDateColumn
 } from 'typeorm'
-import RefreshToken from '~/models/Entity/refresh_token.entity.js'
-import MenstrualCycle from '~/models/Entity/menstrual_cycle.entity.js'
-import Blog from '~/models/Entity/blog.entity.js'
-import Transaction from '~/models/Entity/transaction.entity.js'
-import ConsultAppointment from '~/models/Entity/consult_appointment.entity.js'
-import ConsultantPattern from '~/models/Entity/consultant_pattern.entity.js'
-import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity.js'
-import Reply from '~/models/Entity/reply.entity.js'
-import { Role } from '~/enum/role.enum.js'
-import Question from '~/models/Entity/question.entity.js'
+import { Role } from '../../enum/role.enum.js'
+import RefreshToken from './refresh_token.entity.js'
+import MenstrualCycle from './menstrual_cycle.entity.js'
+import Blog from './blog.entity.js'
+import Transaction from './transaction.entity.js'
+import ConsultAppointment from './consult_appointment.entity.js'
+import ConsultantPattern from './consultant_pattern.entity.js'
+import LaboratoryAppointment from './laborarity_appointment.entity.js'
+import Reply from './reply.entity.js'
+import Question from './question.entity.js'
+
 export interface AccountType {
   account_id: string
   full_name?: string | null
@@ -97,6 +98,6 @@ export default class Account implements AccountType {
   @OneToMany(() => Reply, (reply: Reply) => reply.consultant)
   reply: Reply[]
 
-  @OneToMany(() => Question, (question: Question) => question.consultant)
+  @OneToMany(() => Question, (question: Question) => question.customer)
   question: Question[]
 }

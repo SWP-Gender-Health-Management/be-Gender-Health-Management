@@ -5,9 +5,9 @@ import {
   getSlotByTypeController,
   getSlotController,
   updateSlotController
-} from '~/controllers/working_slot.controller.js'
-import { validateGetSlotByType, validateSlot, validateUpdateSlot } from '~/middlewares/working_slot.middleware.js'
-import wrapRequestHandler from '~/utils/handle.js'
+} from '../controllers/working_slot.controller.js'
+import { validateGetSlotByType, validateSlot, validateUpdateSlot } from '../middlewares/working_slot.middleware.js'
+import wrapRequestHandler from '../utils/handle.js'
 
 const workingSlotRoute = Router()
 

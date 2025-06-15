@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { checkSchema } from 'express-validator'
-import { WORKING_SLOT_MESSAGES } from '~/constants/message.js'
-import { validate } from '~/utils/validations.js'
+import { WORKING_SLOT_MESSAGES } from '../constants/message.js'
+import { validate } from '../utils/validations.js'
 
 export const validateSlot = validate(
   checkSchema({

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
-import HTTP_STATUS from '~/constants/httpStatus.js'
-import { TRANSACTION_MESSAGES } from '~/constants/message.js'
-import transactionService from '~/services/transaction.service.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { TRANSACTION_MESSAGES } from '../constants/message.js'
+import transactionService from '../services/transaction.service.js'
 
 export const createConsultTransactionController = async (req: Request, res: Response, next: NextFunction) => {
   const { amount, description, app_id } = req.query

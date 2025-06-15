@@ -7,8 +7,9 @@ import {
   CreateDateColumn,
   OneToOne
 } from 'typeorm'
-import ConsultAppointment from '~/models/Entity/consult_appointment.entity'
-import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity'
+import ConsultAppointment from './consult_appointment.entity.js'
+import LaboratoryAppointment from './laborarity_appointment.entity.js'
+
 export interface FeedbackType {
   feed_id: string
   content: string

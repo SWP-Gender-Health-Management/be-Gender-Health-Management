@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { STAFF_PATTERN_MESSAGES } from '~/constants/message'
-import staffPatternService from '~/services/staff-pattern.service'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { STAFF_PATTERN_MESSAGES } from '../constants/message.js'
+import staffPatternService from '../services/staff-pattern.service.js'
 
 export const addStaffPatternController = async (req: Request, res: Response, next: NextFunction) => {
   const { date, account_id, slot_id } = req.body

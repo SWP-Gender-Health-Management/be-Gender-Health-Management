@@ -1,13 +1,13 @@
-import payos from '~/config/payosClient.config.js'
-import { AppDataSource } from '~/config/database.config.js'
-import Transaction from '~/models/Entity/transaction.entity.js'
-import { ErrorWithStatus } from '~/models/Error.js'
-import { TransactionStatus } from '~/enum/transaction.enum.js'
-import { TRANSACTION_MESSAGES } from '~/constants/message.js'
-import HTTP_STATUS from '~/constants/httpStatus.js'
+import payos from '../config/payosClient.config.js'
+import { AppDataSource } from '../config/database.config.js'
+import Transaction from '../models/Entity/transaction.entity.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import { TransactionStatus } from '../enum/transaction.enum.js'
+import { TRANSACTION_MESSAGES } from '../constants/message.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
 import { sendMail } from './email.service.js'
 import { WebhookDataType, WebhookType } from '@payos/node/lib/type.js'
-import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity.js'
+import LaboratoryAppointment from '../models/Entity/laborarity_appointment.entity.js'
 
 const transactionRepository = AppDataSource.getRepository(Transaction)
 const labAppointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)

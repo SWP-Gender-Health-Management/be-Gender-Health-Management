@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
-import HTTP_STATUS from '~/constants/httpStatus.js'
-import { LABORARITY_MESSAGES, RESULT_MESSAGES } from '~/constants/message.js'
-import staffService from '~/services/staff.service.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { LABORARITY_MESSAGES, RESULT_MESSAGES } from '../constants/message.js'
+import staffService from '../services/staff.service.js'
 
 export const updateResultController = async (req: Request, res: Response, next: NextFunction) => {
   const { app_id, result } = req.body

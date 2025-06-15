@@ -1,6 +1,6 @@
 import { checkSchema } from 'express-validator'
-import { LABORARITY_MESSAGES, RESULT_MESSAGES, USERS_MESSAGES } from '~/constants/message.js'
-import { verifyToken } from '~/utils/jwt.js'
+import { LABORARITY_MESSAGES, RESULT_MESSAGES, USERS_MESSAGES } from '../constants/message.js'
+import { verifyToken } from '../utils/jwt.js'
 import { config } from 'dotenv'
 config()
 

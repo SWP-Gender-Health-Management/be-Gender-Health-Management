@@ -1,6 +1,6 @@
 import { checkSchema } from 'express-validator'
-import { STAFF_PATTERN_MESSAGES } from '~/constants/message'
-import { validate } from '~/utils/validations'
+import { STAFF_PATTERN_MESSAGES } from '../constants/message.js'
+import { validate } from '../utils/validations.js'
 
 export const validateAddStaffPattern = validate(
   checkSchema({

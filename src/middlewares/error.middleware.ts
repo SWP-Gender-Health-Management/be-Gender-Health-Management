@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { EntityError, ErrorWithStatus } from '../models/Error.js'
-import { omit } from 'lodash-es'
+import { omit } from 'lodash'
 
 const defaultErrorHandle = (err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof EntityError) {

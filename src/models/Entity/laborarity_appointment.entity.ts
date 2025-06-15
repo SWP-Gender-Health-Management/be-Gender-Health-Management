@@ -81,5 +81,5 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
 
   @OneToOne(() => Feedback, (feedback: Feedback) => feedback.laboratoryAppointment)
   @JoinColumn({ name: 'feed_id' })
-  feedback: Feedback
+  feedback: Feedback | null
 }

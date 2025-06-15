@@ -1,30 +1,30 @@
-import { validate } from '~/utils/validations'
 import { checkSchema } from 'express-validator'
-import { LABORARITY_MESSAGES } from '~/constants/message'
-export const validateAddLaborarity = validate(
+import { LABORARITY_MESSAGES } from '../constants/message.js'
+import { validate } from '../utils/validations.js'
+
+// Validation middleware for creating/updating laboratory
+export const validateLaboratoryInput = validate(
   checkSchema({
     name: {
       isString: true,
       trim: true,
-      notEmpty: true,
-      errorMessage: LABORARITY_MESSAGES.NAME_REQUIRED
-    },
-    specimen: {
-      isString: true,
-      trim: true,
-      notEmpty: true,
-      errorMessage: LABORARITY_MESSAGES.SPECIMEN_REQUIRED
+      isLength: {
+        options: { min: 1, max: 1000 },
+        errorMessage: LABORARITY_MESSAGES.LABORATORY_NAME_INVALID
+      }
     },
     description: {
       isString: true,
       trim: true,
-      notEmpty: true,
-      errorMessage: LABORARITY_MESSAGES.DESCRIPTION_REQUIRED
+      notEmpty: {
+        errorMessage: LABORARITY_MESSAGES.LABORATORY_DESCRIPTION_REQUIRED
+      }
     },
     price: {
-      isFloat: true,
-      notEmpty: true,
-      errorMessage: LABORARITY_MESSAGES.PRICE_REQUIRED
+      isFloat: {
+        options: { min: 0 },
+        errorMessage: LABORARITY_MESSAGES.LABORATORY_PRICE_INVALID
+      }
     }
   })
 )

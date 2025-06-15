@@ -8,7 +8,7 @@ import {
   CreateDateColumn,
   JoinColumn
 } from 'typeorm'
-import Account from '~/models/Entity/account.entity'
+import Account from './account.entity.js'
 
 export interface MenstrualCycleType {
   cycle_id: string

@@ -7,10 +7,10 @@ import {
   Timestamp,
   UpdateDateColumn
 } from 'typeorm'
-import ConsultantPattern from '~/models/Entity/consultant_pattern.entity.js'
-import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity.js'
-import StaffPattern from '~/models/Entity/staff_pattern.entity.js'
-import { TypeAppointment } from '~/enum/type_appointment.enum.js'
+import ConsultantPattern from './consultant_pattern.entity.js'
+import LaboratoryAppointment from './laborarity_appointment.entity.js'
+import StaffPattern from './staff_pattern.entity.js'
+import { TypeAppointment } from '../../enum/type_appointment.enum.js'
 export interface WorkingSlotType {
   slot_id: string
   name: string

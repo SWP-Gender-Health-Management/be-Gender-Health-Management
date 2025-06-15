@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
-import adminService from '~/services/admin.service'
-import { ADMIN_MESSAGES } from '~/constants/message'
+import adminService from '../services/admin.service.js'
+import { ADMIN_MESSAGES } from '../constants/message.js'
 
 export const createAdminController = async (req: Request, res: Response, next: NextFunction) => {
   const { full_name, email, password } = req.body

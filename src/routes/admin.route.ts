@@ -6,9 +6,9 @@ import {
   createConsultantController,
   createCustomerController,
   getAllStaffController
-} from '~/controllers/admin.controller'
-import { validateCreateAccount } from '~/middlewares/admin.middleware'
-import wrapRequestHandler from '~/utils/handle'
+} from '../controllers/admin.controller.js'
+import { validateCreateAccount } from '../middlewares/admin.middleware.js'
+import wrapRequestHandler from '../utils/handle.js'
 
 const adminRoute = Router()
 

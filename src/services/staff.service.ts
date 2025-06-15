@@ -1,11 +1,11 @@
 import { Between } from 'typeorm'
 import { AppDataSource } from '../config/database.config.js'
 import StaffPattern from '../models/Entity/staff_pattern.entity.js'
-import Result from '~/models/Entity/result.entity.js'
-import Laborarity from '~/models/Entity/laborarity.entity.js'
-import { RESULT_MESSAGES } from '~/constants/message.js'
-import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity.js'
-import { StatusAppointment, stringToStatus } from '~/enum/statusAppointment.enum.js'
+import Result from '../models/Entity/result.entity.js'
+import Laborarity from '../models/Entity/laborarity.entity.js'
+import { RESULT_MESSAGES } from '../constants/message.js'
+import LaboratoryAppointment from '../models/Entity/laborarity_appointment.entity.js'
+import { StatusAppointment, stringToStatus } from '../enum/statusAppointment.enum.js'
 
 const staffPatternRepository = AppDataSource.getRepository(StaffPattern)
 const resultRepository = AppDataSource.getRepository(Result)

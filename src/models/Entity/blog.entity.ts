@@ -1,4 +1,5 @@
 import {
+  PrimaryColumn,
   Entity,
   PrimaryGeneratedColumn,
   Column,
@@ -7,8 +8,8 @@ import {
   UpdateDateColumn,
   CreateDateColumn
 } from 'typeorm'
-import Account from '~/models/Entity/account.entity'
-import { Major } from '~/enum/major.enum'
+import { Major } from '../../enum/major.enum.js'
+import Account from './account.entity.js'
 
 export interface BlogType {
   blog_id: string

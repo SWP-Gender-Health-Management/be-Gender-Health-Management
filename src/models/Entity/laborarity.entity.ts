@@ -9,7 +9,7 @@ import {
 } from 'typeorm'
 import LaboratoryAppointment from './laborarity_appointment.entity.js'
 
-export interface LaborarityType {
+export interface LaboratoryType {
   lab_id: string
   name: string
   specimen: string
@@ -21,7 +21,7 @@ export interface LaborarityType {
 }
 
 @Entity({ name: 'laborarity' })
-export default class Laborarity implements LaborarityType {
+export default class Laboratory implements LaboratoryType {
   @PrimaryGeneratedColumn('uuid')
   lab_id: string
 

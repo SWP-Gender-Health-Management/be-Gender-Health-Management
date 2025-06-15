@@ -9,8 +9,9 @@ import {
   Entity,
   JoinColumn
 } from 'typeorm'
-import Account from '~/models/Entity/account.entity'
-import Reply from '~/models/Entity/reply.entity'
+import Account from './account.entity.js'
+import Reply from './reply.entity.js'
+
 export interface QuestionType {
   ques_id: string
   content: string
@@ -33,10 +34,10 @@ export default class Question implements QuestionType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @ManyToOne(() => Account, (consultant: Account) => consultant.question)
-  consultant: Account
+  @ManyToOne(() => Account, (customer: Account) => customer.question)
+  customer: Account
 
   @OneToOne(() => Reply, (reply: Reply) => reply.question)
   @JoinColumn({ name: 'reply_id' })
-  reply: Reply
+  reply: Reply | null
 }

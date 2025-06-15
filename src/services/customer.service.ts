@@ -16,7 +16,7 @@ import StaffPattern from '../models/Entity/staff_pattern.entity.js'
 import staffService from './staff.service.js'
 import { Role } from '../enum/role.enum.js'
 import laborarityService from './laborarity.service.js'
-import Transaction from '~/models/Entity/transaction.entity.js'
+import Transaction from '../models/Entity/transaction.entity.js'
 const menstrualCycleRepository = AppDataSource.getRepository(MenstrualCycle)
 const userRepository = AppDataSource.getRepository(Account)
 const appointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)

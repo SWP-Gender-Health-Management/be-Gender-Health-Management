@@ -7,8 +7,8 @@ import {
   UpdateDateColumn,
   CreateDateColumn
 } from 'typeorm'
-import WorkingSlot from '~/models/Entity/working_slot.entity'
-import Account from '~/models/Entity/account.entity'
+import WorkingSlot from './working_slot.entity.js'
+import Account from './account.entity.js'
 
 export interface StaffPatternType {
   pattern_id: string
