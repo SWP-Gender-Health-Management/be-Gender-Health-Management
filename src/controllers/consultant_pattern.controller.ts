@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { CONSULTANT_PATTERNS_MESSAGES } from '~/constants/message'
-import consultantPatternService from '~/services/consultant_pattern.service'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { CONSULTANT_PATTERNS_MESSAGES } from '~/constants/message.js'
+import consultantPatternService from '~/services/consultant_pattern.service.js'
 
 /**
  * @swagger

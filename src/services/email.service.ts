@@ -1,10 +1,12 @@
-// src/services/emailService.ts (ví dụ)
 import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
 import path from 'path'
 import fs from 'fs'
+import { fileURLToPath } from 'url'
 
 dotenv.config()
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 async function createTransporter() {
   // Nếu dùng Gmail, bạn nên sử dụng biến môi trường cho email và mật khẩu ứng dụng
@@ -50,10 +52,11 @@ export async function sendMail(
 ) {
   try {
     const transporter = await createTransporter() // Hoặc bạn có thể khởi tạo transporter một lần và tái sử dụng
-
+    // console.log('htmlPath', htmlPath)
     const absolutePath = path.join(__dirname, '..', htmlPath as string) // Giả sử templates nằm ngoài thư mục services
+    // console.log('absolutePath', absolutePath)
     let htmlContent = fs.readFileSync(absolutePath, 'utf-8')
-
+    // console.log('htmlContent', htmlContent)
     if (placeholders) {
       for (const key in placeholders) {
         // Tạo một RegExp để thay thế tất cả các lần xuất hiện của placeholder

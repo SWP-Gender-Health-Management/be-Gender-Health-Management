@@ -1,22 +1,21 @@
 import 'reflect-metadata'
-import { AppDataSource } from '~/config/database.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { LABORATORIES_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import Laboratory, { LaborarityType } from '~/models/Entity/laborarity.entity'
-import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity'
+import { AppDataSource } from '../config/database.config.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { LABORARITY_MESSAGES } from '../constants/message.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import Laboratory, { LaboratoryType } from '../models/Entity/laborarity.entity.js'
 
 const laboratoryRepository = AppDataSource.getRepository(Laboratory)
 
 export class LaboratoryService {
   // Create a new laboratory
-  async createLaboratory(payload: Partial<LaborarityType>): Promise<Laboratory> {
+  async createLaboratory(payload: Partial<LaboratoryType>): Promise<Laboratory> {
     const { name, description, price } = payload
 
     const existingLab = await laboratoryRepository.findOne({ where: { name } })
     if (existingLab) {
       throw new ErrorWithStatus({
-        message: LABORATORIES_MESSAGES.LABORATORY_NAME_ALREADY_EXISTS,
+        message: LABORARITY_MESSAGES.LABORATORY_NAME_ALREADY_EXISTS,
         status: HTTP_STATUS.BAD_REQUEST
       })
     }
@@ -32,19 +31,18 @@ export class LaboratoryService {
 
   // Get all laboratories
   async getAllLaboratories(): Promise<Laboratory[]> {
-    return await laboratoryRepository.find({
-    })
+    return await laboratoryRepository.find({})
   }
 
   // Get a laboratory by ID
   async getLaboratoryById(lab_id: string): Promise<Laboratory> {
     const laboratory = await laboratoryRepository.findOne({
-      where: { lab_id },
+      where: { lab_id }
     })
 
     if (!laboratory) {
       throw new ErrorWithStatus({
-        message: LABORATORIES_MESSAGES.LABORATORY_NOT_FOUND,
+        message: LABORARITY_MESSAGES.LABORATORY_NOT_FOUND,
         status: HTTP_STATUS.NOT_FOUND
       })
     }
@@ -53,7 +51,7 @@ export class LaboratoryService {
   }
 
   // Update a laboratory
-  async updateLaboratory(lab_id: string, payload: Partial<LaborarityType>): Promise<Laboratory> {
+  async updateLaboratory(lab_id: string, payload: Partial<LaboratoryType>): Promise<Laboratory> {
     const laboratory = await this.getLaboratoryById(lab_id)
     const { name, description, price } = payload
 
@@ -61,7 +59,7 @@ export class LaboratoryService {
       const existingLab = await laboratoryRepository.findOne({ where: { name } })
       if (existingLab) {
         throw new ErrorWithStatus({
-          message: LABORATORIES_MESSAGES.LABORATORY_NAME_ALREADY_EXISTS,
+          message: LABORARITY_MESSAGES.LABORATORY_NAME_ALREADY_EXISTS,
           status: HTTP_STATUS.BAD_REQUEST
         })
       }
@@ -83,7 +81,7 @@ export class LaboratoryService {
     // Check if laboratory is associated with appointments
     if (laboratory.laboratoryAppointment && laboratory.laboratoryAppointment.length > 0) {
       throw new ErrorWithStatus({
-        message: LABORATORIES_MESSAGES.LABORATORY_HAS_APPOINTMENTS,
+        message: LABORARITY_MESSAGES.LABORATORY_HAS_APPOINTMENTS,
         status: HTTP_STATUS.BAD_REQUEST
       })
     }

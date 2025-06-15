@@ -6,36 +6,53 @@ import {
   getQuestionById,
   getQuestionsByCustomerId,
   updateQuestion
-} from '~/controllers/question.controller'
-import { validateAccessToken, restrictTo } from '~/middlewares/account.middleware'
-import { Role } from '~/enum/role.enum'
-import wrapRequestHandler from '~/utils/handle'
+} from '../controllers/question.controller.js'
+import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
+import { Role } from '../enum/role.enum.js'
+import wrapRequestHandler from '../utils/handle.js'
 
-const router = Router()
+const questionRoute = Router()
 
-router.post(
+questionRoute.post(
   '/create-question',
   validateAccessToken,
   restrictTo(Role.CUSTOMER),
   wrapRequestHandler(createQuestion)
 )
 
-router.get('/get-all-questions', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(getAllQuestions))
+questionRoute.get(
+  '/get-all-questions',
+  validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CUSTOMER),
+  wrapRequestHandler(getAllQuestions)
+)
 
+questionRoute.get(
+  '/get-question-by-id/:ques_id',
+  validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CUSTOMER),
+  wrapRequestHandler(getQuestionById)
+)
 
-router.get('/get-question-by-id/:ques_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(getQuestionById))
+questionRoute.get(
+  '/get-question-by-id/customer/:customer_id',
+  validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CUSTOMER),
+  wrapRequestHandler(getQuestionsByCustomerId)
+)
 
-
-router.get('/get-question-by-id/customer/:customer_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(getQuestionsByCustomerId))
-
-router.put(
+questionRoute.put(
   '/update-question/:ques_id',
   validateAccessToken,
   restrictTo(Role.CUSTOMER),
   wrapRequestHandler(updateQuestion)
 )
 
-router.delete('/delete-question/:ques_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(deleteQuestion))
+questionRoute.delete(
+  '/delete-question/:ques_id',
+  validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CUSTOMER),
+  wrapRequestHandler(deleteQuestion)
+)
 
-
-export default router
+export default questionRoute

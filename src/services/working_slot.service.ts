@@ -1,6 +1,6 @@
-import { AppDataSource } from '~/config/database.config'
-import { TypeAppointment } from '~/enum/type_appointment.enum'
-import WorkingSlot from '~/models/Entity/working_slot.entity'
+import { AppDataSource } from '../config/database.config.js'
+import { TypeAppointment } from '../enum/type_appointment.enum.js'
+import WorkingSlot from '../models/Entity/working_slot.entity.js'
 
 const slotRepository = AppDataSource.getRepository(WorkingSlot)
 
@@ -28,11 +28,16 @@ class WorkingSlotService {
   }
 
   async updateSlot(id: string, name: string, start_at: string, end_at: string, type: number) {
+    const slot = await slotRepository.findOne({
+      where: {
+        slot_id: id
+      }
+    })
     return await slotRepository.update(id, {
-      name: name,
-      start_at: start_at,
-      end_at: end_at,
-      type: type === 1 ? TypeAppointment.CONSULT : TypeAppointment.LABORATORY
+      name: name || slot?.name,
+      start_at: start_at || slot?.start_at,
+      end_at: end_at || slot?.end_at,
+      type: (type === 1 ? TypeAppointment.CONSULT : TypeAppointment.LABORATORY) || slot?.type
     })
   }
 

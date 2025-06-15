@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { CONSULTANT_APPOINTMENTS_MESSAGES } from '~/constants/message'
-import consultAppointmentService from '~/services/consult_appointment.service'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { CONSULTANT_APPOINTMENTS_MESSAGES } from '~/constants/message.js'
+import consultAppointmentService from '~/services/consult_appointment.service.js'
 
 /**
  * @swagger

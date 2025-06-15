@@ -1,7 +1,6 @@
 import { checkSchema } from 'express-validator'
-import { max, min } from 'lodash'
-import { CUSTOMER_MESSAGES, USERS_MESSAGES } from '~/constants/message'
-import { validate } from '~/utils/validations'
+import { CUSTOMER_MESSAGES } from '../constants/message.js'
+import { validate } from '../utils/validations.js'
 
 export const validateTrackPeriod = validate(
   checkSchema({
@@ -90,6 +89,49 @@ export const validateUpdateMenstrualCycle = validate(
       isString: true,
       errorMessage: CUSTOMER_MESSAGES.NOTE_INVALID,
       notEmpty: false
+    }
+  })
+)
+
+export const validateCreateLaborarityAppointment = validate(
+  checkSchema({
+    account_id: {
+      isString: true,
+      isUUID: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: CUSTOMER_MESSAGES.ACCOUNT_ID_INVALID
+    },
+    slot_id: {
+      isString: true,
+      isUUID: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: CUSTOMER_MESSAGES.SLOT_ID_INVALID
+    },
+    date: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: CUSTOMER_MESSAGES.DATE_INVALID
+    },
+    lab_id: {
+      isArray: true,
+      notEmpty: true,
+      errorMessage: CUSTOMER_MESSAGES.LABORARITY_ID_INVALID,
+      custom: {
+        options: (value) => {
+          if (!Array.isArray(value)) {
+            throw new Error(CUSTOMER_MESSAGES.LABORARITY_ID_INVALID)
+          }
+          for (const id of value) {
+            if (typeof id !== 'string' || id.trim() === '') {
+              throw new Error(CUSTOMER_MESSAGES.LABORARITY_ID_INVALID)
+            }
+          }
+          return true
+        }
+      }
     }
   })
 )

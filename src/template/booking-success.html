@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xác nhận Lịch hẹn Thành công</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 0;
+      }
+      .email-wrapper {
+        width: 100%;
+        background-color: #f7f7f7;
+        padding: 20px 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border: 1px solid #e6e6e6;
+        border-radius: 8px;
+        box-shadow: 0 2px Succeeded(10px rgba(0, 0, 0, 0.05));
+      }
+      .header {
+        background-color: #28a745; /* Màu xanh lá cây cho thành công */
+        color: #ffffff;
+        padding: 30px;
+        text-align: center;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 26px;
+      }
+      .content {
+        padding: 30px 35px;
+      }
+      .content h2 {
+        color: #333;
+        font-size: 20px;
+        margin-top: 0;
+      }
+      .content p {
+        font-size: 16px;
+        color: #555;
+      }
+      .appointment-details {
+        background-color: #f9f9f9;
+        border: 1px solid #eeeeee;
+        border-radius: 5px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .appointment-details p {
+        margin: 5px 0;
+        line-height: 1.5;
+      }
+      .appointment-details strong {
+        color: #333;
+      }
+      .queue-number-box {
+        text-align: center;
+        background-color: #eaf5ff;
+        border: 1px dashed #3498db;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 25px 0;
+      }
+      .queue-number-box p {
+        margin: 0;
+        font-size: 18px;
+        color: #2c3e50;
+      }
+      .queue-number-box .number {
+        font-size: 42px;
+        font-weight: bold;
+        color: #007bff;
+        display: block;
+        margin-top: 10px;
+      }
+      .cta-button {
+        display: inline-block;
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 12px 25px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        margin-top: 20px;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 12px;
+        color: #999;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-wrapper">
+      <div class="email-container">
+        <div class="header">
+          <h1>Đặt Lịch Thành Công!</h1>
+        </div>
+        <div class="content">
+          <h2>Chào {{USER_NAME}},</h2>
+          <p>Lịch hẹn xét nghiệm của bạn đã được xác nhận thành công. Vui lòng kiểm tra lại các thông tin dưới đây.</p>
+
+          <div class="appointment-details">
+            <h3>Chi tiết lịch hẹn:</h3>
+            <p><strong>Khách hàng:</strong> {{USER_NAME}}</p>
+            <p><strong>Email:</strong> {{CUSTOMER_EMAIL}}</p>
+            <p><strong>Thời gian hẹn:</strong> {{SLOT_NAME}}</p>
+            <p><strong>Ngày đặt lịch:</strong> {{DATE}}</p>
+            <p><strong>Địa điểm:</strong> {{LOCATION_NAME}} - {{LOCATION_ADDRESS}}</p>
+            <p><strong>Các dịch vụ đã đăng ký:</strong></p>
+            <ul>
+              {{LABORATORY_LIST}}
+            </ul>
+          </div>
+
+          <div class="queue-number-box">
+            <p>Số thứ tự của bạn là:</p>
+            <span class="number">{{QUEUE_NUMBER}}</span>
+          </div>
+
+          <h3>Lưu ý quan trọng:</h3>
+          <ul>
+            <li>
+              Khi đến nơi, vui lòng theo dõi bảng hiển thị điện tử và chờ đến lượt theo **số thứ tự {{QUEUE_NUMBER}}**.
+            </li>
+            <li>Vui lòng đến trước 15 phút để làm thủ tục.</li>
+            <li>Mang theo giấy tờ tùy thân (CCCD/CMND) và email xác nhận này.</li>
+            <li>{{PREPARATION_NOTES}}</li>
+          </ul>
+
+          <div style="text-align: center">
+            <a href="{{MANAGE_APPOINTMENT_URL}}" class="cta-button">Quản lý Lịch hẹn</a>
+          </div>
+        </div>
+        <div class="footer">
+          <p>&copy; {{CURRENT_YEAR}} Tên Công Ty Của Bạn. Bảo lưu mọi quyền.</p>
+          <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email: {{SUPPORT_EMAIL}}</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

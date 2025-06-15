@@ -1,13 +1,13 @@
 import { Repository } from 'typeorm'
-import { AppDataSource } from '~/config/database.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { CONSULTANT_APPOINTMENTS_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import ConsultAppointment, { ConsultAppointmentType } from '~/models/Entity/consult_appointment.entity'
-import ConsultantPattern from '~/models/Entity/consultant_pattern.entity'
-import Account from '~/models/Entity/account.entity'
-import { Role } from '~/enum/role.enum'
-import { StatusAppointment } from '~/enum/statusAppointment.enum'
+import { AppDataSource } from '../config/database.config.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { CONSULTANT_APPOINTMENTS_MESSAGES } from '../constants/message.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import ConsultAppointment, { ConsultAppointmentType } from '../models/Entity/consult_appointment.entity.js'
+import ConsultantPattern from '../models/Entity/consultant_pattern.entity.js'
+import Account from '../models/Entity/account.entity.js'
+import { Role } from '../enum/role.enum.js'
+import { StatusAppointment } from '../enum/statusAppointment.enum.js'
 
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
 const consultantPatternRepository = AppDataSource.getRepository(ConsultantPattern)
@@ -48,7 +48,7 @@ export class ConsultAppointmentService {
     const consultAppointment = consultAppointmentRepository.create({
       consultant_pattern: consultantPattern,
       customer: customer,
-      description: data.description || "",
+      description: data.description || '',
       status: data.status || StatusAppointment.PENDING
     })
 
@@ -64,7 +64,14 @@ export class ConsultAppointmentService {
   // Get all consult appointments
   async getAllConsultAppointments(): Promise<ConsultAppointment[]> {
     return await consultAppointmentRepository.find({
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'consultant_pattern.consultant',
+        'customer',
+        'report',
+        'feedback'
+      ]
     })
   }
 
@@ -72,7 +79,14 @@ export class ConsultAppointmentService {
   async getConsultAppointmentById(app_id: string): Promise<ConsultAppointment> {
     const consultAppointment = await consultAppointmentRepository.findOne({
       where: { app_id },
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'consultant_pattern.consultant',
+        'customer',
+        'report',
+        'feedback'
+      ]
     })
 
     if (!consultAppointment) {
@@ -97,7 +111,14 @@ export class ConsultAppointmentService {
 
     const consultAppointments = await consultAppointmentRepository.find({
       where: { customer },
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'consultant_pattern.consultant',
+        'customer',
+        'report',
+        'feedback'
+      ]
     })
 
     if (!consultAppointments.length) {
@@ -122,7 +143,16 @@ export class ConsultAppointmentService {
 
     const consultAppointment = await consultAppointmentRepository.findOne({
       where: { consultant_pattern: consultantPattern },
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback', 'report', 'feedback']
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'consultant_pattern.consultant',
+        'customer',
+        'report',
+        'feedback',
+        'report',
+        'feedback'
+      ]
     })
 
     if (!consultAppointment) {

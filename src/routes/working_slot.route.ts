@@ -5,9 +5,9 @@ import {
   getSlotByTypeController,
   getSlotController,
   updateSlotController
-} from '~/controllers/working_slot.controller'
-import { validateSlot, validateUpdateSlot } from '~/middlewares/working_slot.middleware'
-import wrapRequestHandler from '~/utils/handle'
+} from '../controllers/working_slot.controller.js'
+import { validateGetSlotByType, validateSlot, validateUpdateSlot } from '../middlewares/working_slot.middleware.js'
+import wrapRequestHandler from '../utils/handle.js'
 
 const workingSlotRoute = Router()
 
@@ -32,7 +32,7 @@ Request Body:{
   type: enum
 }
 */
-workingSlotRoute.get('/get-slot-by-type', wrapRequestHandler(getSlotByTypeController))
+workingSlotRoute.get('/get-slot-by-type', validateGetSlotByType, wrapRequestHandler(getSlotByTypeController))
 
 /*
 Description: get all working slots

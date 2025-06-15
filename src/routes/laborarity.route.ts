@@ -5,41 +5,51 @@ import {
   getAllLaboratories,
   getLaboratoryById,
   updateLaboratory
-} from '~/controllers/laborarity.controller'
-import { validateAccessToken, restrictTo } from '~/middlewares/account.middleware'
-import { Role } from '~/enum/role.enum'
-import wrapRequestHandler from '~/utils/handle'
+} from '../controllers/laborarity.controller.js'
+import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
+import { Role } from '../enum/role.enum.js'
+import wrapRequestHandler from '../utils/handle.js'
 
-const router = Router()
+const laborarityRoute = Router()
 
 //Create a new laboratory (admin only)
-router.post(
+laborarityRoute.post(
   '/create-laboratory',
   validateAccessToken,
   restrictTo(Role.ADMIN),
   wrapRequestHandler(createLaboratory)
 )
 
-
 //Get all laboratories (admin or user)
-router.get('/get-all-laboratories', validateAccessToken, restrictTo(Role.ADMIN, Role.CUSTOMER), wrapRequestHandler(getAllLaboratories))
-
+laborarityRoute.get(
+  '/get-all-laboratories',
+  validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CUSTOMER),
+  wrapRequestHandler(getAllLaboratories)
+)
 
 // Get a laboratory by ID (admin or user)
-router.get('/get-laboratory-by-id/:lab_id', validateAccessToken, restrictTo(Role.ADMIN), wrapRequestHandler(getLaboratoryById))
-
+laborarityRoute.get(
+  '/get-laboratory-by-id/:lab_id',
+  validateAccessToken,
+  restrictTo(Role.ADMIN),
+  wrapRequestHandler(getLaboratoryById)
+)
 
 // Update a laboratory (admin only)
-router.put(
+laborarityRoute.put(
   '/update-laboratory/:lab_id',
   validateAccessToken,
   restrictTo(Role.ADMIN),
   wrapRequestHandler(updateLaboratory)
 )
 
-
 // Delete a laboratory (admin only)
-router.delete('/delete-laboratory/:lab_id', validateAccessToken, restrictTo(Role.ADMIN), wrapRequestHandler(deleteLaboratory))
+laborarityRoute.delete(
+  '/delete-laboratory/:lab_id',
+  validateAccessToken,
+  restrictTo(Role.ADMIN),
+  wrapRequestHandler(deleteLaboratory)
+)
 
-
-export default router
+export default laborarityRoute

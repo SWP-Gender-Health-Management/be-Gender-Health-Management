@@ -7,7 +7,7 @@ import {
   Timestamp,
   UpdateDateColumn
 } from 'typeorm'
-import ConsultAppointment from './consult_appointment.entity'
+import ConsultAppointment from './consult_appointment.entity.js'
 
 export interface ConsultReportType {
   report_id: string
@@ -23,7 +23,7 @@ export default class ConsultReport implements ConsultReportType {
   report_id: string
 
   // @Column({ type: 'varchar', length: 1000, nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
-  @Column({ type: 'varchar', length: 1000, nullable: false})
+  @Column({ type: 'varchar', length: 1000, nullable: false })
   name: string
 
   // @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
