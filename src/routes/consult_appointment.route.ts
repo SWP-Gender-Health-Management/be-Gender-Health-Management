@@ -39,8 +39,8 @@ consultAppointmentRoute.post(
 */
 consultAppointmentRoute.get(
   '/get-all-consult-appointments',
-  validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN, Role.CONSULTANT),
   wrapRequestHandler(getAllConsultAppointments)
 )
 

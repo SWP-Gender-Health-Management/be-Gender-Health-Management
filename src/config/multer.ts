@@ -1,0 +1,58 @@
+import multer from 'multer';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+
+// Đường dẫn thư mục lưu trữ
+const avatarDir = path.join(__dirname, '../../uploads/avatars');
+const blogImageDir = path.join(__dirname, '../../uploads/blog_images');
+
+// Cấu hình lưu trữ cho avatar
+const avatarStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, avatarDir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `account_${req.body.account_id}_${uuidv4()}${ext}`);
+  },
+});
+
+// Cấu hình lưu trữ cho ảnh blog
+const blogImageStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, blogImageDir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `blog_${req.body.blog_id}_${uuidv4()}${ext}`);
+  },
+});
+// Middleware Multer cho avatar (chỉ cho phép 1 file)
+const uploadAvatar = multer({
+  storage: avatarStorage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only images are allowed'));
+    }
+  },
+  limits: { fileSize: 2 * 1024 * 1024 }, // Giới hạn 2MB cho avatar
+});
+
+// Middleware Multer cho ảnh blog (cho phép nhiều file)
+const uploadBlogImages = multer({
+  storage: blogImageStorage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only images are allowed'));
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn 5MB cho ảnh blog
+});
+
+export { uploadAvatar, uploadBlogImages };

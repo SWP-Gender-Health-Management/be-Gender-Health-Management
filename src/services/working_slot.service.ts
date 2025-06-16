@@ -15,16 +15,34 @@ class WorkingSlotService {
     return await slotRepository.save(slot)
   }
 
-  async getSlotByType(type: string) {
+  async getSlotByType(type: string, pageVar: any) {
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
     return await slotRepository.find({
       where: {
         type: type === '1' ? TypeAppointment.CONSULT : TypeAppointment.LABORATORY
-      }
+      },
+      skip,
+      take: limit
     })
   }
 
-  async getSlot() {
-    return await slotRepository.find()
+  async getSlot(pageVar: any) {
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+    return await slotRepository.find({
+      skip,
+      take: limit
+    })
   }
 
   async updateSlot(id: string, name: string, start_at: string, end_at: string, type: number) {

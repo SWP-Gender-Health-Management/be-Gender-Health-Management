@@ -62,16 +62,18 @@ export class ConsultAppointmentService {
   }
 
   // Get all consult appointments
-  async getAllConsultAppointments(): Promise<ConsultAppointment[]> {
+  async getAllConsultAppointments(filter: any, pageVar: any): Promise<ConsultAppointment[]> {
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
     return await consultAppointmentRepository.find({
-      relations: [
-        'consultant_pattern',
-        'consultant_pattern.working_slot',
-        'consultant_pattern.consultant',
-        'customer',
-        'report',
-        'feedback'
-      ]
+      where: {...filter},
+      skip,
+      take: limit,
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
   }
 
@@ -100,7 +102,13 @@ export class ConsultAppointmentService {
   }
 
   // Get consult appointments by Customer ID
-  async getConsultAppointmentsByCustomerId(customer_id: string): Promise<ConsultAppointment[]> {
+  async getConsultAppointmentsByCustomerId(customer_id: string, filter:any, pageVar: any): Promise<ConsultAppointment[]> {
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -108,17 +116,11 @@ export class ConsultAppointmentService {
         status: HTTP_STATUS.NOT_FOUND
       })
     }
-
     const consultAppointments = await consultAppointmentRepository.find({
-      where: { customer },
-      relations: [
-        'consultant_pattern',
-        'consultant_pattern.working_slot',
-        'consultant_pattern.consultant',
-        'customer',
-        'report',
-        'feedback'
-      ]
+      where: { customer, ...filter },
+      skip,
+      take: limit,
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
 
     if (!consultAppointments.length) {
@@ -168,7 +170,6 @@ export class ConsultAppointmentService {
   // Update a consult appointment
   async updateConsultAppointment(app_id: string, data: any): Promise<ConsultAppointment> {
     const consultAppointment = await this.getConsultAppointmentById(app_id)
-
     // Validate consultant pattern if provided
     let consultantPattern
     if (data.pattern_id && data.pattern_id !== consultAppointment.consultant_pattern.pattern_id) {

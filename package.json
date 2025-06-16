@@ -45,6 +45,7 @@
   "dependencies": {
     "@payos/node": "^1.0.10",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/multer": "^1.4.13",
     "@types/lodash-es": "^4.17.12",
     "@types/nodemailer": "^6.4.17",
     "@types/passport-jwt": "^4.0.1",
@@ -60,6 +61,7 @@
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "multer": "^2.0.1",
     "lodash-es": "^4.17.21",
     "node-cron": "^4.0.7",
     "nodemailer": "^7.0.3",

@@ -120,7 +120,7 @@ class AccountService {
   }
 
   async getAccountById(id: any) {
-    const user: Account = await accountRepository.findOneBy({
+    const user = await accountRepository.findOneBy({
       account_id: id
     })
     if (!user) {
@@ -272,6 +272,11 @@ class AccountService {
         status: 400
       })
     }
+  }
+
+  async getAccountFromRedis(data: any) {
+    const {account_id} = data
+    return await this.getAccountById(account_id);
   }
 }
 const accountService = new AccountService()

@@ -109,9 +109,17 @@ export const validateAccessToken = validate(
             })
           }
           const decoded = await verifyToken({ token, secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string })
-          req.body.email = decoded.email
-          req.body.account_id = decoded.account_id
-          req.body.role = decoded.role
+          console.log(decoded)
+
+          // req.body.email = decoded.email
+          // req.body.account_id = decoded.account_id
+
+          req.body = {
+            ...req.body,
+            email: decoded.email,
+            account_id: decoded.account_id
+          }
+
           return true
         }
       }
@@ -267,43 +275,45 @@ export const restrictTo = (...allowedRoles: Role[]) => {
               })
             }
 
-            try {
-              // Verify token and decode payload
-              const decoded = await verifyToken({
-                token,
-                secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
-              })
 
-              // Store user info in request body
-              req.body.email = decoded.email
-              req.body.account_id = decoded.account_id
+            // Verify token and decode payload
+            const decoded = await verifyToken({ token, secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string })
+            console.log(decoded)
 
-              // Check if user exists and get their role
-              const user = await accountService.getAccountById(decoded.account_id)
-              if (!user) {
-                throw new ErrorWithStatus({
-                  message: USERS_MESSAGES.USER_NOT_FOUND,
-                  status: HTTP_STATUS.NOT_FOUND
-                })
-              }
+            // Store user info in request body
+            // req.body.email = decoded.email
+            // req.body.account_id = decoded.account_id
+            req.body = {
+              ...req.body,
+              email: decoded.email,
+              account_id: decoded.account_id
+            }
 
-              // Check if user's role is in allowed roles
-              if (!allowedRoles.includes(user.role)) {
-                throw new ErrorWithStatus({
-                  message: USERS_MESSAGES.PERMISSION_DENIED,
-                  status: HTTP_STATUS.FORBIDDEN
-                })
-              }
-
-              // Store user role in request for further use
-              req.body.role = user.role
-              return true
-            } catch (error) {
+            // Check if user exists and get their role
+            const user = await accountService.getAccountById(decoded.account_id)
+            if (!user) {
               throw new ErrorWithStatus({
-                message: USERS_MESSAGES.VALIDATION_ERROR,
-                status: HTTP_STATUS.UNAUTHORIZED
+                message: USERS_MESSAGES.USER_NOT_FOUND,
+                status: HTTP_STATUS.NOT_FOUND
               })
             }
+
+            // Check if user's role is in allowed roles
+            if (!allowedRoles.includes(user.role)) {
+              throw new ErrorWithStatus({
+                message: USERS_MESSAGES.PERMISSION_DENIED,
+                status: HTTP_STATUS.FORBIDDEN
+              })
+            }
+
+            // Store user role in request for further use
+            // req.body.role = user.role
+            req.body = {
+              ...req.body,
+              role: user.role
+            }
+            return true
+
           }
         }
       }

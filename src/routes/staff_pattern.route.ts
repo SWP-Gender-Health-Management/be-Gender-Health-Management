@@ -5,8 +5,8 @@ import {
   getAllStaffPatternController,
   getStaffPatternController,
   updateStaffPatternController
-} from '../controllers/staff-pattern.controller.js'
-import { validateAddStaffPattern, validateUpdateStaffPattern } from '../middlewares/staff-pattern.middleware.js'
+} from '../controllers/staff_pattern.controller.js'
+import { validateAddStaffPattern, validateUpdateStaffPattern } from '../middlewares/staff_pattern.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
 
 const staffPatternRoute = Router()

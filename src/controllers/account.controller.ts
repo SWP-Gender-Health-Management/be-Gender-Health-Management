@@ -555,3 +555,39 @@ export const logoutController = async (req: Request, res: Response, next: NextFu
     message: USERS_MESSAGES.USER_LOGGED_OUT_SUCCESS
   })
 }
+
+/**
+ * @swagger
+ * /account/get-account-from-redis:
+ *   post:
+ *     summary: Get account from Redis cache
+ *     description: Get account from Redis cache.
+ *     tags: [Accounts]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: Get Account ID Successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message
+ *                 result:
+ *                   type: string          
+ *       401:
+ *         description: Unauthorized (invalid token)
+ */
+export const getAccountFromRedis = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await accountService.getAccountFromRedis(req.body);
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.USER_GET_ACCOUNT_ID_SUCCESS,
+    result
+  })
+}
+

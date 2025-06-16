@@ -65,8 +65,18 @@ export class ReplyService {
   }
 
   // Get all replies
-  async getAllReplies(): Promise<Reply[]> {
+  async getAllReplies(filter: any, pageVar: any): Promise<Reply[]> {
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
     return await replyRepository.find({
+      where: {...filter},
+      skip,
+      take: limit,
       relations: ['consultant', 'question']
     })
   }
@@ -89,7 +99,7 @@ export class ReplyService {
   }
 
   // Get replies by Consultant ID
-  async getRepliesByConsultantId(consultant_id: string): Promise<Reply[]> {
+  async getRepliesByConsultantId(consultant_id: string, filter: any, pageVar: any): Promise<Reply[]> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
@@ -98,8 +108,17 @@ export class ReplyService {
       })
     }
 
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
     const replies = await replyRepository.find({
-      where: { consultant: consultant },
+      where: { consultant: consultant, ...filter },
+      skip,
+      take: limit,
       relations: ['consultant', 'question']
     })
 

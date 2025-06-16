@@ -112,9 +112,9 @@ export const addSlotController = async (req: Request, res: Response, next: NextF
  */
 // Get working slots by type
 export const getSlotByTypeController = async (req: Request, res: Response, next: NextFunction) => {
-  const { type } = req.query
-  const slot = await workingSlotService.getSlotByType(type as string)
-  return res.status(HTTP_STATUS.OK).json({
+  const { type } = req.body
+  const slot = await workingSlotService.getSlotByType(type, req.query)
+  return res.status(200).json({
     message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
     data: slot
   })
@@ -145,8 +145,8 @@ export const getSlotByTypeController = async (req: Request, res: Response, next:
  */
 // Get all working slots
 export const getSlotController = async (req: Request, res: Response, next: NextFunction) => {
-  const slot = await workingSlotService.getSlot()
-  return res.status(HTTP_STATUS.OK).json({
+  const slot = await workingSlotService.getSlot(req.query)
+  return res.status(200).json({
     message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
     data: slot
   })

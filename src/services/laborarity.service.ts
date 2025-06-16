@@ -30,8 +30,19 @@ export class LaboratoryService {
   }
 
   // Get all laboratories
-  async getAllLaboratories(): Promise<Laboratory[]> {
-    return await laboratoryRepository.find({})
+  async getAllLaboratories(filter: any, pageVar: any): Promise<Laboratory[]> {
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
+    return await laboratoryRepository.find({
+      where: {...filter},
+      skip,
+      take: limit
+    })
   }
 
   // Get a laboratory by ID
