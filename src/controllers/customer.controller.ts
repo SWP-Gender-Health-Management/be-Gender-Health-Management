@@ -266,6 +266,71 @@ export const createNotificationController = async (req: Request, res: Response, 
   })
 }
 
+/**
+ * @swagger
+ * /api/customer/create-laborarity-appointment:
+ *   post:
+ *     summary: Create a laboratory appointment
+ *     description: Creates a new laboratory appointment for a customer with specified laboratory tests, working slot, and date. Requires customer role and authentication.
+ *     tags: [Customer]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               account_id:
+ *                 type: string
+ *                 description: The customer account ID (UUID)
+ *               laborarity_id:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of laboratory test IDs (UUIDs)
+ *               slot_id:
+ *                 type: string
+ *                 description: The working slot ID (UUID)
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 description: Date of the appointment (e.g., '2025-06-11')
+ *             required: [account_id, laborarity_id, slot_id, date]
+ *     responses:
+ *       201:
+ *         description: Laboratory appointment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     appointment:
+ *                       $ref: '#/components/schemas/LaboratoryAppointment'
+ *                     amount:
+ *                       type: number
+ *                       description: Total price of the laboratory tests
+ *       400:
+ *         description: Bad request (e.g., insufficient staff, laboratory not found)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ *       401:
+ *         description: Unauthorized (invalid token or insufficient role)
+ */
+// Create laboratory appointment
 export const createLaborarityAppointmentController = async (req: Request, res: Response, next: NextFunction) => {
   const result = await customerService.createLaborarityAppointment(req.body)
   res.status(HTTP_STATUS.OK).json({

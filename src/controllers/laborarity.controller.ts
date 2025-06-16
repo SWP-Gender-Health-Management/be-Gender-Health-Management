@@ -3,23 +3,6 @@ import { LABORARITY_MESSAGES } from '~/constants/message.js'
 import HTTP_STATUS from '~/constants/httpStatus.js'
 import laboratoryService from '~/services/laborarity.service.js'
 
-export const addLaborarityController = async (req: Request, res: Response) => {
-  const { name, specimen, description, price } = req.body
-  const laborarity = await laboratoryService.createLaboratory({ name, specimen, description, price })
-  return res.status(HTTP_STATUS.CREATED).json({
-    message: LABORARITY_MESSAGES.LABORARITY_CREATED_SUCCESS,
-    data: laborarity
-  })
-}
-
-export const getAllLaboraritiesController = async (req: Request, res: Response) => {
-  const laborarities = await laboratoryService.getAllLaboratories()
-  return res.status(HTTP_STATUS.OK).json({
-    message: LABORARITY_MESSAGES.LABORARITY_CREATED_SUCCESS,
-    data: laborarities
-  })
-}
-
 /**
  * @swagger
  * /laborarity/create-laboratory:

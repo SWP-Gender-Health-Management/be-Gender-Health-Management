@@ -12,7 +12,7 @@ import {
   verifyEmailController,
   viewAccountController,
   getAccountFromRedis
-} from '~/controllers/account.controller'
+} from '../controllers/account.controller.js'
 import {
   validateAccessToken,
   validateChangePassword,

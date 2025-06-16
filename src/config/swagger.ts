@@ -348,7 +348,7 @@ const swaggerDefinition = {
 const options = {
   swaggerDefinition,
   // Đường dẫn đến các file chứa JSDoc annotations
-  apis: ['./src/routes/*.ts', './src/controllers/*.ts'] // Chỉ định nơi chứa các file route hoặc controller
+  apis: ['./src/routes/*.ts', './src/controllers/*.ts'] // Chỉ định nơi chứa các file controller
 }
 
 const swaggerSpec = swaggerJSDoc(options)

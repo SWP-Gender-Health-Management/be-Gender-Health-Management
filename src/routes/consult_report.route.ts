@@ -28,17 +28,60 @@ consultReportRoute.post(
   wrapRequestHandler(createConsultReport)
 )
 
+/*
+  Description: Get all consult reports (admin, consultant, or customer)
+  Method: GET
+  Path: /get-all-consult-reports
+  Body: {
+    
+  }
+*/
+consultReportRoute.get(
+  '/get-all-consult-reports',
+   validateAccessToken,
+  // restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  wrapRequestHandler(getAllConsultReports)
+)
 
-router.get('/get-all-consult-reports', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getAllConsultReports))
+/*
+  Description: Get a consult report by ID (admin, consultant, or customer)
+  Method: GET
+  Path: /get-consult-report-by-id/:report_id
+  Body: {
+    
+  }
+*/
+consultReportRoute.get(
+  '/get-consult-report-by-id/:report_id',
+  validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  wrapRequestHandler(getConsultReportById)
+)
 
+/*
+  Description: Get a consult report by appointment ID (admin, consultant, or customer)
+  Method: GET
+  Path: /get-consult-report-by-id/appointment/:app_id
+  Body: {
+    
+  }
+*/
+consultReportRoute.get(
+  '/get-consult-report-by-id/appointment/:app_id',
+  validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  wrapRequestHandler(getConsultReportByAppointmentId)
+)
 
-router.get('/get-consult-report-by-id/:report_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getConsultReportById))
-
-
-router.get('/get-consult-report-by-id/appointment/:app_id', validateAccessToken, restrictTo(Role.ADMIN, Role.CONSULTANT), wrapRequestHandler(getConsultReportByAppointmentId))
-
-
-router.put(
+/*
+  Description: Update a consult report (consultant only)
+  Method: PUT
+  Path: /update-consult-report/:report_id
+  Body: {
+    
+  }
+*/
+consultReportRoute.put(
   'update-consult-report/:report_id',
   validateAccessToken,
   restrictTo(Role.CONSULTANT),
