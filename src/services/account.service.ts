@@ -387,8 +387,12 @@ class AccountService {
     }
   }
 
-  async getAccountFromRedis(data: any) {
-    const { account_id } = data
+  /**
+   * @description: Lấy thông tin tài khoản từ redis
+   * @param account_id: string
+   * @returns: Account
+   */
+  async getAccountFromRedis(account_id: string) {
     return await this.getAccountById(account_id)
   }
 }
