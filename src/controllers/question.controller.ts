@@ -108,7 +108,7 @@ export const createQuestion = async (req: Request, res: Response, next: NextFunc
 // Get all questions
 export const getAllQuestions = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {email, account_id, ...filter} = req.body;
+    const { email, account_id, ...filter } = req.body
     const result = await questionService.getAllQuestions(filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: QUESTION_MESSAGES.QUESTIONS_RETRIEVED_SUCCESS,
@@ -221,7 +221,7 @@ export const getQuestionById = async (req: Request, res: Response, next: NextFun
 // Get questions by Customer ID
 export const getQuestionsByCustomerId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {email, account_id, ...filter} = req.body;
+    const { email, account_id, ...filter } = req.body
     const result = await questionService.getQuestionsByCustomerId(req.params.customer_id, filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: QUESTION_MESSAGES.QUESTIONS_RETRIEVED_SUCCESS,

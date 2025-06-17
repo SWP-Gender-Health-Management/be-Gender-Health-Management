@@ -68,7 +68,8 @@ import refreshTokenService from '~/services/refresh_token.service.js'
  *                   description: Error message
  */
 export const registerController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.createAccount(req.body)
+  const { email, password } = req.body
+  const result = await accountService.createAccount(email, password)
   console.log(result)
 
   const { account_id, refreshToken } = result
@@ -140,7 +141,8 @@ export const registerController = async (req: Request, res: Response, next: Next
  *                   description: Error message
  */
 export const loginController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.login(req.body)
+  const { account_id, email, password } = req.body
+  const result = await accountService.login(account_id, email, password)
   const { refreshToken } = result
   const account = JSON.parse((await redisClient.get(req.body.account_id)) as string)
   await refreshTokenService.updateRefreshToken({ account: account, token: refreshToken })
@@ -218,7 +220,8 @@ export const loginController = async (req: Request, res: Response, next: NextFun
  *         description: Unauthorized (invalid token)
  */
 export const changePasswordController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.changePassword(req.body)
+  const { account_id, new_password } = req.body
+  const result = await accountService.changePassword(account_id, new_password)
   if (!result) {
     throw new ErrorWithStatus({
       message: USERS_MESSAGES.CHANGE_PASSWORD_FAILED,
@@ -244,7 +247,8 @@ export const changePasswordController = async (req: Request, res: Response, next
 }
 
 export const sendPasscodeResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.sendEmailResetPassword(req.body)
+  const { account_id, email } = req.body
+  const result = await accountService.sendEmailResetPassword(account_id, email)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.SEND_PASSCODE_RESET_PASSWORD_SUCCESS,
     result
@@ -308,7 +312,8 @@ export const verifyPasscodeResetPasswordController = async (req: Request, res: R
  *         description: Unauthorized (invalid token)
  */
 export const verifyEmailController = async (req: Request, res: Response, next: NextFunction) => {
-  await accountService.verifyEmail(req.body)
+  const { account_id, secretPasscode } = req.body
+  await accountService.verifyEmail(account_id, secretPasscode)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
   })
@@ -402,7 +407,8 @@ export const sendEmailVerifiedController = async (req: Request, res: Response, n
  *         description: Unauthorized (invalid token)
  */
 export const updateAccountController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.updateProfile(req.body)
+  const { account_id, full_name, phone, dob, gender } = req.body
+  const result = await accountService.updateProfile(account_id, full_name, phone, dob, gender)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_UPDATED_SUCCESS,
     result
@@ -456,7 +462,8 @@ export const updateAccountController = async (req: Request, res: Response, next:
  *         description: Unauthorized (invalid token)
  */
 export const checkEmailVerifiedController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.checkEmailVerified(req.body)
+  const { account_id } = req.body
+  const result = await accountService.checkEmailVerified(account_id)
   if (!result) {
     throw new ErrorWithStatus({
       message: USERS_MESSAGES.EMAIL_NOT_VERIFIED,
@@ -506,7 +513,8 @@ export const checkEmailVerifiedController = async (req: Request, res: Response, 
  *         description: Unauthorized (invalid token)
  */
 export const viewAccountController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.viewAccount(req.body.account_id)
+  const { account_id } = req.body
+  const result = await accountService.viewAccount(account_id)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_VIEWED_SUCCESS,
     result
@@ -548,7 +556,8 @@ export const viewAccountController = async (req: Request, res: Response, next: N
  *         description: Unauthorized (invalid token)
  */
 export const logoutController = async (req: Request, res: Response, next: NextFunction) => {
-  await refreshTokenService.deleteRefreshToken(req.body.account_id)
+  const { account_id } = req.body
+  await refreshTokenService.deleteRefreshToken(account_id)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_LOGGED_OUT_SUCCESS
   })
@@ -582,7 +591,8 @@ export const logoutController = async (req: Request, res: Response, next: NextFu
  *         description: Unauthorized (invalid token)
  */
 export const getAccountFromRedis = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.getAccountFromRedis(req.body)
+  const { account_id } = req.body
+  const result = await accountService.getAccountFromRedis(account_id)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_GET_ACCOUNT_ID_SUCCESS,
     result
