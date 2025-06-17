@@ -11,7 +11,7 @@ import {
 import RefreshToken from './refresh_token.entity'
 import MenstrualCycle from './menstrual_cycle.entity'
 import Blog from './blog.entity'
-import Transaction from './transaction.entity'
+import Transaction from '../../enum/transaction.entity'
 import ConsultAppointment from './consult_appointment.entity'
 import ConsultantPattern from './consultant_pattern.entity'
 import LaboratoryAppointment from './laborarity_appointment.entity'
