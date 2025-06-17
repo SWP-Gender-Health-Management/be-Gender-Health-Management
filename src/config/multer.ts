@@ -13,7 +13,7 @@ const avatarStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    cb(null, `account_${req.body.account_id}_${uuidv4()}${ext}`);
+    cb(null, `user_${req.body.account_id}_${uuidv4()}${ext}`);
   },
 });
 
@@ -27,6 +27,7 @@ const blogImageStorage = multer.diskStorage({
     cb(null, `blog_${req.body.blog_id}_${uuidv4()}${ext}`);
   },
 });
+
 // Middleware Multer cho avatar (chỉ cho phép 1 file)
 const uploadAvatar = multer({
   storage: avatarStorage,
@@ -38,7 +39,7 @@ const uploadAvatar = multer({
       cb(new Error('Only images are allowed'));
     }
   },
-  limits: { fileSize: 2 * 1024 * 1024 }, // Giới hạn 2MB cho avatar
+  limits: { fileSize: 2 * 1024 * 1024 }, // Giới hạn 2MB
 });
 
 // Middleware Multer cho ảnh blog (cho phép nhiều file)
@@ -52,7 +53,7 @@ const uploadBlogImages = multer({
       cb(new Error('Only images are allowed'));
     }
   },
-  limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn 5MB cho ảnh blog
+  limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn 5MB
 });
 
 export { uploadAvatar, uploadBlogImages };

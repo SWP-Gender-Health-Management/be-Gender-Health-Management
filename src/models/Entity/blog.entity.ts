@@ -35,6 +35,10 @@ export default class Blog implements BlogType {
   @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   content: string
 
+  //path of image
+  @Column({ type: 'text', nullable: true })
+  images: string[]
+
   @Column({ type: 'boolean', default: false })
   status: boolean
 
@@ -44,7 +48,7 @@ export default class Blog implements BlogType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  //foreign key
+  //foreign key to author of blog
   @ManyToOne(() => Account, (account) => account.blog)
   account: Account
 }
