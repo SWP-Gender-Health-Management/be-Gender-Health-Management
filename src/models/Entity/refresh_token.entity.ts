@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn
 } from 'typeorm'
-import Account from './account.entity'
+import Account from './account.entity.js'
 
 export interface RefreshTokenType {
   token_id: string

@@ -1,12 +1,12 @@
 import { checkSchema } from 'express-validator'
-import redisClient from '~/config/redis.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { USERS_MESSAGES } from '~/constants/message'
-import { Role } from '~/enum/role.enum'
-import { ErrorWithStatus } from '~/models/Error'
-import accountService from '~/services/account.service'
-import { verifyToken } from '~/utils/jwt'
-import { validate } from '~/utils/validations'
+import redisClient from '../config/redis.config.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { USERS_MESSAGES } from '../constants/message.js'
+import { Role } from '../enum/role.enum.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import accountService from '../services/account.service.js'
+import { verifyToken } from '../utils/jwt.js'
+import { validate } from '../utils/validations.js'
 
 export const validateRegister = validate(
   checkSchema({
@@ -110,8 +110,16 @@ export const validateAccessToken = validate(
           }
           const decoded = await verifyToken({ token, secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string })
           console.log(decoded)
-          req.body.email = decoded.email
-          req.body.account_id = decoded.account_id
+
+          // req.body.email = decoded.email
+          // req.body.account_id = decoded.account_id
+
+          req.body = {
+            ...req.body,
+            email: decoded.email,
+            account_id: decoded.account_id
+          }
+
           return true
         }
       }
@@ -130,7 +138,10 @@ export const validateChangePassword = validate(
         options: async (value, { req }) => {
           const isPasswordValid = await accountService.checkPassword(req.body.email, value)
           if (!isPasswordValid) {
-            throw new Error(USERS_MESSAGES.PASSWORD_INVALID)
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.PASSWORD_INVALID_OLD,
+              status: HTTP_STATUS.BAD_REQUEST
+            })
           }
           return true
         }
@@ -158,6 +169,30 @@ export const validateChangePassword = validate(
           if (value !== req.body.new_password) {
             throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_MUST_MATCH)
           }
+          return true
+        }
+      }
+    }
+  })
+)
+
+export const validateEmail = validate(
+  checkSchema({
+    email: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: USERS_MESSAGES.EMAIL_NOT_EXIST,
+      custom: {
+        options: async (value, { req }) => {
+          const user = await accountService.checkEmailExist(value)
+          if (!user) {
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.EMAIL_NOT_EXIST,
+              status: HTTP_STATUS.BAD_REQUEST
+            })
+          }
+          req.body.account = user
           return true
         }
       }
@@ -240,43 +275,45 @@ export const restrictTo = (...allowedRoles: Role[]) => {
               })
             }
 
-            try {
-              // Verify token and decode payload
-              const decoded = await verifyToken({ 
-                token, 
-                secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string 
-              })
 
-              // Store user info in request body
-              req.body.email = decoded.email
-              req.body.account_id = decoded.account_id
+            // Verify token and decode payload
+            const decoded = await verifyToken({ token, secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string })
+            console.log(decoded)
 
-              // Check if user exists and get their role
-              const user = await accountService.getAccountById(decoded.account_id)
-              if (!user) {
-                throw new ErrorWithStatus({
-                  message: USERS_MESSAGES.USER_NOT_FOUND,
-                  status: HTTP_STATUS.NOT_FOUND
-                })
-              }
+            // Store user info in request body
+            // req.body.email = decoded.email
+            // req.body.account_id = decoded.account_id
+            req.body = {
+              ...req.body,
+              email: decoded.email,
+              account_id: decoded.account_id
+            }
 
-              // Check if user's role is in allowed roles
-              if (!allowedRoles.includes(user.role)) {
-                throw new ErrorWithStatus({
-                  message: USERS_MESSAGES.PERMISSION_DENIED,
-                  status: HTTP_STATUS.FORBIDDEN
-                })
-              }
-
-              // Store user role in request for further use
-              req.body.role = user.role
-              return true
-            } catch (error) {
+            // Check if user exists and get their role
+            const user = await accountService.getAccountById(decoded.account_id)
+            if (!user) {
               throw new ErrorWithStatus({
-                message: USERS_MESSAGES.VALIDATION_ERROR,
-                status: HTTP_STATUS.UNAUTHORIZED
+                message: USERS_MESSAGES.USER_NOT_FOUND,
+                status: HTTP_STATUS.NOT_FOUND
               })
             }
+
+            // Check if user's role is in allowed roles
+            if (!allowedRoles.includes(user.role)) {
+              throw new ErrorWithStatus({
+                message: USERS_MESSAGES.PERMISSION_DENIED,
+                status: HTTP_STATUS.FORBIDDEN
+              })
+            }
+
+            // Store user role in request for further use
+            // req.body.role = user.role
+            req.body = {
+              ...req.body,
+              role: user.role
+            }
+            return true
+
           }
         }
       }

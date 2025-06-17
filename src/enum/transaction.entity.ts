@@ -8,8 +8,13 @@ import {
   CreateDateColumn,
   Generated
 } from 'typeorm'
+<<<<<<< HEAD:src/enum/transaction.entity.ts
 import Account from '../models/Entity/account.entity.js'
 import { TransactionStatus } from '~/enum/transaction.enum.js'
+=======
+import Account from './account.entity.js'
+import { TransactionStatus } from '../../enum/transaction.enum.js'
+>>>>>>> 3132dc8bd12c51015eb9348b825880f910766dda:src/models/Entity/transaction.entity.ts
 
 export interface TransactionType {
   transaction_id: string
@@ -26,7 +31,11 @@ export default class Transaction implements TransactionType {
   @PrimaryGeneratedColumn('uuid')
   transaction_id: string
 
+<<<<<<< HEAD:src/enum/transaction.entity.ts
   // @Generated('increment')
+=======
+  @Generated('increment')
+>>>>>>> 3132dc8bd12c51015eb9348b825880f910766dda:src/models/Entity/transaction.entity.ts
   @Column({ type: 'int', nullable: true })
   order_code: number
 

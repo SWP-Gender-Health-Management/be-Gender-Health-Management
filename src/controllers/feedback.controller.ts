@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { FEEDBACK_MESSAGES } from '~/constants/message'
-import feedbackService from '~/services/feedback.service'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { FEEDBACK_MESSAGES } from '~/constants/message.js'
+import feedbackService from '~/services/feedback.service.js'
 
 /**
  * @swagger
@@ -111,7 +111,8 @@ export const createFeedback = async (req: Request, res: Response, next: NextFunc
 // Get all feedbacks
 export const getAllFeedbacks = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await feedbackService.getAllFeedbacks()
+    const {email, account_id, ...filter} = req.body;
+    const result = await feedbackService.getAllFeedbacks(filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: FEEDBACK_MESSAGES.FEEDBACKS_RETRIEVED_SUCCESS,
       result

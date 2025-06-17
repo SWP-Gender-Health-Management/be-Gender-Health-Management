@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { CONSULT_REPORT_MESSAGES } from '~/constants/message'
-import consultReportService from '~/services/consult_report.service'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { CONSULT_REPORT_MESSAGES } from '~/constants/message.js'
+import consultReportService from '~/services/consult_report.service.js'
 
 /**
  * @swagger
@@ -108,7 +108,8 @@ export const createConsultReport = async (req: Request, res: Response, next: Nex
 // Get all consult reports
 export const getAllConsultReports = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultReportService.getAllConsultReports()
+    const {email, account_id, ...filter} = req.body;
+    const result = await consultReportService.getAllConsultReports(filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULT_REPORT_MESSAGES.REPORTS_RETRIEVED_SUCCESS,
       result

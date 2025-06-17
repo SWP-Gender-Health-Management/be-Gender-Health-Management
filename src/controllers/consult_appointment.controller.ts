@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { CONSULTANT_APPOINTMENTS_MESSAGES } from '~/constants/message'
-import consultAppointmentService from '~/services/consult_appointment.service'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { CONSULTANT_APPOINTMENTS_MESSAGES } from '~/constants/message.js'
+import consultAppointmentService from '~/services/consult_appointment.service.js'
 
 /**
  * @swagger
@@ -108,7 +108,8 @@ export const createConsultAppointment = async (req: Request, res: Response, next
 // Get all consult appointments
 export const getAllConsultAppointments = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultAppointmentService.getAllConsultAppointments()
+    const {email, account_id, ...filter} = req.body;
+    const result = await consultAppointmentService.getAllConsultAppointments(filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
       result
@@ -220,7 +221,8 @@ export const getConsultAppointmentById = async (req: Request, res: Response, nex
 // Get consult appointments by Customer ID
 export const getConsultAppointmentsByCustomerId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultAppointmentService.getConsultAppointmentsByCustomerId(req.params.customer_id)
+    const {email, account_id, ...filter} = req.body;
+    const result = await consultAppointmentService.getConsultAppointmentsByCustomerId(req.params.customer_id, filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
       result

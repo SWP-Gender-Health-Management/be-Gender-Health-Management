@@ -8,7 +8,7 @@ import {
   CreateDateColumn,
   JoinColumn
 } from 'typeorm'
-import Account from './account.entity'
+import Account from './account.entity.js'
 
 export interface MenstrualCycleType {
   cycle_id: string
@@ -43,7 +43,8 @@ export default class MenstrualCycle implements MenstrualCycleType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @OneToOne(() => Account, (customer: Account) => customer.menstrualCycle)
+  // foreign key
+  @OneToOne(() => Account, (account: Account) => account.menstrualCycle)
   @JoinColumn({ name: 'account_id', referencedColumnName: 'account_id' })
-  customer: Account
+  account: Account
 }

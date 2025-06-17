@@ -1,12 +1,11 @@
-import { Repository } from 'typeorm'
-import { AppDataSource } from '~/config/database.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { QUESTION_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import Question, { QuestionType } from '~/models/Entity/question.entity'
-import Account from '~/models/Entity/account.entity'
-import Reply from '~/models/Entity/reply.entity'
-import { Role } from '~/enum/role.enum'
+import { AppDataSource } from '../config/database.config.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { QUESTION_MESSAGES } from '../constants/message.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import Question from '../models/Entity/question.entity.js'
+import Account from '../models/Entity/account.entity.js'
+import Reply from '../models/Entity/reply.entity.js'
+import { Role } from '../enum/role.enum.js'
 
 const questionRepository = AppDataSource.getRepository(Question)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -34,8 +33,18 @@ export class QuestionService {
   }
 
   // Get all questions
-  async getAllQuestions(): Promise<Question[]> {
+  async getAllQuestions(filter: any, pageVar: any): Promise<Question[]> {
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
     return await questionRepository.find({
+      where: {...filter},
+      skip,
+      take: limit,
       relations: ['customer', 'reply']
     })
   }
@@ -58,7 +67,7 @@ export class QuestionService {
   }
 
   // Get questions by Customer ID
-  async getQuestionsByCustomerId(customer_id: string): Promise<Question[]> {
+  async getQuestionsByCustomerId(customer_id: string, filter:any, pageVar: any): Promise<Question[]> {
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -67,8 +76,17 @@ export class QuestionService {
       })
     }
 
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+
     const questions = await questionRepository.find({
-      where: { customer: customer },
+      where: { customer: customer, ...filter},
+      skip,
+      take: limit,
       relations: ['customer', 'reply']
     })
 

@@ -9,8 +9,8 @@ import {
   OneToOne,
   JoinColumn
 } from 'typeorm'
-import Account from './account.entity'
-import Question from './question.entity'
+import Account from './account.entity.js'
+import Question from './question.entity.js'
 
 export interface ReplyType {
   reply_id: string

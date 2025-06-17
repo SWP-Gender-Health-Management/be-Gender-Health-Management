@@ -28,7 +28,7 @@ redisClient.on('connect', () => {
   console.log(`Connected to Redis at ${redisHost}:${redisPort}`)
 })
 
-redisClient.on('error', (err) => {
+redisClient.on('error', (err: any) => {
   console.error('Redis connection error:', err)
   // Bạn có thể thêm logic xử lý lỗi ở đây, ví dụ: thoát ứng dụng nếu không thể kết nối
   // process.exit(1);

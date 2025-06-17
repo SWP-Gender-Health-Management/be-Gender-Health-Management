@@ -1,20 +1,20 @@
-import swaggerJSDoc from 'swagger-jsdoc';
-import { Role } from '~/enum/role.enum';
-import { Major } from '~/enum/major.enum';
-import { StatusAppointment } from '~/enum/statusAppointment.enum';
-import { TypeAppointment } from '~/enum/type_appointment.enum';
+import swaggerJSDoc from 'swagger-jsdoc'
+import { Role } from '../enum/role.enum.js'
+import { Major } from '../enum/major.enum.js'
+import { StatusAppointment } from '../enum/statusAppointment.enum.js'
+import { TypeAppointment } from '../enum/type_appointment.enum.js'
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
     title: 'GenderCare APIs',
     version: '1.0.0',
-    description: 'API documentation for Express.js project with TypeScript and TypeORM',
+    description: 'API documentation for Express.js project with TypeScript and TypeORM'
   },
   servers: [
     {
       url: 'http://localhost:3000',
-      description: 'Development server',
-    },
+      description: 'Development server'
+    }
   ],
   components: {
     schemas: {
@@ -33,17 +33,43 @@ const swaggerDefinition = {
           is_verified: { type: 'boolean', description: 'Verification status' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          refreshToken: { $ref: '#/components/schemas/RefreshToken', description: 'The refresh token associated with the account' },
-          menstrualCycle: { $ref: '#/components/schemas/MenstrualCycle', description: 'The menstrual cycle associated with the account' },
-          transaction: { type: 'array', items: { $ref: '#/components/schemas/Transaction' }, description: 'List of transactions' },
+          refreshToken: {
+            $ref: '#/components/schemas/RefreshToken',
+            description: 'The refresh token associated with the account'
+          },
+          menstrualCycle: {
+            $ref: '#/components/schemas/MenstrualCycle',
+            description: 'The menstrual cycle associated with the account'
+          },
+          transaction: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/Transaction' },
+            description: 'List of transactions'
+          },
           blog: { type: 'array', items: { $ref: '#/components/schemas/Blog' }, description: 'List of blogs' },
-          consult_appointment: { type: 'array', items: { $ref: '#/components/schemas/ConsultAppointment' }, description: 'List of consult appointments' },
-          consultant_pattern: { type: 'array', items: { $ref: '#/components/schemas/ConsultantPattern' }, description: 'List of consultant patterns' },
-          laborarity_appointment: { type: 'array', items: { $ref: '#/components/schemas/LaboratoryAppointment' }, description: 'List of laboratory appointments' },
+          consult_appointment: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/ConsultAppointment' },
+            description: 'List of consult appointments'
+          },
+          consultant_pattern: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/ConsultantPattern' },
+            description: 'List of consultant patterns'
+          },
+          laborarity_appointment: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/LaboratoryAppointment' },
+            description: 'List of laboratory appointments'
+          },
           reply: { type: 'array', items: { $ref: '#/components/schemas/Reply' }, description: 'List of replies' },
-          question: { type: 'array', items: { $ref: '#/components/schemas/Question' }, description: 'List of questions' },
+          question: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/Question' },
+            description: 'List of questions'
+          }
         },
-        required: ['account_id', 'email', 'password', 'role', 'is_verified', 'created_at', 'updated_at'],
+        required: ['account_id', 'email', 'password', 'role', 'is_verified', 'created_at', 'updated_at']
       },
       Laborarity: {
         type: 'object',
@@ -54,9 +80,13 @@ const swaggerDefinition = {
           price: { type: 'number', description: 'Price of the test' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          laboratoryAppointment: { type: 'array', items: { $ref: '#/components/schemas/LaboratoryAppointment' }, description: 'List of laboratory appointments' },
+          laboratoryAppointment: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/LaboratoryAppointment' },
+            description: 'List of laboratory appointments'
+          }
         },
-        required: ['lab_id', 'name', 'description', 'price', 'created_at', 'updated_at'],
+        required: ['lab_id', 'name', 'description', 'price', 'created_at', 'updated_at']
       },
       MenstrualCycle: {
         type: 'object',
@@ -68,9 +98,9 @@ const swaggerDefinition = {
           note: { type: 'string', nullable: true, description: 'Additional notes' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          customer: { $ref: '#/components/schemas/Account', description: 'The customer associated with the cycle' },
+          customer: { $ref: '#/components/schemas/Account', description: 'The customer associated with the cycle' }
         },
-        required: ['cycle_id', 'start_date', 'end_date', 'period', 'created_at', 'updated_at'],
+        required: ['cycle_id', 'start_date', 'end_date', 'period', 'created_at', 'updated_at']
       },
       RefreshToken: {
         type: 'object',
@@ -79,9 +109,9 @@ const swaggerDefinition = {
           token: { type: 'string', description: 'The refresh token string' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          account: { $ref: '#/components/schemas/Account', description: 'The account associated with the token' },
+          account: { $ref: '#/components/schemas/Account', description: 'The account associated with the token' }
         },
-        required: ['token_id', 'token', 'created_at', 'updated_at'],
+        required: ['token_id', 'token', 'created_at', 'updated_at']
       },
       Question: {
         type: 'object',
@@ -92,9 +122,9 @@ const swaggerDefinition = {
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
           customer: { $ref: '#/components/schemas/Account', description: 'The customer who asked the question' },
-          reply: { $ref: '#/components/schemas/Reply', nullable: true, description: 'The reply to the question' },
+          reply: { $ref: '#/components/schemas/Reply', nullable: true, description: 'The reply to the question' }
         },
-        required: ['ques_id', 'content', 'status', 'created_at', 'updated_at'],
+        required: ['ques_id', 'content', 'status', 'created_at', 'updated_at']
       },
       Feedback: {
         type: 'object',
@@ -104,10 +134,16 @@ const swaggerDefinition = {
           rating: { type: 'integer', nullable: true, description: 'Rating given' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          consult_appointment: { $ref: '#/components/schemas/ConsultAppointment', description: 'The consult appointment associated with the feedback' },
-          laboratoryAppointment: { $ref: '#/components/schemas/LaboratoryAppointment', description: 'The laboratory appointment associated with the feedback' },
+          consult_appointment: {
+            $ref: '#/components/schemas/ConsultAppointment',
+            description: 'The consult appointment associated with the feedback'
+          },
+          laboratoryAppointment: {
+            $ref: '#/components/schemas/LaboratoryAppointment',
+            description: 'The laboratory appointment associated with the feedback'
+          }
         },
-        required: ['feed_id', 'content', 'created_at', 'updated_at'],
+        required: ['feed_id', 'content', 'created_at', 'updated_at']
       },
       Blog: {
         type: 'object',
@@ -119,9 +155,9 @@ const swaggerDefinition = {
           status: { type: 'boolean', description: 'Status of the blog' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          account: { $ref: '#/components/schemas/Account', description: 'The account that created the blog' },
+          account: { $ref: '#/components/schemas/Account', description: 'The account that created the blog' }
         },
-        required: ['blog_id', 'major', 'title', 'content', 'status', 'created_at', 'updated_at'],
+        required: ['blog_id', 'major', 'title', 'content', 'status', 'created_at', 'updated_at']
       },
       ConsultAppointment: {
         type: 'object',
@@ -132,11 +168,22 @@ const swaggerDefinition = {
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
           customer: { $ref: '#/components/schemas/Account', description: 'The customer who booked the appointment' },
-          consultant_pattern: { $ref: '#/components/schemas/ConsultantPattern', description: 'The consultant pattern for the appointment' },
-          feedback: { $ref: '#/components/schemas/Feedback', nullable: true, description: 'Feedback for the appointment' },
-          report: { $ref: '#/components/schemas/ConsultReport', nullable: true, description: 'Report for the appointment' },
+          consultant_pattern: {
+            $ref: '#/components/schemas/ConsultantPattern',
+            description: 'The consultant pattern for the appointment'
+          },
+          feedback: {
+            $ref: '#/components/schemas/Feedback',
+            nullable: true,
+            description: 'Feedback for the appointment'
+          },
+          report: {
+            $ref: '#/components/schemas/ConsultReport',
+            nullable: true,
+            description: 'Report for the appointment'
+          }
         },
-        required: ['app_id', 'status', 'description', 'created_at', 'updated_at'],
+        required: ['app_id', 'status', 'description', 'created_at', 'updated_at']
       },
       ConsultReport: {
         type: 'object',
@@ -146,9 +193,12 @@ const swaggerDefinition = {
           description: { type: 'string', description: 'Description of the report' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          consult_appointment: { $ref: '#/components/schemas/ConsultAppointment', description: 'The consult appointment associated with the report' },
+          consult_appointment: {
+            $ref: '#/components/schemas/ConsultAppointment',
+            description: 'The consult appointment associated with the report'
+          }
         },
-        required: ['report_id', 'name', 'description', 'created_at', 'updated_at'],
+        required: ['report_id', 'name', 'description', 'created_at', 'updated_at']
       },
       ConsultantPattern: {
         type: 'object',
@@ -158,11 +208,20 @@ const swaggerDefinition = {
           is_booked: { type: 'boolean', description: 'Booking status of the pattern' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          working_slot: { $ref: '#/components/schemas/WorkingSlot', description: 'The working slot associated with the pattern' },
-          consultant: { $ref: '#/components/schemas/Account', description: 'The consultant associated with the pattern' },
-          consult_appointment: { $ref: '#/components/schemas/ConsultAppointment', description: 'The consult appointment associated with the pattern' },
+          working_slot: {
+            $ref: '#/components/schemas/WorkingSlot',
+            description: 'The working slot associated with the pattern'
+          },
+          consultant: {
+            $ref: '#/components/schemas/Account',
+            description: 'The consultant associated with the pattern'
+          },
+          consult_appointment: {
+            $ref: '#/components/schemas/ConsultAppointment',
+            description: 'The consult appointment associated with the pattern'
+          }
         },
-        required: ['pattern_id', 'date', 'is_booked', 'created_at', 'updated_at'],
+        required: ['pattern_id', 'date', 'is_booked', 'created_at', 'updated_at']
       },
       WorkingSlot: {
         type: 'object',
@@ -174,11 +233,23 @@ const swaggerDefinition = {
           type: { type: 'string', enum: Object.values(TypeAppointment), description: 'Type of appointment' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          consultant_pattern: { type: 'array', items: { $ref: '#/components/schemas/ConsultantPattern' }, description: 'List of consultant patterns' },
-          laborarity_appointment: { type: 'array', items: { $ref: '#/components/schemas/LaboratoryAppointment' }, description: 'List of laboratory appointments' },
-          staff_pattern: { type: 'array', items: { $ref: '#/components/schemas/StaffPattern' }, description: 'List of staff patterns' },
+          consultant_pattern: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/ConsultantPattern' },
+            description: 'List of consultant patterns'
+          },
+          laborarity_appointment: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/LaboratoryAppointment' },
+            description: 'List of laboratory appointments'
+          },
+          staff_pattern: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/StaffPattern' },
+            description: 'List of staff patterns'
+          }
         },
-        required: ['slot_id', 'name', 'type', 'created_at', 'updated_at'],
+        required: ['slot_id', 'name', 'type', 'created_at', 'updated_at']
       },
       Reply: {
         type: 'object',
@@ -188,9 +259,9 @@ const swaggerDefinition = {
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
           consultant: { $ref: '#/components/schemas/Account', description: 'The consultant who replied' },
-          question: { $ref: '#/components/schemas/Question', description: 'The question being replied to' },
+          question: { $ref: '#/components/schemas/Question', description: 'The question being replied to' }
         },
-        required: ['reply_id', 'content', 'created_at', 'updated_at'],
+        required: ['reply_id', 'content', 'created_at', 'updated_at']
       },
       Result: {
         type: 'object',
@@ -200,9 +271,12 @@ const swaggerDefinition = {
           description: { type: 'string', description: 'Description of the result' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          laboratoryAppointment: { $ref: '#/components/schemas/LaboratoryAppointment', description: 'The laboratory appointment associated with the result' },
+          laboratoryAppointment: {
+            $ref: '#/components/schemas/LaboratoryAppointment',
+            description: 'The laboratory appointment associated with the result'
+          }
         },
-        required: ['result_id', 'name', 'description', 'created_at', 'updated_at'],
+        required: ['result_id', 'name', 'description', 'created_at', 'updated_at']
       },
       LaboratoryAppointment: {
         type: 'object',
@@ -213,12 +287,23 @@ const swaggerDefinition = {
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
           customer: { $ref: '#/components/schemas/Account', description: 'The customer who booked the appointment' },
-          working_slot: { $ref: '#/components/schemas/WorkingSlot', description: 'The working slot for the appointment' },
-          laborarity: { type: 'array', items: { $ref: '#/components/schemas/Laborarity' }, description: 'List of laboratory tests' },
+          working_slot: {
+            $ref: '#/components/schemas/WorkingSlot',
+            description: 'The working slot for the appointment'
+          },
+          laborarity: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/Laborarity' },
+            description: 'List of laboratory tests'
+          },
           result: { $ref: '#/components/schemas/Result', nullable: true, description: 'Result of the appointment' },
-          feedback: { $ref: '#/components/schemas/Feedback', nullable: true, description: 'Feedback for the appointment' },
+          feedback: {
+            $ref: '#/components/schemas/Feedback',
+            nullable: true,
+            description: 'Feedback for the appointment'
+          }
         },
-        required: ['app_id', 'queue_index', 'created_at', 'updated_at'],
+        required: ['app_id', 'queue_index', 'created_at', 'updated_at']
       },
       StaffPattern: {
         type: 'object',
@@ -227,10 +312,13 @@ const swaggerDefinition = {
           date: { type: 'string', format: 'date', description: 'Date of the staff pattern' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          working_slot: { $ref: '#/components/schemas/WorkingSlot', description: 'The working slot associated with the pattern' },
-          account: { $ref: '#/components/schemas/Account', description: 'The account associated with the pattern' },
+          working_slot: {
+            $ref: '#/components/schemas/WorkingSlot',
+            description: 'The working slot associated with the pattern'
+          },
+          account: { $ref: '#/components/schemas/Account', description: 'The account associated with the pattern' }
         },
-        required: ['pattern_id', 'date', 'created_at', 'updated_at'],
+        required: ['pattern_id', 'date', 'created_at', 'updated_at']
       },
       Transaction: {
         type: 'object',
@@ -242,27 +330,27 @@ const swaggerDefinition = {
           description: { type: 'string', nullable: true, description: 'Description of the transaction' },
           created_at: { type: 'string', format: 'date-time', description: 'Creation timestamp' },
           updated_at: { type: 'string', format: 'date-time', description: 'Update timestamp' },
-          customer: { $ref: '#/components/schemas/Account', description: 'The customer who made the transaction' },
+          customer: { $ref: '#/components/schemas/Account', description: 'The customer who made the transaction' }
         },
-        required: ['transaction_id', 'method', 'app_id', 'date', 'created_at', 'updated_at'],
-      },
-    },
+        required: ['transaction_id', 'method', 'app_id', 'date', 'created_at', 'updated_at']
+      }
+    }
   },
   securitySchemes: {
     bearerAuth: {
       type: 'http',
       scheme: 'bearer',
-      bearerFormat: 'JWT',
-    },
-  },
-};
+      bearerFormat: 'JWT'
+    }
+  }
+}
 
 const options = {
   swaggerDefinition,
   // Đường dẫn đến các file chứa JSDoc annotations
-  apis: ['./src/routes/*.ts', './src/controllers/*.ts'], // Chỉ định nơi chứa các file route hoặc controller
-};
+  apis: ['./src/routes/*.ts', './src/controllers/*.ts'] // Chỉ định nơi chứa các file controller
+}
 
-const swaggerSpec = swaggerJSDoc(options);
+const swaggerSpec = swaggerJSDoc(options)
 
-export default swaggerSpec;
+export default swaggerSpec

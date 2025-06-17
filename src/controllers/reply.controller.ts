@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { REPLY_MESSAGES } from '~/constants/message'
-import replyService from '~/services/reply.service'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { REPLY_MESSAGES } from '../constants/message.js'
+import replyService from '../services/reply.service.js'
 
 /**
  * @swagger
@@ -108,7 +108,8 @@ export const createReply = async (req: Request, res: Response, next: NextFunctio
 // Get all replies
 export const getAllReplies = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await replyService.getAllReplies()
+    const {email, account_id, ...filter} = req.body;
+    const result = await replyService.getAllReplies(filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: REPLY_MESSAGES.REPLIES_RETRIEVED_SUCCESS,
       result
@@ -220,7 +221,8 @@ export const getReplyById = async (req: Request, res: Response, next: NextFuncti
 // Get replies by Consultant ID
 export const getRepliesByConsultantId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await replyService.getRepliesByConsultantId(req.params.consultant_id)
+    const {email, account_id, ...filter} = req.body;
+    const result = await replyService.getRepliesByConsultantId(req.params.consultant_id, filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: REPLY_MESSAGES.REPLIES_RETRIEVED_SUCCESS,
       result

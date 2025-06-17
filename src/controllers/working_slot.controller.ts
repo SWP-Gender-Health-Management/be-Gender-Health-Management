@@ -1,7 +1,7 @@
-import { json, NextFunction, Request, Response } from 'express'
-import { WORKING_SLOT_MESSAGES } from '~/constants/message'
-import { TypeAppointment } from '~/enum/type_appointment.enum'
-import workingSlotService from '~/services/working_slot.service'
+import { NextFunction, Request, Response } from 'express'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { WORKING_SLOT_MESSAGES } from '../constants/message.js'
+import workingSlotService from '../services/working_slot.service.js'
 
 /**
  * @swagger
@@ -59,7 +59,7 @@ import workingSlotService from '~/services/working_slot.service'
 export const addSlotController = async (req: Request, res: Response, next: NextFunction) => {
   const { name, start_at, end_at, type } = req.body
   const slot = await workingSlotService.addSlot(name, start_at, end_at, type)
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     message: WORKING_SLOT_MESSAGES.WORKING_SLOT_CREATED_SUCCESS,
     data: slot
   })
@@ -113,7 +113,7 @@ export const addSlotController = async (req: Request, res: Response, next: NextF
 // Get working slots by type
 export const getSlotByTypeController = async (req: Request, res: Response, next: NextFunction) => {
   const { type } = req.body
-  const slot = await workingSlotService.getSlotByType(type)
+  const slot = await workingSlotService.getSlotByType(type, req.query)
   return res.status(200).json({
     message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
     data: slot
@@ -145,7 +145,7 @@ export const getSlotByTypeController = async (req: Request, res: Response, next:
  */
 // Get all working slots
 export const getSlotController = async (req: Request, res: Response, next: NextFunction) => {
-  const slot = await workingSlotService.getSlot()
+  const slot = await workingSlotService.getSlot(req.query)
   return res.status(200).json({
     message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
     data: slot
@@ -222,7 +222,7 @@ export const getSlotController = async (req: Request, res: Response, next: NextF
 export const updateSlotController = async (req: Request, res: Response, next: NextFunction) => {
   const { id, name, start_at, end_at, type } = req.body
   const slot = await workingSlotService.updateSlot(id, name, start_at, end_at, type)
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     message: WORKING_SLOT_MESSAGES.WORKING_SLOT_UPDATED_SUCCESS,
     data: slot
   })
@@ -285,7 +285,7 @@ export const updateSlotController = async (req: Request, res: Response, next: Ne
 export const deleteSlotController = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.body
   const slot = await workingSlotService.deleteSlot(id)
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     message: WORKING_SLOT_MESSAGES.WORKING_SLOT_DELETED_SUCCESS,
     data: slot
   })

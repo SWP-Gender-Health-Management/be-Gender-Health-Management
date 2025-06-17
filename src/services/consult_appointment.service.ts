@@ -1,13 +1,13 @@
 import { Repository } from 'typeorm'
-import { AppDataSource } from '~/config/database.config'
-import HTTP_STATUS from '~/constants/httpStatus'
-import { CONSULTANT_APPOINTMENTS_MESSAGES } from '~/constants/message'
-import { ErrorWithStatus } from '~/models/Error'
-import ConsultAppointment, { ConsultAppointmentType } from '~/models/Entity/consult_appointment.entity'
-import ConsultantPattern from '~/models/Entity/consultant_pattern.entity'
-import Account from '~/models/Entity/account.entity'
-import { Role } from '~/enum/role.enum'
-import { StatusAppointment } from '~/enum/statusAppointment.enum'
+import { AppDataSource } from '../config/database.config.js'
+import HTTP_STATUS from '../constants/httpStatus.js'
+import { CONSULTANT_APPOINTMENTS_MESSAGES } from '../constants/message.js'
+import { ErrorWithStatus } from '../models/Error.js'
+import ConsultAppointment, { ConsultAppointmentType } from '../models/Entity/consult_appointment.entity.js'
+import ConsultantPattern from '../models/Entity/consultant_pattern.entity.js'
+import Account from '../models/Entity/account.entity.js'
+import { Role } from '../enum/role.enum.js'
+import { StatusAppointment } from '../enum/statusAppointment.enum.js'
 
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
 const consultantPatternRepository = AppDataSource.getRepository(ConsultantPattern)
@@ -48,7 +48,7 @@ export class ConsultAppointmentService {
     const consultAppointment = consultAppointmentRepository.create({
       consultant_pattern: consultantPattern,
       customer: customer,
-      description: data.description || "",
+      description: data.description || '',
       status: data.status || StatusAppointment.PENDING
     })
 
@@ -62,8 +62,17 @@ export class ConsultAppointmentService {
   }
 
   // Get all consult appointments
-  async getAllConsultAppointments(): Promise<ConsultAppointment[]> {
+  async getAllConsultAppointments(filter: any, pageVar: any): Promise<ConsultAppointment[]> {
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
     return await consultAppointmentRepository.find({
+      where: {...filter},
+      skip,
+      take: limit,
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
   }
@@ -72,7 +81,14 @@ export class ConsultAppointmentService {
   async getConsultAppointmentById(app_id: string): Promise<ConsultAppointment> {
     const consultAppointment = await consultAppointmentRepository.findOne({
       where: { app_id },
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'consultant_pattern.consultant',
+        'customer',
+        'report',
+        'feedback'
+      ]
     })
 
     if (!consultAppointment) {
@@ -86,7 +102,13 @@ export class ConsultAppointmentService {
   }
 
   // Get consult appointments by Customer ID
-  async getConsultAppointmentsByCustomerId(customer_id: string): Promise<ConsultAppointment[]> {
+  async getConsultAppointmentsByCustomerId(customer_id: string, filter:any, pageVar: any): Promise<ConsultAppointment[]> {
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = 0;
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -94,9 +116,10 @@ export class ConsultAppointmentService {
         status: HTTP_STATUS.NOT_FOUND
       })
     }
-
     const consultAppointments = await consultAppointmentRepository.find({
-      where: { customer },
+      where: { customer, ...filter },
+      skip,
+      take: limit,
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
     })
 
@@ -122,7 +145,16 @@ export class ConsultAppointmentService {
 
     const consultAppointment = await consultAppointmentRepository.findOne({
       where: { consultant_pattern: consultantPattern },
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback', 'report', 'feedback']
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'consultant_pattern.consultant',
+        'customer',
+        'report',
+        'feedback',
+        'report',
+        'feedback'
+      ]
     })
 
     if (!consultAppointment) {
@@ -138,7 +170,6 @@ export class ConsultAppointmentService {
   // Update a consult appointment
   async updateConsultAppointment(app_id: string, data: any): Promise<ConsultAppointment> {
     const consultAppointment = await this.getConsultAppointmentById(app_id)
-
     // Validate consultant pattern if provided
     let consultantPattern
     if (data.pattern_id && data.pattern_id !== consultAppointment.consultant_pattern.pattern_id) {
