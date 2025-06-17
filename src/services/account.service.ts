@@ -162,8 +162,16 @@ class AccountService {
     return { accessToken, refreshToken }
   }
 
-  async changePassword(payload: any) {
-    const { account_id, new_password } = payload
+  /**
+   * @description: Thay đổi mật khẩu
+   * @param account_id: string
+   * @param new_password: string
+   * @returns: {
+   *   accessToken: string
+   *   refreshToken: string
+   * }
+   */
+  async changePassword(account_id: string, new_password: string) {
     const passwordHash = await hashPassword(new_password)
     const [userRedis] = await Promise.all([
       redisClient.get(account_id),
@@ -172,13 +180,18 @@ class AccountService {
     const user: Account = JSON.parse(userRedis as string)
     user.password = passwordHash
     const [accessToken, refreshToken] = await Promise.all([
-      this.createAccessToken({ account_id, new_password }),
-      this.createRefreshToken({ account_id, new_password }),
+      this.createAccessToken(account_id, user.email, passwordHash),
+      this.createRefreshToken(account_id, user.email, passwordHash),
       redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
     ])
     return { accessToken, refreshToken }
   }
 
+  /**
+   * @description: Lấy thông tin tài khoản từ database
+   * @param id: string
+   * @returns: Account
+   */
   async getAccountById(id: any) {
     const user = await accountRepository.findOneBy({
       account_id: id
