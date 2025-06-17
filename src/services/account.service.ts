@@ -205,8 +205,15 @@ class AccountService {
     return user
   }
 
-  async verifyEmail(payload: any) {
-    const { account_id, secretPasscode } = payload
+  /**
+   * @description: Xác thực email
+   * @param account_id: string
+   * @param secretPasscode: string
+   * @returns: {
+   *   message: string
+   * }
+   */
+  async verifyEmail(account_id: string, secretPasscode: string) {
     const userToken = await redisClient.get(`${process.env.JWT_EMAIL_VERIFIED_TOKEN}:${account_id}`)
     // const userTokenParse = JSON.parse(userToken as string)
     console.log(userToken)
