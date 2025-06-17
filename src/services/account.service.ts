@@ -270,25 +270,30 @@ class AccountService {
     return user
   }
 
+  /**
+   * @description: Gửi email xác thực
+   * @param account_id: string
+   * @returns: {
+   *   message: string
+   * }
+   */
   async sendEmailVerified(account_id: string) {
     const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
-    const emailVerifyToken = await this.createEmailVerifiedToken({
-      account_id: account_id,
-      secretPasscode: secretPasscode
-    })
+    const emailVerifyToken = await this.createEmailVerifiedToken(account_id, secretPasscode)
     console.log(emailVerifyToken)
-
+    const user = await redisClient.get(account_id)
+    const userParse = JSON.parse(user as string)
     await Promise.all([
       //lưu token vào redis
       redisClient.set(`${process.env.JWT_EMAIL_VERIFIED_TOKEN}:${account_id}`, emailVerifyToken, 'EX', 60 * 60),
       //gửi email
       sendMail(
-        'ndmanh1005@gmail.com',
+        userParse.email,
         'Verify your email',
         `Your passcode is ${secretPasscode}`,
         'template/email-verify.html',
         {
-          USER_NAME: 'Nguyen Duy Manh',
+          USER_NAME: userParse.full_name,
           OTP_CODE: secretPasscode,
           OTP_EXPIRATION_MINUTES: '10',
           CURRENT_YEAR: new Date().getFullYear().toString(),
@@ -298,18 +303,33 @@ class AccountService {
     ])
   }
 
+  /**
+   * @description: Kiểm tra email đã được xác thực
+   * @param account_id: string
+   * @returns: Account
+   */
   async checkEmailVerified(account_id: string) {
     const user: Account = JSON.parse((await redisClient.get(account_id)) as string)
     return user?.is_verified === true ? user : false
   }
 
+  /**
+   * @description: Xem thông tin tài khoản
+   * @param account_id: string
+   * @returns: Account
+   */
   async viewAccount(account_id: string) {
     const user: Account = JSON.parse((await redisClient.get(account_id)) as string)
     return user
   }
 
-  async createEmailResetPasswordToken(payload: any) {
-    const { account_id, secretPasscode } = payload
+  /**
+   * @description: Tạo token đặt lại mật khẩu
+   * @param account_id: string
+   * @param secretPasscode: string
+   * @returns: string
+   */
+  async createEmailResetPasswordToken(account_id: string, secretPasscode: string) {
     return await signToken({
       payload: { account_id, secretPasscode },
       secretKey: process.env.JWT_SECRET_RESET_PASSWORD_TOKEN as string,
@@ -317,23 +337,22 @@ class AccountService {
     })
   }
 
-  async sendEmailResetPassword(payload: any) {
-    const { account, email } = payload
+  /**
+   * @description: Gửi email đặt lại mật khẩu
+   * @param account_id: string
+   * @param email: string
+   * @returns: {
+   *   message: string
+   * }
+   */
+  async sendEmailResetPassword(account_id: string, email: string) {
     const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
-    const resetPasswordToken = await this.createEmailResetPasswordToken({
-      account_id: account.account_id,
-      secretPasscode: secretPasscode
-    })
+    const resetPasswordToken = await this.createEmailResetPasswordToken(account_id, secretPasscode)
     console.log(resetPasswordToken)
 
     await Promise.all([
       //lưu token vào redis
-      redisClient.set(
-        `${process.env.JWT_EMAIL_VERIFIED_TOKEN}:${account.account_id}`,
-        resetPasswordToken,
-        'EX',
-        60 * 5
-      ),
+      redisClient.set(`${process.env.JWT_EMAIL_VERIFIED_TOKEN}:${account_id}`, resetPasswordToken, 'EX', 60 * 5),
       //gửi email
       sendMail(email, 'Verify your email', `Your passcode is ${secretPasscode}`, 'template/reset-password.html', {
         EMAIL: email,
@@ -348,6 +367,12 @@ class AccountService {
     }
   }
 
+  /**
+   * @description: Xác thực mã passcode đặt lại mật khẩu
+   * @param passcode: string
+   * @param account_id: string
+   * @returns: void
+   */
   async verifyPasscodeResetPassword(passcode: string, account_id: string) {
     const userToken = await redisClient.get(`${process.env.JWT_RESET_PASSWORD_TOKEN}:${account_id}`)
     const userTokenParse = await verifyToken({
