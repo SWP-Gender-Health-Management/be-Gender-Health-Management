@@ -13,10 +13,21 @@ import redisClient from '../config/redis.config.js'
 config()
 const accountRepository = AppDataSource.getRepository(Account)
 class AccountService {
+  /**
+   * @description: Kiểm tra email đã tồn tại trong database
+   * @param email: string
+   * @returns: Account | null
+   */
   async checkEmailExist(email: string) {
     return await accountRepository.findOne({ where: { email } })
   }
 
+  /**
+   * @description: Kiểm tra mật khẩu có khớp với email trong database
+   * @param email: string
+   * @param password: string
+   * @returns: boolean
+   */
   async checkPassword(email: string, password: string) {
     const user = await accountRepository.findOne({ where: { email } })
     if (!user) {
@@ -29,9 +40,20 @@ class AccountService {
     return isPasswordValid
   }
 
-  async createAccessToken(payload: any) {
+  /**
+   * @description: Tạo token access
+   * @param account_id: string
+   * @param email: string
+   * @param password: string
+   * @returns: string
+   */
+  async createAccessToken(account_id: string, email: string, password: string) {
     const token = await signToken({
-      payload,
+      payload: {
+        account_id: account_id,
+        email: email,
+        password: password
+      },
       secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
       options: {
         expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRE_IN as StringValue
@@ -40,9 +62,20 @@ class AccountService {
     return token
   }
 
-  async createRefreshToken(payload: any) {
+  /**
+   * @description: Tạo token refresh
+   * @param account_id: string
+   * @param email: string
+   * @param password: string
+   * @returns: string
+   */
+  async createRefreshToken(account_id: string, email: string, password: string) {
     return await signToken({
-      payload,
+      payload: {
+        account_id: account_id,
+        email: email,
+        password: password
+      },
       secretKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
       options: {
         expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as StringValue
@@ -50,9 +83,18 @@ class AccountService {
     })
   }
 
-  async createEmailVerifiedToken(payload: any) {
+  /**
+   * @description: Tạo token email verified
+   * @param account_id: string
+   * @param secretPasscode: string
+   * @returns: string
+   */
+  async createEmailVerifiedToken(account_id: string, secretPasscode: string) {
     return await signToken({
-      payload,
+      payload: {
+        account_id: account_id,
+        secretPasscode: secretPasscode
+      },
       secretKey: process.env.JWT_SECRET_EMAIL_VERIFIED_TOKEN as string,
       options: {
         expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as StringValue
@@ -60,22 +102,31 @@ class AccountService {
     })
   }
 
-  async createAccount(payload: any) {
-    const { email, password } = payload
-
+  /**
+   * @description: Tạo tài khoản
+   * @param email: string
+   * @param password: string
+   * @returns: {
+   *   account_id: string
+   *   accessToken: string
+   *   refreshToken: string
+   *   emailVerifiedToken: string
+   * }
+   */
+  async createAccount(email: string, password: string) {
     const passwordHash = await hashPassword(password)
     const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
 
-    const user = await accountRepository.create({
+    const user = accountRepository.create({
       email: email,
       password: passwordHash
     })
     await accountRepository.save(user)
 
     const [accessToken, refreshToken, emailVerifiedToken] = await Promise.all([
-      this.createAccessToken({ account_id: user.account_id, email: email, password: passwordHash }),
-      this.createRefreshToken({ account_id: user.account_id, email: email, password: passwordHash }),
-      this.createEmailVerifiedToken({ account_id: user.account_id, secretPasscode })
+      this.createAccessToken(user.account_id, email, passwordHash),
+      this.createRefreshToken(user.account_id, email, passwordHash),
+      this.createEmailVerifiedToken(user.account_id, secretPasscode)
     ])
     // await this.sendEmailVerified(user.account_id)
     //lưu token và user vào redis
@@ -92,12 +143,21 @@ class AccountService {
     }
   }
 
-  async login(payload: any) {
-    const { account_id } = payload
+  /**
+   * @description: Đăng nhập
+   * @param account_id: string
+   * @param email: string
+   * @param password: string
+   * @returns: {
+   *   accessToken: string
+   *   refreshToken: string
+   * }
+   */
+  async login(account_id: string, email: string, password: string) {
     const user: Account = JSON.parse((await redisClient.get(account_id)) as string)
     const [accessToken, refreshToken] = await Promise.all([
-      this.createAccessToken({ account_id: account_id, email: user.email, password: user.password }),
-      this.createRefreshToken({ account_id: account_id, email: user.email, password: user.password })
+      this.createAccessToken(account_id, email, password),
+      this.createRefreshToken(account_id, email, password)
     ])
     return { accessToken, refreshToken }
   }
@@ -129,7 +189,7 @@ class AccountService {
         status: 400
       })
     }
-    return user;
+    return user
   }
 
   async verifyEmail(payload: any) {
@@ -275,8 +335,8 @@ class AccountService {
   }
 
   async getAccountFromRedis(data: any) {
-    const {account_id} = data
-    return await this.getAccountById(account_id);
+    const { account_id } = data
+    return await this.getAccountById(account_id)
   }
 }
 const accountService = new AccountService()

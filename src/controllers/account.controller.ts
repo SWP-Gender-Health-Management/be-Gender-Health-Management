@@ -75,14 +75,12 @@ export const registerController = async (req: Request, res: Response, next: Next
   const account = JSON.parse((await redisClient.get(account_id)) as string)
   await refreshTokenService.createRefreshToken({ account: account, token: refreshToken })
 
-  // res.cookie('refreshToken', refreshToken, {
-  //   httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
-  //   secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS ở môi trường production
-  //   sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
-  //   maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string) // Thời gian sống của cookie (tính bằng mili giây)
-  //   // path: '/', // (Tùy chọn) Đường dẫn mà cookie hợp lệ, '/' là cho toàn bộ domain
-  //   // domain: 'yourdomain.com', // (Tùy chọn) Chỉ định domain cho cookie
-  // })
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
+    secure: true, // Chỉ gửi cookie qua HTTPS ở môi trường production
+    sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
+    maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string) // Thời gian sống của cookie (tính bằng mili giây)
+  })
   res.status(HTTP_STATUS.CREATED).json({
     message: USERS_MESSAGES.USER_CREATED_SUCCESS,
     result
@@ -579,15 +577,14 @@ export const logoutController = async (req: Request, res: Response, next: NextFu
  *                   type: string
  *                   description: Success message
  *                 result:
- *                   type: string          
+ *                   type: string
  *       401:
  *         description: Unauthorized (invalid token)
  */
 export const getAccountFromRedis = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await accountService.getAccountFromRedis(req.body);
+  const result = await accountService.getAccountFromRedis(req.body)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_GET_ACCOUNT_ID_SUCCESS,
     result
   })
 }
-
