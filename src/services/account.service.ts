@@ -247,15 +247,23 @@ class AccountService {
     }
   }
 
-  async updateProfile(payload: any) {
-    const { account_id, full_name, phone, dob, gender } = payload
+  /**
+   * @description: Cập nhật thông tin tài khoản
+   * @param account_id: string
+   * @param full_name: string
+   * @param phone: string
+   * @param dob: string
+   * @param gender: string
+   * @returns: Account
+   */
+  async updateProfile(account_id: string, full_name?: string, phone?: string, dob?: string, gender?: string) {
     const [user] = await Promise.all([
       accountRepository.findOne({ where: { account_id } }),
       accountRepository.update(account_id, {
-        full_name: full_name || null,
-        phone: phone || null,
-        dob: dob || null,
-        gender: gender || null
+        full_name: full_name || undefined,
+        phone: phone || undefined,
+        dob: dob || undefined,
+        gender: gender || undefined
       })
     ])
     await redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
