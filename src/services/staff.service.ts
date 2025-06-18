@@ -3,7 +3,6 @@ import { AppDataSource } from '../config/database.config.js'
 import StaffPattern from '../models/Entity/staff_pattern.entity.js'
 import Result from '../models/Entity/result.entity.js'
 import Laborarity from '../models/Entity/laborarity.entity.js'
-import { RESULT_MESSAGES } from '../constants/message.js'
 import LaboratoryAppointment from '../models/Entity/laborarity_appointment.entity.js'
 import { StatusAppointment, stringToStatus } from '../enum/statusAppointment.enum.js'
 
@@ -12,8 +11,13 @@ const resultRepository = AppDataSource.getRepository(Result)
 const laborarityRepository = AppDataSource.getRepository(Laborarity)
 const laboratoryAppointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
 class StaffService {
-  async countStaff(payload: any) {
-    const { date, slot_id } = payload
+  /**
+   * Count the number of staff available for a given date and slot
+   * @param date - The date of the appointment
+   * @param slot_id - The ID of the slot
+   * @returns The number of staff available
+   */
+  async countStaff(date: string, slot_id: string) {
     const appointmentDate = new Date(date)
     const staff = await staffPatternRepository.count({
       where: {
@@ -27,6 +31,12 @@ class StaffService {
     return staff * 20
   }
 
+  /**
+   * @description Update the result of a laboratory appointment
+   * @param app_id - The ID of the laboratory appointment
+   * @param result - The result of the laboratory appointment
+   * @returns The result entities
+   */
   async updateResult(app_id: string, result: any[]) {
     const resultEntities = []
     for (const item of result) {
@@ -54,6 +64,12 @@ class StaffService {
     return resultEntities
   }
 
+  /**
+   * @description Update the status of a laboratory appointment
+   * @param appointment_id - The ID of the laboratory appointment
+   * @param status - The status of the laboratory appointment
+   * @returns The laboratory appointment entity
+   */
   async updateAppointmentStatus(appointment_id: string, status: number) {
     const appointment = await laboratoryAppointmentRepository.findOne({
       where: { app_id: appointment_id }
