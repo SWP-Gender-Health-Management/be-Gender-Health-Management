@@ -15,7 +15,6 @@ class AdminService {
    */
   async createAdmin(full_name: string, email: string, password: string) {
     const hashedPassword = await hashPassword(password)
-
     const newAdmin = await accountRepository.create({
       full_name,
       email,
@@ -27,8 +26,14 @@ class AdminService {
     return newAdmin
   }
 
-  async createManager(payload: any) {
-    const { full_name, email, password } = payload
+  /**
+   * @description: Tạo tài khoản manager
+   * @param full_name: string
+   * @param email: string
+   * @param password: string
+   * @returns: Account
+   */
+  async createManager(full_name: string, email: string, password: string) {
     const hashedPassword = await hashPassword(password)
 
     const newManager = accountRepository.create({
