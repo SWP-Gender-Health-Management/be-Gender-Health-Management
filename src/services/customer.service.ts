@@ -21,11 +21,12 @@ const menstrualCycleRepository = AppDataSource.getRepository(MenstrualCycle)
 const userRepository = AppDataSource.getRepository(Account)
 const appointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
 const labRepository = AppDataSource.getRepository(Laboratory)
-const transactionRepository = AppDataSource.getRepository(Transaction)
-const resultRepository = AppDataSource.getRepository(Result)
-const feedbackRepository = AppDataSource.getRepository(Feedback)
-const staffPatternRepository = AppDataSource.getRepository(StaffPattern)
+
 class CustomerService {
+  /**
+   * Get all customers
+   * @returns The customers
+   */
   async getCustomer() {
     return await userRepository.find({
       where: {
@@ -34,8 +35,17 @@ class CustomerService {
     })
   }
 
-  async createMenstrualCycle(payload: any) {
-    const user = JSON.parse((await redisClient.get(payload.account_id)) as string)
+  /**
+   * Create a menstrual cycle
+   * @param account_id - The ID of the account
+   * @param start_date - The start date of the menstrual cycle
+   * @param end_date - The end date of the menstrual cycle
+   * @param period - The period of the menstrual cycle
+   * @param note - The note of the menstrual cycle
+   * @returns The menstrual cycle
+   */
+  async createMenstrualCycle(account_id: string, start_date: string, end_date: string, period: number, note: string) {
+    const user = JSON.parse((await redisClient.get(account_id)) as string)
     const menstrual = await menstrualCycleRepository.findOne({
       where: { account: user }
     })
@@ -51,7 +61,6 @@ class CustomerService {
         status: 400
       })
     }
-    const { start_date, end_date, period, note } = payload
     const menstrualCycle = menstrualCycleRepository.create({
       account: user,
       start_date,
@@ -62,8 +71,12 @@ class CustomerService {
     return menstrualCycleRepository.save(menstrualCycle)
   }
 
-  async predictPeriod(payload: any) {
-    const { account_id } = payload
+  /**
+   * Predict the next period
+   * @param account_id - The ID of the account
+   * @returns The next period
+   */
+  async predictPeriod(account_id: string) {
     const menstrualCycle: MenstrualCycle | null = await menstrualCycleRepository.findOne({
       where: { account: { account_id } }
     })
@@ -82,7 +95,7 @@ class CustomerService {
     const notiDate = new Date(next_start_date.getTime() - 2 * 24 * 60 * 60 * 1000 + 7 * 60 * 60 * 1000)
 
     await redisClient.set(
-      `${payload.account_id}: notiDate`,
+      `${account_id}: notiDate`,
       JSON.stringify({
         notiDate,
         notiPayload: {
@@ -103,8 +116,15 @@ class CustomerService {
     }
   }
 
-  async updateMenstrualCycle(payload: any) {
-    const { account_id, start_date, end_date, note } = payload
+  /**
+   * Update a menstrual cycle
+   * @param account_id - The ID of the account
+   * @param start_date - The start date of the menstrual cycle
+   * @param end_date - The end date of the menstrual cycle
+   * @param note - The note of the menstrual cycle
+   * @returns The menstrual cycle
+   */
+  async updateMenstrualCycle(account_id: string, start_date: string, end_date: string, note: string) {
     const menstrualCycle: MenstrualCycle | null = await menstrualCycleRepository.findOne({
       where: { account: { account_id } }
     })
@@ -129,26 +149,37 @@ class CustomerService {
     }
   }
 
-  async createNotification(payload: any) {
-    const redisNoti = await redisClient.get(`${payload.account_id}: notiDate`)
+  /**
+   * Create a notification
+   * @param account_id - The ID of the account
+   * @returns The notification
+   */
+  async createNotification(account_id: string) {
+    const redisNoti = await redisClient.get(`${account_id}: notiDate`)
     console.log(redisNoti)
     const noti = JSON.parse(redisNoti as string)
     console.log(noti)
     // gửi thông báo lên redis đợi
     await Promise.all([
       scheduleNotification(new Date('2025-05-31T07:00:00.000Z'), noti.notiPayload),
-      redisClient.del(`${payload.account_id}: notiDate`)
+      redisClient.del(`${account_id}: notiDate`)
     ])
     return {
       message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_SCHEDULED_NOTIFICATION
     }
   }
 
-  async createLaborarityAppointment(payload: any) {
-    const { account_id, slot_id, date, lab_id } = payload
-
+  /**
+   * Create a laborarity appointment
+   * @param account_id - The ID of the account
+   * @param slot_id - The ID of the slot
+   * @param date - The date of the appointment
+   * @param lab_id - The ID of the laboratory
+   * @returns The appointment
+   */
+  async createLaborarityAppointment(account_id: string, slot_id: string, date: string, lab_id: string[]) {
     const [staff, queueIndex] = await Promise.all([
-      staffService.countStaff({ date, slot_id }),
+      staffService.countStaff(date, slot_id),
       appointmentRepository.count({
         where: {
           working_slot: { slot_id: slot_id as string },
