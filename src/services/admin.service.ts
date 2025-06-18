@@ -65,6 +65,10 @@ class AdminService {
     return newStaff
   }
 
+  /**
+   * @description: Lấy tất cả tài khoản staff
+   * @returns: Account[]
+   */
   async getAllStaff() {
     return await accountRepository.find({
       where: {
@@ -73,10 +77,16 @@ class AdminService {
     })
   }
 
-  async createConsultant(payload: any) {
-    const { full_name, email, password } = payload
+  /**
+   * @description: Tạo tài khoản consultant
+   * @param full_name: string
+   * @param email: string
+   * @param password: string
+   * @returns: Account
+   */
+  async createConsultant(full_name: string, email: string, password: string) {
     const hashedPassword = await hashPassword(password)
-    const newConsultant = await accountRepository.create({
+    const newConsultant = accountRepository.create({
       full_name,
       email,
       password: hashedPassword,
