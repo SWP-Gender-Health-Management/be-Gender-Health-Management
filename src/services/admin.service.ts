@@ -42,13 +42,18 @@ class AdminService {
       password: hashedPassword,
       role: Role.MANAGER
     })
-
     await accountRepository.save(newManager)
     return newManager
   }
 
-  async createStaff(payload: any) {
-    const { full_name, email, password } = payload
+  /**
+   * @description: Tạo tài khoản staff
+   * @param full_name: string
+   * @param email: string
+   * @param password: string
+   * @returns: Account
+   */
+  async createStaff(full_name: string, email: string, password: string) {
     const hashedPassword = await hashPassword(password)
     const newStaff = accountRepository.create({
       full_name,

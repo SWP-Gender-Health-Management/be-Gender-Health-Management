@@ -22,7 +22,7 @@ export const createManagerController = async (req: Request, res: Response, next:
 
 export const createStaffController = async (req: Request, res: Response, next: NextFunction) => {
   const { full_name, email, password } = req.body
-  const staff = await adminService.createStaff({ full_name, email, password })
+  const staff = await adminService.createStaff(full_name, email, password)
   res.status(201).json({
     message: ADMIN_MESSAGES.STAFF_CREATED_SUCCESS,
     data: staff
