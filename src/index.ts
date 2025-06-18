@@ -20,6 +20,7 @@ import questionRoute from './routes/question.route.js'
 import replyRoute from './routes/reply.route.js'
 import consultReportRoute from './routes/consult_report.route.js'
 import feedbackRoute from './routes/feedback.route.js'
+import blogRoute from './routes/blog.route.js'
 
 dotenv.config()
 
@@ -74,6 +75,8 @@ initializeApp()
       app.use('/feedback', feedbackRoute)
       // route transaction
       app.use('/transaction/payos', transactionRoute)
+      // route blog
+      app.use('/blog', blogRoute)
       app.use(defaultErrorHandle)
 
       // Start server

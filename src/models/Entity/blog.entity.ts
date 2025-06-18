@@ -29,14 +29,14 @@ export default class Blog implements BlogType {
   @Column({ type: 'enum', nullable: false, enum: Major })
   major: Major
 
-  @Column({ type: 'varchar', length: 255, nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   title: string
 
-  @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
+  @Column({ type: 'text', nullable: false })
   content: string
 
   //path of image
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'json', nullable: true })
   images: string[]
 
   @Column({ type: 'boolean', default: false })
