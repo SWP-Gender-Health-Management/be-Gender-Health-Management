@@ -39,7 +39,7 @@ consultReportRoute.post(
 consultReportRoute.get(
   '/get-all-consult-reports',
    validateAccessToken,
-  // restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
   wrapRequestHandler(getAllConsultReports)
 )
 

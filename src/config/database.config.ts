@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm'
 import dotenv from 'dotenv'
 
 import { config } from 'dotenv'
+import { truncate } from 'fs'
 
 config()
 
