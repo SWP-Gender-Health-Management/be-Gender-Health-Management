@@ -96,8 +96,14 @@ class AdminService {
     return newConsultant
   }
 
-  async createCustomer(payload: any) {
-    const { full_name, email, password } = payload
+  /**
+   * @description: Tạo tài khoản customer
+   * @param full_name: string
+   * @param email: string
+   * @param password: string
+   * @returns: Account
+   */
+  async createCustomer(full_name: string, email: string, password: string) {
     const hashedPassword = await hashPassword(password)
     const newCustomer = accountRepository.create({
       full_name,

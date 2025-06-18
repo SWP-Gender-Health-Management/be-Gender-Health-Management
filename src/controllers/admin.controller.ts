@@ -47,7 +47,7 @@ export const createConsultantController = async (req: Request, res: Response, ne
 
 export const createCustomerController = async (req: Request, res: Response, next: NextFunction) => {
   const { full_name, email, password } = req.body
-  const customer = await adminService.createCustomer({ full_name, email, password })
+  const customer = await adminService.createCustomer(full_name, email, password)
   res.status(201).json({
     message: ADMIN_MESSAGES.CUSTOMER_CREATED_SUCCESS,
     data: customer
