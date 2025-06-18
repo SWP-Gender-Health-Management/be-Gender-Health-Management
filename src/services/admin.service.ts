@@ -6,8 +6,14 @@ import { hashPassword } from '../utils/crypto.js'
 const accountRepository = AppDataSource.getRepository(Account)
 
 class AdminService {
-  async createAdmin(payload: any) {
-    const { full_name, email, password } = payload
+  /**
+   * @description: Tạo tài khoản admin
+   * @param full_name: string
+   * @param email: string
+   * @param password: string
+   * @returns: Account
+   */
+  async createAdmin(full_name: string, email: string, password: string) {
     const hashedPassword = await hashPassword(password)
 
     const newAdmin = await accountRepository.create({

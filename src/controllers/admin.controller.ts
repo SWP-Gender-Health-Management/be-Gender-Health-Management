@@ -4,7 +4,7 @@ import { ADMIN_MESSAGES } from '../constants/message.js'
 
 export const createAdminController = async (req: Request, res: Response, next: NextFunction) => {
   const { full_name, email, password } = req.body
-  const admin = await adminService.createAdmin({ full_name, email, password })
+  const admin = await adminService.createAdmin(full_name, email, password)
   res.status(201).json({
     message: ADMIN_MESSAGES.ADMIN_CREATED_SUCCESS,
     data: admin
