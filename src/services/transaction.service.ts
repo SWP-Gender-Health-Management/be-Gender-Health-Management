@@ -13,6 +13,13 @@ const transactionRepository = AppDataSource.getRepository(Transaction)
 const labAppointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
 
 export class createTransactionService {
+  /**
+   * Create a consult transaction
+   * @param app_id - The ID of the appointment
+   * @param amount - The amount of the transaction
+   * @param description - The description of the transaction
+   * @returns The transaction
+   */
   async createConsultTransaction(app_id: string, amount: number, description: string) {
     const appointment = await labAppointmentRepository.findOne({
       where: {
@@ -31,6 +38,14 @@ export class createTransactionService {
     return transaction
   }
 
+  /**
+   * Create a laborarity transaction
+   * @param app_id - The ID of the appointment
+   * @param orderCode - The order code of the transaction
+   * @param amount - The amount of the transaction
+   * @param description - The description of the transaction
+   * @returns The transaction
+   */
   async createLaborarityTransaction(app_id: string, orderCode: number, amount: number, description: string) {
     const appointment: LaboratoryAppointment | null = await labAppointmentRepository.findOne({
       where: {
@@ -59,8 +74,12 @@ export class createTransactionService {
     return transaction
   }
 
-  async createPaymentUrlService(payload: any) {
-    const { orderCode } = payload
+  /**
+   * Create a payment url
+   * @param orderCode - The order code of the transaction
+   * @returns The payment url
+   */
+  async createPaymentUrlService(orderCode: string) {
     if (!orderCode) {
       throw new ErrorWithStatus({
         message: 'Passcode is required',
@@ -69,7 +88,7 @@ export class createTransactionService {
     }
     const transaction = await transactionRepository.findOne({
       where: {
-        order_code: orderCode
+        order_code: parseInt(orderCode)
       }
     })
     if (!transaction) {
@@ -95,6 +114,11 @@ export class createTransactionService {
     return paymentLink
   }
 
+  /**
+   * Get a link payment
+   * @param orderCode - The order code of the transaction
+   * @returns The link payment
+   */
   async getLinkPaymentService(orderCode: string) {
     const linkPayment = await payos.getPaymentLinkInformation(orderCode)
     if (!linkPayment) {
@@ -106,6 +130,11 @@ export class createTransactionService {
     return linkPayment
   }
 
+  /**
+   * Cancel a payment
+   * @param orderCode - The order code of the transaction
+   * @returns The cancel payment
+   */
   async cancelPaymentService(orderCode: string) {
     const cancelPayment = await payos.cancelPaymentLink(orderCode)
     if (!cancelPayment) {
@@ -114,12 +143,22 @@ export class createTransactionService {
     return cancelPayment
   }
 
+  /**
+   * Confirm a webhook
+   * @param webhookData - The webhook data
+   * @returns The verified data
+   */
   async confirmWebhookService(webhookData: WebhookType) {
     const verifiedData: WebhookDataType = payos.verifyPaymentWebhookData(webhookData)
     console.log('Webhook data verified successfully:', verifiedData)
     return verifiedData
   }
 
+  /**
+   * Receive a hook
+   * @param webhookData - The webhook data
+   * @returns The verified data
+   */
   async receiveHookService(webhookData: WebhookType) {
     // Sử dụng SDK để xác thực dữ liệu webhook
     // Thao tác này sẽ kiểm tra chữ ký (signature) để đảm bảo dữ liệu là từ PayOS
