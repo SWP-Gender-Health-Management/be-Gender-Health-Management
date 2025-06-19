@@ -27,7 +27,7 @@ import questionService from '../services/question.service.js'
  *                 description: The question content
  *               status:
  *                 type: boolean
- *                 description: Status of the question (default: false)
+ *                 description: 'Status of the question(default: false)'
  *             required: [customer_id, content]
  *     responses:
  *       201:

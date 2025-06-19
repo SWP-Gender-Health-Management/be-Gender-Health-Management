@@ -53,7 +53,8 @@ export const USERS_MESSAGES = {
   EMAIL_NOT_EXIST: 'Email is not exist',
   SEND_PASSCODE_RESET_PASSWORD_SUCCESS: 'Send passcode reset password successfully',
   VERIFY_PASSCODE_RESET_PASSWORD_SUCCESS: 'Verify passcode reset password successfully',
-  PERMISSION_DENIED: 'Permission denied'
+  PERMISSION_DENIED: 'Permission denied',
+  REFRESH_TOKEN_SUCCESS: 'Refresh token successfully'
 }
 
 export const CUSTOMER_MESSAGES = {

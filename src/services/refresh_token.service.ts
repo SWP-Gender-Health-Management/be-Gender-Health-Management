@@ -21,7 +21,7 @@ class RefreshTokenService {
       await refreshTokenRepository.update(account.account_id, {
         token: token
       })
-    } 
+    }
     // else {
     //   // Create new token if doesn't exist
     //   await this.createRefreshToken({ account, token })
