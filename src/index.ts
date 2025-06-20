@@ -28,8 +28,8 @@ const app = express()
 // app.use(passport.initialize())
 app.use(
   cors({
-    origin: process.env.FE_ADDRESS,
-    credentials: true //for using cookie/token
+    origin: process.env.FE_ADDRESS
+    // credentials: true //for using cookie/token
   })
 )
 

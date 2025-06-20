@@ -386,15 +386,6 @@ class AccountService {
       })
     }
   }
-
-  /**
-   * @description: Lấy thông tin tài khoản từ redis
-   * @param account_id: string
-   * @returns: Account
-   */
-  async getAccountFromRedis(account_id: string) {
-    return await this.getAccountById(account_id)
-  }
 }
 const accountService = new AccountService()
 export default accountService
