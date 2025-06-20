@@ -68,7 +68,8 @@ import questionService from '../services/question.service.js'
 // Create a new question
 export const createQuestion = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await questionService.createQuestion(req.body)
+    const { customer_id, content, status } = req.body
+    const result = await questionService.createQuestion(customer_id, content, status)
     res.status(HTTP_STATUS.CREATED).json({
       message: QUESTION_MESSAGES.QUESTION_CREATED_SUCCESS,
       result
@@ -164,7 +165,8 @@ export const getAllQuestions = async (req: Request, res: Response, next: NextFun
 // Get a question by ID
 export const getQuestionById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await questionService.getQuestionById(req.params.ques_id)
+    const { ques_id } = req.params
+    const result = await questionService.getQuestionById(ques_id)
     res.status(HTTP_STATUS.OK).json({
       message: QUESTION_MESSAGES.QUESTION_RETRIEVED_SUCCESS,
       result
@@ -221,8 +223,8 @@ export const getQuestionById = async (req: Request, res: Response, next: NextFun
 // Get questions by Customer ID
 export const getQuestionsByCustomerId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, account_id, ...filter } = req.body
-    const result = await questionService.getQuestionsByCustomerId(req.params.customer_id, filter, req.query)
+    const { customer_id, ...filter } = req.body
+    const result = await questionService.getQuestionsByCustomerId(customer_id, filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: QUESTION_MESSAGES.QUESTIONS_RETRIEVED_SUCCESS,
       result
@@ -304,7 +306,9 @@ export const getQuestionsByCustomerId = async (req: Request, res: Response, next
 // Update a question
 export const updateQuestion = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await questionService.updateQuestion(req.params.ques_id, req.body)
+    const { ques_id } = req.params
+    const { customer_id, content, status } = req.body
+    const result = await questionService.updateQuestion(ques_id, customer_id, content, status)
     res.status(HTTP_STATUS.OK).json({
       message: QUESTION_MESSAGES.QUESTION_UPDATED_SUCCESS,
       result
@@ -367,7 +371,8 @@ export const updateQuestion = async (req: Request, res: Response, next: NextFunc
 // Delete a question
 export const deleteQuestion = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await questionService.deleteQuestion(req.params.ques_id)
+    const { ques_id } = req.params
+    await questionService.deleteQuestion(ques_id)
     res.status(HTTP_STATUS.OK).json({
       message: QUESTION_MESSAGES.QUESTION_DELETED_SUCCESS
     })
