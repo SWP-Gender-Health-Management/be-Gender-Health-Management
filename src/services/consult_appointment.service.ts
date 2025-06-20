@@ -14,11 +14,21 @@ const consultantPatternRepository = AppDataSource.getRepository(ConsultantPatter
 const accountRepository = AppDataSource.getRepository(Account)
 
 export class ConsultAppointmentService {
+  /**
+   * @description Create a new consult appointment
+   * @param pattern_id - The ID of the consultant pattern
+   * @returns The created consult appointment
+   */
   // Create a new consult appointment
-  async createConsultAppointment(data: any): Promise<ConsultAppointment> {
+  async createConsultAppointment(
+    pattern_id: string,
+    customer_id: string,
+    description: string,
+    status: StatusAppointment
+  ): Promise<ConsultAppointment> {
     // Validate consultant pattern
     const consultantPattern = await consultantPatternRepository.findOne({
-      where: { pattern_id: data.pattern_id },
+      where: { pattern_id },
       relations: ['consult_appointment']
     })
     if (!consultantPattern) {
@@ -37,7 +47,7 @@ export class ConsultAppointmentService {
     }
 
     // Validate customer (account)
-    const customer = await accountRepository.findOne({ where: { account_id: data.customer_id } })
+    const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
         message: CONSULTANT_APPOINTMENTS_MESSAGES.CUSTOMER_NOT_FOUND,
@@ -48,8 +58,8 @@ export class ConsultAppointmentService {
     const consultAppointment = consultAppointmentRepository.create({
       consultant_pattern: consultantPattern,
       customer: customer,
-      description: data.description || '',
-      status: data.status || StatusAppointment.PENDING
+      description: description || '',
+      status: status || StatusAppointment.PENDING
     })
 
     // Update consultant pattern to mark as booked
@@ -61,22 +71,40 @@ export class ConsultAppointmentService {
     return await consultAppointmentRepository.save(consultAppointment)
   }
 
+  /**
+   * @description Get all consult appointments
+   * @param filter - The filter for the consult appointments
+   * @param pageVar - The page and limit for the consult appointments
+   * @returns The consult appointments
+   */
   // Get all consult appointments
   async getAllConsultAppointments(filter: any, pageVar: any): Promise<ConsultAppointment[]> {
-    let {limit, page} = pageVar;
-    if(!limit || !page) {
-      limit = 0;
-      page = 1;
+    let { limit, page } = pageVar
+    if (!limit || !page) {
+      limit = 0
+      page = 1
     }
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
     return await consultAppointmentRepository.find({
-      where: {...filter},
+      where: { ...filter },
       skip,
       take: limit,
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'consultant_pattern.consultant',
+        'customer',
+        'report',
+        'feedback'
+      ]
     })
   }
 
+  /**
+   * @description Get a consult appointment by ID
+   * @param app_id - The ID of the consult appointment
+   * @returns The consult appointment
+   */
   // Get a consult appointment by ID
   async getConsultAppointmentById(app_id: string): Promise<ConsultAppointment> {
     const consultAppointment = await consultAppointmentRepository.findOne({
@@ -101,14 +129,25 @@ export class ConsultAppointmentService {
     return consultAppointment
   }
 
+  /**
+   * @description Get consult appointments by Customer ID
+   * @param customer_id - The ID of the customer
+   * @param filter - The filter for the consult appointments
+   * @param pageVar - The page and limit for the consult appointments
+   * @returns The consult appointments
+   */
   // Get consult appointments by Customer ID
-  async getConsultAppointmentsByCustomerId(customer_id: string, filter:any, pageVar: any): Promise<ConsultAppointment[]> {
-    let {limit, page} = pageVar;
-    if(!limit || !page) {
-      limit = 0;
-      page = 1;
+  async getConsultAppointmentsByCustomerId(
+    customer_id: string,
+    filter: any,
+    pageVar: any
+  ): Promise<ConsultAppointment[]> {
+    let { limit, page } = pageVar
+    if (!limit || !page) {
+      limit = 0
+      page = 1
     }
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -120,7 +159,14 @@ export class ConsultAppointmentService {
       where: { customer, ...filter },
       skip,
       take: limit,
-      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'consultant_pattern.consultant',
+        'customer',
+        'report',
+        'feedback'
+      ]
     })
 
     if (!consultAppointments.length) {
@@ -133,6 +179,11 @@ export class ConsultAppointmentService {
     return consultAppointments
   }
 
+  /**
+   * @description Get consult appointments by Consultant Pattern ID
+   * @param pattern_id - The ID of the consultant pattern
+   * @returns The consult appointments
+   */
   // Get consult appointments by Consultant Pattern ID
   async getConsultAppointmentsByPatternId(pattern_id: string): Promise<ConsultAppointment> {
     const consultantPattern = await consultantPatternRepository.findOne({ where: { pattern_id } })
@@ -167,6 +218,12 @@ export class ConsultAppointmentService {
     return consultAppointment
   }
 
+  /**
+   * @description Update a consult appointment
+   * @param app_id - The ID of the consult appointment
+   * @param data - The data for the consult appointment
+   * @returns The updated consult appointment
+   */
   // Update a consult appointment
   async updateConsultAppointment(app_id: string, data: any): Promise<ConsultAppointment> {
     const consultAppointment = await this.getConsultAppointmentById(app_id)
@@ -226,6 +283,11 @@ export class ConsultAppointmentService {
     return await consultAppointmentRepository.save(consultAppointment)
   }
 
+  /**
+   * @description Delete a consult appointment
+   * @param app_id - The ID of the consult appointment
+   * @returns The deleted consult appointment
+   */
   // Delete a consult appointment
   async deleteConsultAppointment(app_id: string): Promise<void> {
     const consultAppointment = await this.getConsultAppointmentById(app_id)
