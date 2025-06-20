@@ -8,6 +8,14 @@ const staffPatternRepository = AppDataSource.getRepository(StaffPattern)
 const accountRepository = AppDataSource.getRepository(Account)
 const workingSlotRepository = AppDataSource.getRepository(WorkingSlot)
 class StaffPatternService {
+  /**
+   * Add a staff pattern
+   * @param date - The date of the appointment
+   * @param account_id - The ID of the account
+   * @param working_slot_id - The ID of the working slot
+   * @returns The staff pattern
+   */
+  // Add a staff pattern
   async addStaffPattern(date: string, account_id: string, working_slot_id: string) {
     // const [account, workingSlot] = await Promise.all([
     //   accountRepository.findOneBy({ account_id: account_id }),
@@ -22,6 +30,13 @@ class StaffPatternService {
     return staffPattern
   }
 
+  /**
+   * Get a staff pattern by date
+   * @param date - The date of the appointment
+   * @returns The staff pattern
+   */
+  // Get a staff pattern by date
+  // get staff pattern by date
   async getStaffPattern(date: string) {
     const staffPattern = await staffPatternRepository.find({
       where: { date: new Date(date) }
@@ -29,6 +44,11 @@ class StaffPatternService {
     return staffPattern
   }
 
+  /**
+   * Get all staff patterns
+   * @returns The staff patterns
+   */
+  // Get all staff patterns
   async getAllStaffPattern() {
     const staffPattern = await staffPatternRepository.find({
       where: { is_active: true }
@@ -36,6 +56,15 @@ class StaffPatternService {
     return staffPattern
   }
 
+  /**
+   * Update a staff pattern
+   * @param pattern_id - The ID of the staff pattern
+   * @param date - The date of the appointment
+   * @param account_id - The ID of the account
+   * @param working_slot_id - The ID of the working slot
+   * @returns The staff pattern
+   */
+  // Update a staff pattern
   async updateStaffPattern(pattern_id: string, date?: string, account_id?: string, working_slot_id?: string) {
     const staffPattern = await staffPatternRepository.findOneBy({ pattern_id })
     if (!staffPattern) {
@@ -52,6 +81,12 @@ class StaffPatternService {
     return staffPattern
   }
 
+  /**
+   * Delete a staff pattern
+   * @param pattern_id - The ID of the staff pattern
+   * @returns The staff pattern
+   */
+  // Delete a staff pattern
   async deleteStaffPattern(pattern_id: string) {
     const staffPattern = await staffPatternRepository.findOneBy({ pattern_id })
     if (!staffPattern) {

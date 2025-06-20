@@ -72,7 +72,13 @@ import consultAppointmentService from '~/services/consult_appointment.service.js
 // Create a new consult appointment
 export const createConsultAppointment = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultAppointmentService.createConsultAppointment(req.body)
+    const { pattern_id, customer_id, description, status } = req.body
+    const result = await consultAppointmentService.createConsultAppointment(
+      pattern_id,
+      customer_id,
+      description,
+      status
+    )
     res.status(HTTP_STATUS.CREATED).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_CREATED_SUCCESS,
       result
@@ -108,7 +114,7 @@ export const createConsultAppointment = async (req: Request, res: Response, next
 // Get all consult appointments
 export const getAllConsultAppointments = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {email, account_id, ...filter} = req.body;
+    const { email, account_id, ...filter } = req.body
     const result = await consultAppointmentService.getAllConsultAppointments(filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
@@ -221,8 +227,12 @@ export const getConsultAppointmentById = async (req: Request, res: Response, nex
 // Get consult appointments by Customer ID
 export const getConsultAppointmentsByCustomerId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {email, account_id, ...filter} = req.body;
-    const result = await consultAppointmentService.getConsultAppointmentsByCustomerId(req.params.customer_id, filter, req.query)
+    const { email, account_id, ...filter } = req.body
+    const result = await consultAppointmentService.getConsultAppointmentsByCustomerId(
+      req.params.customer_id,
+      filter,
+      req.query
+    )
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
       result

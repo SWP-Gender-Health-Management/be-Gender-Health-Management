@@ -58,7 +58,8 @@ import laboratoryService from '~/services/laborarity.service.js'
 // Create a new laboratory
 export const createLaboratory = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await laboratoryService.createLaboratory(req.body)
+    const { name, description, price, specimen } = req.body
+    const result = await laboratoryService.createLaboratory(name, specimen, description, price)
     res.status(HTTP_STATUS.CREATED).json({
       message: LABORARITY_MESSAGES.LABORARITY_CREATED_SUCCESS,
       result
@@ -98,7 +99,7 @@ export const createLaboratory = async (req: Request, res: Response, next: NextFu
 // Get all laboratories
 export const getAllLaboratories = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {email, account_id, ...filter} = req.body;
+    const { email, account_id, ...filter } = req.body
     const result = await laboratoryService.getAllLaboratories(filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: LABORARITY_MESSAGES.LABORARITY_CREATED_SUCCESS,

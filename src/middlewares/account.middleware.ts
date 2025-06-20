@@ -79,7 +79,7 @@ export const validateLogin = validate(
               status: HTTP_STATUS.BAD_REQUEST
             })
           }
-          await redisClient.set(user.account_id, JSON.stringify(user), 'EX', 60 * 60)
+          await redisClient.set(`account:${user.account_id}`, JSON.stringify(user), 'EX', 60 * 60)
           req.body.account_id = user.account_id
           return true
         }
@@ -275,7 +275,6 @@ export const restrictTo = (...allowedRoles: Role[]) => {
               })
             }
 
-
             // Verify token and decode payload
             const decoded = await verifyToken({ token, secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string })
             console.log(decoded)
@@ -313,7 +312,6 @@ export const restrictTo = (...allowedRoles: Role[]) => {
             //   role: user.role
             // }
             return true
-
           }
         }
       }
