@@ -68,7 +68,8 @@ import consultReportService from '~/services/consult_report.service.js'
 // Create a new consult report
 export const createConsultReport = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultReportService.createConsultReport(req.body)
+    const { app_id, name, description } = req.body
+    const result = await consultReportService.createConsultReport(app_id, name, description)
     res.status(HTTP_STATUS.CREATED).json({
       message: CONSULT_REPORT_MESSAGES.REPORT_CREATED_SUCCESS,
       result

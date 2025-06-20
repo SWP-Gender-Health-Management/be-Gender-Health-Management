@@ -8,10 +8,13 @@ import ConsultantPattern from '../models/Entity/consultant_pattern.entity.js'
 import Account from '../models/Entity/account.entity.js'
 import { Role } from '../enum/role.enum.js'
 import { StatusAppointment } from '../enum/statusAppointment.enum.js'
+import Feedback from '../models/Entity/feedback.entity.js'
+import { TypeAppointment } from '../enum/type_appointment.enum.js'
 
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
 const consultantPatternRepository = AppDataSource.getRepository(ConsultantPattern)
 const accountRepository = AppDataSource.getRepository(Account)
+const feedbackRepository = AppDataSource.getRepository(Feedback)
 
 export class ConsultAppointmentService {
   /**
@@ -291,9 +294,11 @@ export class ConsultAppointmentService {
   // Delete a consult appointment
   async deleteConsultAppointment(app_id: string): Promise<void> {
     const consultAppointment = await this.getConsultAppointmentById(app_id)
-
+    const feedback = await feedbackRepository.findOne({
+      where: { app_id: consultAppointment.app_id, type: TypeAppointment.CONSULT }
+    })
     // Check if appointment has associated feedback
-    if (consultAppointment.feedback) {
+    if (feedback) {
       throw new ErrorWithStatus({
         message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_CANNOT_DELETE,
         status: HTTP_STATUS.BAD_REQUEST
