@@ -29,11 +29,15 @@ export default class Blog implements BlogType {
   @Column({ type: 'enum', nullable: false, enum: Major })
   major: Major
 
-  @Column({ type: 'varchar', length: 255, nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   title: string
 
-  @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
+  @Column({ type: 'text', nullable: false })
   content: string
+
+  //path of image
+  @Column({ type: 'json', nullable: true })
+  images: string[]
 
   @Column({ type: 'boolean', default: false })
   status: boolean
@@ -44,7 +48,7 @@ export default class Blog implements BlogType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  //foreign key
+  //foreign key to author of blog
   @ManyToOne(() => Account, (account) => account.blog)
   account: Account
 }

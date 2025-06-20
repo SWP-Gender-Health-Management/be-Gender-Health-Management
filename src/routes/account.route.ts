@@ -10,8 +10,8 @@ import {
   sendPasscodeResetPasswordController,
   updateAccountController,
   verifyEmailController,
-  viewAccountController,
-  getAccountFromRedis
+  viewAccountController
+  // getAccountFromRedis
 } from '../controllers/account.controller.js'
 import {
   validateAccessToken,
@@ -156,6 +156,6 @@ accountRoute.post('/view-account', validateAccessToken, wrapRequestHandler(viewA
 */
 accountRoute.post('/logout', validateAccessToken, wrapRequestHandler(logoutController))
 
-accountRoute.get('/get-account-from-redis',validateAccessToken, wrapRequestHandler(getAccountFromRedis))
+// accountRoute.get('/get-account-from-redis', validateAccessToken, wrapRequestHandler(getAccountFromRedis))
 
 export default accountRoute
