@@ -8,15 +8,10 @@ import { v4 as uuidv4 } from 'uuid'
 import redisClient from '../config/redis.config.js'
 import { NotificationPayload } from '../worker/notificationWorker.js'
 import LaboratoryAppointment from '../models/Entity/laborarity_appointment.entity.js'
-import WorkingSlot from '../models/Entity/working_slot.entity.js'
 import Laboratory from '../models/Entity/laborarity.entity.js'
-import Result from '../models/Entity/result.entity.js'
-import Feedback from '../models/Entity/feedback.entity.js'
-import StaffPattern from '../models/Entity/staff_pattern.entity.js'
 import staffService from './staff.service.js'
 import { Role } from '../enum/role.enum.js'
-import laborarityService from './laborarity.service.js'
-import Transaction from '../models/Entity/transaction.entity.js'
+
 const menstrualCycleRepository = AppDataSource.getRepository(MenstrualCycle)
 const userRepository = AppDataSource.getRepository(Account)
 const appointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
