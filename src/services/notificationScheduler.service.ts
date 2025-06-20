@@ -4,6 +4,12 @@ import { NotificationPayload } from '../worker/notificationWorker.js'
 
 const SCHEDULED_NOTIFICATIONS_KEY = 'MENSTRUAL CYCLE SCHEDULED NOTIFICATIONS' // Key của Sorted Set trong Redis
 
+/**
+ * @description Schedule a notification
+ * @param notificationTime - The time to send the notification
+ * @param payload - The payload for the notification
+ * @returns The ID of the scheduled notification
+ */
 export async function scheduleNotification(
   notificationTime: Date, // Thời điểm muốn gửi thông báo
   payload: NotificationPayload
