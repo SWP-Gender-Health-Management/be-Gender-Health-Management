@@ -17,6 +17,7 @@ class StaffService {
    * @param slot_id - The ID of the slot
    * @returns The number of staff available
    */
+  // Count the number of staff available for a given date and slot
   async countStaff(date: string, slot_id: string) {
     const appointmentDate = new Date(date)
     const staff = await staffPatternRepository.count({
@@ -37,6 +38,7 @@ class StaffService {
    * @param result - The result of the laboratory appointment
    * @returns The result entities
    */
+  // Update the result of a laboratory appointment
   async updateResult(app_id: string, result: any[]) {
     const resultEntities = []
     for (const item of result) {
@@ -70,6 +72,7 @@ class StaffService {
    * @param status - The status of the laboratory appointment
    * @returns The laboratory appointment entity
    */
+  // Update the status of a laboratory appointment
   async updateAppointmentStatus(appointment_id: string, status: number) {
     const appointment = await laboratoryAppointmentRepository.findOne({
       where: { app_id: appointment_id }

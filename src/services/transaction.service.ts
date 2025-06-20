@@ -20,6 +20,7 @@ export class createTransactionService {
    * @param description - The description of the transaction
    * @returns The transaction
    */
+  // Create a consult transaction
   async createConsultTransaction(app_id: string, amount: number, description: string) {
     const appointment = await labAppointmentRepository.findOne({
       where: {
@@ -46,6 +47,7 @@ export class createTransactionService {
    * @param description - The description of the transaction
    * @returns The transaction
    */
+  // Create a laborarity transaction
   async createLaborarityTransaction(app_id: string, orderCode: number, amount: number, description: string) {
     const appointment: LaboratoryAppointment | null = await labAppointmentRepository.findOne({
       where: {
@@ -79,6 +81,7 @@ export class createTransactionService {
    * @param orderCode - The order code of the transaction
    * @returns The payment url
    */
+  // Create a payment url
   async createPaymentUrlService(orderCode: string) {
     if (!orderCode) {
       throw new ErrorWithStatus({
@@ -119,6 +122,7 @@ export class createTransactionService {
    * @param orderCode - The order code of the transaction
    * @returns The link payment
    */
+  // Get a link payment
   async getLinkPaymentService(orderCode: string) {
     const linkPayment = await payos.getPaymentLinkInformation(orderCode)
     if (!linkPayment) {
@@ -135,6 +139,7 @@ export class createTransactionService {
    * @param orderCode - The order code of the transaction
    * @returns The cancel payment
    */
+  // Cancel a payment
   async cancelPaymentService(orderCode: string) {
     const cancelPayment = await payos.cancelPaymentLink(orderCode)
     if (!cancelPayment) {
@@ -148,6 +153,7 @@ export class createTransactionService {
    * @param webhookData - The webhook data
    * @returns The verified data
    */
+  // Confirm a webhook
   async confirmWebhookService(webhookData: WebhookType) {
     const verifiedData: WebhookDataType = payos.verifyPaymentWebhookData(webhookData)
     console.log('Webhook data verified successfully:', verifiedData)
@@ -159,6 +165,7 @@ export class createTransactionService {
    * @param webhookData - The webhook data
    * @returns The verified data
    */
+  // Receive a hook
   async receiveHookService(webhookData: WebhookType) {
     // Sử dụng SDK để xác thực dữ liệu webhook
     // Thao tác này sẽ kiểm tra chữ ký (signature) để đảm bảo dữ liệu là từ PayOS

@@ -15,6 +15,7 @@ class StaffPatternService {
    * @param working_slot_id - The ID of the working slot
    * @returns The staff pattern
    */
+  // Add a staff pattern
   async addStaffPattern(date: string, account_id: string, working_slot_id: string) {
     // const [account, workingSlot] = await Promise.all([
     //   accountRepository.findOneBy({ account_id: account_id }),
@@ -34,6 +35,8 @@ class StaffPatternService {
    * @param date - The date of the appointment
    * @returns The staff pattern
    */
+  // Get a staff pattern by date
+  // get staff pattern by date
   async getStaffPattern(date: string) {
     const staffPattern = await staffPatternRepository.find({
       where: { date: new Date(date) }
@@ -45,6 +48,7 @@ class StaffPatternService {
    * Get all staff patterns
    * @returns The staff patterns
    */
+  // Get all staff patterns
   async getAllStaffPattern() {
     const staffPattern = await staffPatternRepository.find({
       where: { is_active: true }
@@ -60,6 +64,7 @@ class StaffPatternService {
    * @param working_slot_id - The ID of the working slot
    * @returns The staff pattern
    */
+  // Update a staff pattern
   async updateStaffPattern(pattern_id: string, date?: string, account_id?: string, working_slot_id?: string) {
     const staffPattern = await staffPatternRepository.findOneBy({ pattern_id })
     if (!staffPattern) {
@@ -81,6 +86,7 @@ class StaffPatternService {
    * @param pattern_id - The ID of the staff pattern
    * @returns The staff pattern
    */
+  // Delete a staff pattern
   async deleteStaffPattern(pattern_id: string) {
     const staffPattern = await staffPatternRepository.findOneBy({ pattern_id })
     if (!staffPattern) {
