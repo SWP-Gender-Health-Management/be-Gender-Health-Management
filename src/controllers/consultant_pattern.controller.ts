@@ -72,7 +72,8 @@ import consultantPatternService from '~/services/consultant_pattern.service.js'
 // Create a new consultant pattern
 export const createConsultantPattern = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultantPatternService.createConsultantPattern(req.body)
+    const { slot_id, consultant_id, date, is_booked } = req.body
+    const result = await consultantPatternService.createConsultantPattern(slot_id, consultant_id, date, is_booked)
     res.status(HTTP_STATUS.CREATED).json({
       message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_CREATED_SUCCESS,
       result
@@ -366,7 +367,14 @@ export const getConsultantPatternBySlotId = async (req: Request, res: Response, 
 // Update a consultant pattern
 export const updateConsultantPattern = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultantPatternService.updateConsultantPattern(req.params.pattern_id, req.body)
+    const { slot_id, consultant_id, date, is_booked } = req.body
+    const result = await consultantPatternService.updateConsultantPattern(
+      req.params.pattern_id,
+      slot_id,
+      consultant_id,
+      date,
+      is_booked
+    )
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_UPDATED_SUCCESS,
       result
@@ -429,7 +437,8 @@ export const updateConsultantPattern = async (req: Request, res: Response, next:
 // Delete a consultant pattern
 export const deleteConsultantPattern = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await consultantPatternService.deleteConsultantPattern(req.params.pattern_id)
+    const { pattern_id } = req.params
+    await consultantPatternService.deleteConsultantPattern(pattern_id)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_DELETED_SUCCESS
     })
