@@ -264,3 +264,16 @@ export const FEEDBACK_MESSAGES = {
   FEEDBACK_ALREADY_EXISTS: 'A feedback already exists for this appointment',
   FEEDBACK_NOT_FOUND: 'Feedback not found'
 }
+
+export const BLOG_MESSAGES = {
+  BLOG_CREATED_SUCCESS: 'Blog created successfully',
+  BLOGS_RETRIEVED_SUCCESS: 'Blogs retrieved successfully',
+  BLOG_RETRIEVED_SUCCESS: 'Blog retrieved successfully',
+  BLOG_UPDATED_SUCCESS: 'Blog updated successfully',
+  BLOG_DELETED_SUCCESS: 'Blog deleted successfully',
+  ACCOUNT_NOT_FOUND: 'Account not found',
+  BLOG_NOT_FOUND: 'Blog not found',
+  TITLE_REQUIRED: 'Blog title is required',
+  CONTENT_REQUIRED: 'Blog content is required',
+  MAJOR_REQUIRED: 'Blog major is required'
+}

@@ -307,10 +307,10 @@ export const restrictTo = (...allowedRoles: Role[]) => {
 
             // Store user role in request for further use
             // req.body.role = user.role
-            req.body = {
-              ...req.body,
-              role: user.role
-            }
+            // req.body = {
+            //   ...req.body,
+            //   role: user.role
+            // }
             return true
           }
         }

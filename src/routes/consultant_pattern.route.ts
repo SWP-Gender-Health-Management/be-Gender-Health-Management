@@ -39,8 +39,8 @@ consultantPatternRoute.post(
 */
 consultantPatternRoute.get(
   '/get-all-consultant-patterns',
-  // validateAccessToken,
-  // restrictTo(Role.ADMIN, Role.CUSTOMER),
+  validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getAllConsultantPatterns)
 )
 
@@ -99,8 +99,8 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.put(
   '/update-consultant-pattern/:pattern_id',
-  // validateAccessToken,
-  // restrictTo(Role.ADMIN),
+  validateAccessToken,
+  restrictTo(Role.ADMIN),
   wrapRequestHandler(updateConsultantPattern)
 )
 
