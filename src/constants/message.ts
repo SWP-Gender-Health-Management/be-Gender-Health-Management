@@ -57,6 +57,11 @@ export const USERS_MESSAGES = {
   REFRESH_TOKEN_SUCCESS: 'Refresh token successfully'
 }
 
+export const REFRESH_TOKEN_MESSAGES = {
+  REFRESH_TOKEN_NOT_FOUND: 'Refresh token not found',
+  INVALID_REFRESH_TOKEN: 'Invalid refresh token'
+}
+
 export const CUSTOMER_MESSAGES = {
   CREATE_MENSTRUAL_CYCLE_SUCCESS: 'Menstrual cycle created successfully',
   PREDICT_PERIOD_SUCCESS: 'Period predicted successfully',
