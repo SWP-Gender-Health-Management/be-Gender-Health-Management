@@ -68,7 +68,8 @@ import replyService from '../services/reply.service.js'
 // Create a new reply
 export const createReply = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await replyService.createReply(req.body)
+    const { consultant_id, ques_id, content } = req.body
+    const result = await replyService.createReply(consultant_id, ques_id, content)
     res.status(HTTP_STATUS.CREATED).json({
       message: REPLY_MESSAGES.REPLY_CREATED_SUCCESS,
       result
@@ -108,7 +109,7 @@ export const createReply = async (req: Request, res: Response, next: NextFunctio
 // Get all replies
 export const getAllReplies = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {email, account_id, ...filter} = req.body;
+    const { email, account_id, ...filter } = req.body
     const result = await replyService.getAllReplies(filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: REPLY_MESSAGES.REPLIES_RETRIEVED_SUCCESS,
@@ -164,7 +165,8 @@ export const getAllReplies = async (req: Request, res: Response, next: NextFunct
 // Get a reply by ID
 export const getReplyById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await replyService.getReplyById(req.params.reply_id)
+    const { reply_id } = req.params
+    const result = await replyService.getReplyById(reply_id)
     res.status(HTTP_STATUS.OK).json({
       message: REPLY_MESSAGES.REPLY_RETRIEVED_SUCCESS,
       result
@@ -221,8 +223,8 @@ export const getReplyById = async (req: Request, res: Response, next: NextFuncti
 // Get replies by Consultant ID
 export const getRepliesByConsultantId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {email, account_id, ...filter} = req.body;
-    const result = await replyService.getRepliesByConsultantId(req.params.consultant_id, filter, req.query)
+    const { consultant_id, ...filter } = req.body
+    const result = await replyService.getRepliesByConsultantId(consultant_id, filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: REPLY_MESSAGES.REPLIES_RETRIEVED_SUCCESS,
       result
@@ -277,7 +279,8 @@ export const getRepliesByConsultantId = async (req: Request, res: Response, next
 // Get reply by Question ID
 export const getReplyByQuestionId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await replyService.getReplyByQuestionId(req.params.ques_id)
+    const { ques_id } = req.params
+    const result = await replyService.getReplyByQuestionId(ques_id)
     res.status(HTTP_STATUS.OK).json({
       message: REPLY_MESSAGES.REPLY_RETRIEVED_SUCCESS,
       result
@@ -356,7 +359,9 @@ export const getReplyByQuestionId = async (req: Request, res: Response, next: Ne
 // Update a reply
 export const updateReply = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await replyService.updateReply(req.params.reply_id, req.body)
+    const { reply_id } = req.params
+    const { consultant_id, content } = req.body
+    const result = await replyService.updateReply(reply_id, consultant_id, content)
     res.status(HTTP_STATUS.OK).json({
       message: REPLY_MESSAGES.REPLY_UPDATED_SUCCESS,
       result
@@ -409,7 +414,8 @@ export const updateReply = async (req: Request, res: Response, next: NextFunctio
 // Delete a reply
 export const deleteReply = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await replyService.deleteReply(req.params.reply_id)
+    const { reply_id } = req.params
+    await replyService.deleteReply(reply_id)
     res.status(HTTP_STATUS.OK).json({
       message: REPLY_MESSAGES.REPLY_DELETED_SUCCESS
     })
