@@ -143,7 +143,8 @@ export const LABORARITY_MESSAGES = {
   LABORATORY_DELETED_SUCCESS: 'Laboratory deleted successfully',
   LABORATORY_NAME_INVALID: 'Laboratory name is invalid',
   LABORATORY_DESCRIPTION_REQUIRED: 'Laboratory description is required',
-  LABORATORY_PRICE_INVALID: 'Laboratory price is invalid'
+  LABORATORY_PRICE_INVALID: 'Laboratory price is invalid',
+  LABORATORY_NAME_REQUIRED: 'Laboratory name is required'
 }
 
 export const TRANSACTION_MESSAGES = {
