@@ -13,11 +13,24 @@ const workingSlotRepository = AppDataSource.getRepository(WorkingSlot)
 const accountRepository = AppDataSource.getRepository(Account)
 
 export class ConsultantPatternService {
+  /**
+   * @description Create a new consultant pattern
+   * @param slot_id - The ID of the working slot
+   * @param consultant_id - The ID of the consultant
+   * @param date - The date of the consultant pattern
+   * @param is_booked - The status of the consultant pattern
+   * @returns The created consultant pattern
+   */
   // Create a new consultant pattern
-  async createConsultantPattern(data: any): Promise<ConsultantPattern> {
+  async createConsultantPattern(
+    slot_id: string,
+    consultant_id: string,
+    date: string,
+    is_booked: boolean
+  ): Promise<ConsultantPattern> {
     // Validate working slot
 
-    const workingSlot = await workingSlotRepository.findOne({ where: { slot_id: data.slot_id } })
+    const workingSlot = await workingSlotRepository.findOne({ where: { slot_id } })
     if (!workingSlot) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.WORKING_SLOT_NOT_FOUND,
@@ -26,7 +39,7 @@ export class ConsultantPatternService {
     }
 
     // Validate consultant (account)
-    const consultant = await accountRepository.findOne({ where: { account_id: data.consultant_id } })
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_NOT_FOUND,
@@ -39,7 +52,7 @@ export class ConsultantPatternService {
       where: {
         working_slot: workingSlot,
         consultant: consultant,
-        date: data.date
+        date: new Date(date)
       }
     })
     if (existingPattern) {
@@ -52,21 +65,27 @@ export class ConsultantPatternService {
     const consultantPattern = consultantPatternRepository.create({
       working_slot: workingSlot,
       consultant: consultant,
-      date: data.date,
-      is_booked: data.is_booked ?? false
+      date: date,
+      is_booked: is_booked ?? false
     })
 
     return await consultantPatternRepository.save(consultantPattern)
   }
 
+  /**
+   * @description Get all consultant patterns
+   * @param filter - The filter for the consultant patterns
+   * @param pageVar - The page and limit for the consultant patterns
+   * @returns The consultant patterns
+   */
   // Get all consultant patterns
   async getAllConsultantPatterns(filter: any, pageVar: any): Promise<ConsultantPattern[]> {
-    let { limit, page } = pageVar;
+    let { limit, page } = pageVar
     if (!limit || !page) {
-      limit = 0;
-      page = 1;
+      limit = 0
+      page = 1
     }
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
     return await consultantPatternRepository.find({
       where: { ...filter },
       skip,
@@ -75,6 +94,11 @@ export class ConsultantPatternService {
     })
   }
 
+  /**
+   * @description Get a consultant pattern by ID
+   * @param pattern_id - The ID of the consultant pattern
+   * @returns The consultant pattern
+   */
   // Get a consultant pattern by ID
   async getConsultantPatternById(pattern_id: string): Promise<ConsultantPattern> {
     const consultantPattern = await consultantPatternRepository.findOne({
@@ -92,10 +116,20 @@ export class ConsultantPatternService {
     return consultantPattern
   }
 
+  /**
+   * @description Get a consultant pattern by Consultant ID
+   * @param consultant_id - The ID of the consultant
+   * @param filter - The filter for the consultant patterns
+   * @param pageVar - The page and limit for the consultant patterns
+   * @returns The consultant patterns
+   */
   // Get a consultant pattern by Consultant ID
-  async getConsultantPatternByConsultantId(consultant_id: string, filter: any, pageVar: any): Promise<ConsultantPattern[]> {
-    
-    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } });
+  async getConsultantPatternByConsultantId(
+    consultant_id: string,
+    filter: any,
+    pageVar: any
+  ): Promise<ConsultantPattern[]> {
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_NOT_FOUND,
@@ -103,12 +137,12 @@ export class ConsultantPatternService {
       })
     }
 
-    let {limit, page} = pageVar;
-    if(!limit || !page) {
-      limit = 0;
-      page = 1;
+    let { limit, page } = pageVar
+    if (!limit || !page) {
+      limit = 0
+      page = 1
     }
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
 
     const consultantPattern = await consultantPatternRepository.find({
       where: { consultant: consultant, ...filter },
@@ -127,9 +161,16 @@ export class ConsultantPatternService {
     return consultantPattern
   }
 
+  /**
+   * @description Get a consultant pattern by Slot ID
+   * @param slot_id - The ID of the working slot
+   * @param filter - The filter for the consultant patterns
+   * @param pageVar - The page and limit for the consultant patterns
+   * @returns The consultant patterns
+   */
   // Get a consultant pattern by Slot ID
-  async getConsultantPatternBySlotId(slot_id: string, filter: any, pageVar:any): Promise<ConsultantPattern[]> {
-    const workingSlot = await workingSlotRepository.findOne({ where: { slot_id } });
+  async getConsultantPatternBySlotId(slot_id: string, filter: any, pageVar: any): Promise<ConsultantPattern[]> {
+    const workingSlot = await workingSlotRepository.findOne({ where: { slot_id } })
     if (!workingSlot) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.WORKING_SLOT_NOT_FOUND,
@@ -137,12 +178,12 @@ export class ConsultantPatternService {
       })
     }
 
-    let {limit, page} = pageVar;
-    if(!limit || !page) {
-      limit = 0;
-      page = 1;
+    let { limit, page } = pageVar
+    if (!limit || !page) {
+      limit = 0
+      page = 1
     }
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
 
     const consultantPattern = await consultantPatternRepository.find({
       where: { working_slot: workingSlot, ...filter },
@@ -161,14 +202,29 @@ export class ConsultantPatternService {
     return consultantPattern
   }
 
+  /**
+   * @description Update a consultant pattern
+   * @param pattern_id - The ID of the consultant pattern
+   * @param slot_id - The ID of the working slot
+   * @param consultant_id - The ID of the consultant
+   * @param date - The date of the consultant pattern
+   * @param is_booked - The status of the consultant pattern
+   * @returns The updated consultant pattern
+   */
   // Update a consultant pattern
-  async updateConsultantPattern(pattern_id: string, data: any): Promise<ConsultantPattern> {
+  async updateConsultantPattern(
+    pattern_id: string,
+    slot_id: string,
+    consultant_id: string,
+    date: string,
+    is_booked: boolean
+  ): Promise<ConsultantPattern> {
     const consultantPattern = await this.getConsultantPatternById(pattern_id)
     let workingSlot
     let consultant
     // Validate working slot if provided
-    if (data.slot_id && (!consultantPattern.working_slot || data.slot_id !== consultantPattern.working_slot.slot_id)) {
-      workingSlot = await workingSlotRepository.findOne({ where: { slot_id: data.slot_id } })
+    if (slot_id && (!consultantPattern.working_slot || slot_id !== consultantPattern.working_slot.slot_id)) {
+      workingSlot = await workingSlotRepository.findOne({ where: { slot_id } })
       if (!workingSlot) {
         throw new ErrorWithStatus({
           message: CONSULTANT_PATTERNS_MESSAGES.WORKING_SLOT_NOT_FOUND,
@@ -178,11 +234,8 @@ export class ConsultantPatternService {
     }
 
     // Validate consultant if provided
-    if (
-      data.consultant_id &&
-      (!consultantPattern.consultant || data.consultant_id !== consultantPattern.consultant.account_id)
-    ) {
-      consultant = await accountRepository.findOne({ where: { account_id: data.consultant_id } })
+    if (consultant_id && (!consultantPattern.consultant || consultant_id !== consultantPattern.consultant.account_id)) {
+      consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
       if (!consultant || consultant.role !== Role.CONSULTANT) {
         throw new ErrorWithStatus({
           message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_NOT_FOUND,
@@ -192,12 +245,12 @@ export class ConsultantPatternService {
     }
 
     // Check for duplicate pattern if key fields are updated
-    if (data.slot_id || data.consultant_id || data.date) {
+    if (slot_id || consultant_id || date) {
       const existingPattern = await consultantPatternRepository.findOne({
         where: {
           working_slot: workingSlot || consultantPattern.working_slot,
           consultant: consultant || consultantPattern.consultant,
-          date: data.date || consultantPattern.date
+          date: new Date(date) || consultantPattern.date
         }
       })
       if (existingPattern && existingPattern.pattern_id !== pattern_id) {
@@ -211,13 +264,18 @@ export class ConsultantPatternService {
     await Object.assign(consultantPattern, {
       working_slot: workingSlot || consultantPattern.working_slot,
       consultant: consultant || consultantPattern.consultant,
-      date: data.date || consultantPattern.date,
-      is_booked: data.is_booked !== undefined ? data.is_booked : consultantPattern.is_booked
+      date: new Date(date) || consultantPattern.date,
+      is_booked: is_booked !== undefined ? is_booked : consultantPattern.is_booked
     })
 
     return await consultantPatternRepository.save(consultantPattern)
   }
 
+  /**
+   * @description Delete a consultant pattern
+   * @param pattern_id - The ID of the consultant pattern
+   * @returns The deleted consultant pattern
+   */
   // Delete a consultant pattern
   async deleteConsultantPattern(pattern_id: string): Promise<void> {
     const consultantPattern = await this.getConsultantPatternById(pattern_id)
