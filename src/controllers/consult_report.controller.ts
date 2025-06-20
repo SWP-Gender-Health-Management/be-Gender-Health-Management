@@ -108,7 +108,7 @@ export const createConsultReport = async (req: Request, res: Response, next: Nex
 // Get all consult reports
 export const getAllConsultReports = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {email, account_id, ...filter} = req.body;
+    const { email, account_id, ...filter } = req.body
     const result = await consultReportService.getAllConsultReports(filter, req.query)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULT_REPORT_MESSAGES.REPORTS_RETRIEVED_SUCCESS,

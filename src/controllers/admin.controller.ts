@@ -36,6 +36,7 @@ export const getAllStaffController = async (req: Request, res: Response, next: N
     data: staff
   })
 }
+
 export const createConsultantController = async (req: Request, res: Response, next: NextFunction) => {
   const { full_name, email, password } = req.body
   const consultant = await adminService.createConsultant(full_name, email, password)
