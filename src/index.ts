@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 import express from 'express'
+import http from 'http'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import swaggerUi from 'swagger-ui-express'
@@ -21,6 +22,7 @@ import replyRoute from './routes/reply.route.js'
 import consultReportRoute from './routes/consult_report.route.js'
 import feedbackRoute from './routes/feedback.route.js'
 import blogRoute from './routes/blog.route.js'
+import { SocketServer } from './config/websocket.config.js'
 
 dotenv.config()
 
@@ -29,8 +31,8 @@ const app = express()
 // app.use(passport.initialize())
 app.use(
   cors({
-    origin: process.env.FE_ADDRESS
-    // credentials: true //for using cookie/token
+    origin: process.env.FE_ADDRESS,
+    credentials: true //for using cookie/token
   })
 )
 
@@ -80,6 +82,9 @@ initializeApp()
       app.use(defaultErrorHandle)
 
       // Start server
+      const server = http.createServer(app) //Tạo server HTTP từ app Express
+      const socketServer = new SocketServer(server)
+
       const port = process.env.PORT || 3000
       app.listen(port, () => {
         console.log(`Server is running on port: ${port}`)
