@@ -111,7 +111,7 @@ export class FeedbackService {
   }
 
   // Get all feedbacks
-  async getAllFeedbacks(filter: any, pageVar: any): Promise<Feedback[]> {
+  async getAllFeedbacks(filter: any, pageVar: { limit: number, page: number }): Promise<Feedback[]> {
     let { limit, page } = pageVar;
     if (!limit || !page) {
       limit = 0;

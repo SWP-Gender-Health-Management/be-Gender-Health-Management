@@ -30,7 +30,7 @@ export class LaboratoryService {
   }
 
   // Get all laboratories
-  async getAllLaboratories(filter: any, pageVar: any): Promise<Laboratory[]> {
+  async getAllLaboratories(filter: any, pageVar: { limit: number, page: number }): Promise<Laboratory[]> {
     let { limit, page } = pageVar;
     if (!limit || !page) {
       limit = 0;

@@ -60,7 +60,7 @@ export class ConsultantPatternService {
   }
 
   // Get all consultant patterns
-  async getAllConsultantPatterns(filter: any, pageVar: any): Promise<ConsultantPattern[]> {
+  async getAllConsultantPatterns(filter: any, pageVar: { limit: number, page: number }): Promise<ConsultantPattern[]> {
     let { limit, page } = pageVar;
     if (!limit || !page) {
       limit = 0;
@@ -93,7 +93,7 @@ export class ConsultantPatternService {
   }
 
   // Get a consultant pattern by Consultant ID
-  async getConsultantPatternByConsultantId(consultant_id: string, filter: any, pageVar: any): Promise<ConsultantPattern[]> {
+  async getConsultantPatternByConsultantId(consultant_id: string, filter: any, pageVar: { limit: number, page: number }): Promise<ConsultantPattern[]> {
     
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } });
     if (!consultant) {

@@ -83,7 +83,7 @@ export class BlogService {
   }
 
   // Get all blogs
-  async getAllBlogs(filter: any, pageVar: any): Promise<Blog[]> {
+  async getAllBlogs(filter: any, pageVar: { limit: number, page: number }): Promise<Blog[]> {
     let { limit, page } = pageVar;
     if (!limit || !page) {
       limit = 0;
@@ -117,7 +117,7 @@ export class BlogService {
   }
 
   // Get blogs by Account ID
-  async getBlogsByAccountId(account_id: string, filter: any, pageVar: any): Promise<Blog[]> {
+  async getBlogsByAccountId(account_id: string, filter: any, pageVar: { limit: number, page: number }): Promise<Blog[]> {
     const account = await accountRepository.findOne({ where: { account_id } })
     if (!account) {
       throw new ErrorWithStatus({
@@ -220,7 +220,7 @@ export class BlogService {
 
     Object.assign(blog, {
       account: account || blog.account,
-      major: data.major || blog.major,
+      major: (data.content && data.content.trim() === '') ? data.major : blog.major,
       title: data.title || blog.title,
       content: data.content || blog.content,
       status: data.status !== undefined ? (data.status === 'true' || data.status === true) : blog.status,
@@ -229,7 +229,7 @@ export class BlogService {
 
     return await blogRepository.save(blog)
   }
-
+  
   // Delete a blog
   async deleteBlog(blog_id: string): Promise<void> {
     const blog = await this.getBlogById(blog_id)

@@ -15,7 +15,7 @@ class WorkingSlotService {
     return await slotRepository.save(slot)
   }
 
-  async getSlotByType(type: string, pageVar: any) {
+  async getSlotByType(type: string, pageVar: { limit: number, page: number }) {
     let { limit, page } = pageVar;
     if (!limit || !page) {
       limit = 0;
@@ -32,7 +32,7 @@ class WorkingSlotService {
     })
   }
 
-  async getSlot(pageVar: any) {
+  async getSlot(pageVar: { limit: number, page: number }) {
     let { limit, page } = pageVar;
     if (!limit || !page) {
       limit = 0;

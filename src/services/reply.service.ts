@@ -65,7 +65,7 @@ export class ReplyService {
   }
 
   // Get all replies
-  async getAllReplies(filter: any, pageVar: any): Promise<Reply[]> {
+  async getAllReplies(filter: any, pageVar: { limit: number, page: number }): Promise<Reply[]> {
     let { limit, page } = pageVar;
     if (!limit || !page) {
       limit = 0;
@@ -99,7 +99,7 @@ export class ReplyService {
   }
 
   // Get replies by Consultant ID
-  async getRepliesByConsultantId(consultant_id: string, filter: any, pageVar: any): Promise<Reply[]> {
+  async getRepliesByConsultantId(consultant_id: string, filter: any, pageVar: { limit: number, page: number }): Promise<Reply[]> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({

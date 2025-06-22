@@ -33,7 +33,7 @@ export class QuestionService {
   }
 
   // Get all questions
-  async getAllQuestions(filter: any, pageVar: any): Promise<Question[]> {
+  async getAllQuestions(filter: any, pageVar: { limit: number, page: number }): Promise<Question[]> {
     let { limit, page } = pageVar;
     if (!limit || !page) {
       limit = 0;
@@ -67,7 +67,7 @@ export class QuestionService {
   }
 
   // Get questions by Customer ID
-  async getQuestionsByCustomerId(customer_id: string, filter:any, pageVar: any): Promise<Question[]> {
+  async getQuestionsByCustomerId(customer_id: string, filter:any, pageVar: { limit: number, page: number }): Promise<Question[]> {
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({

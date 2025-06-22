@@ -2,6 +2,7 @@ import multer from 'multer';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import {fileURLToPath} from 'url'; 
+import { ensureDir } from 'fs-extra';
 
 // Lấy __dirname trong ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -10,6 +11,10 @@ const __dirname = path.dirname(__filename);
 // Đường dẫn thư mục lưu trữ
 const avatarDir = path.join(__dirname, '../../uploads/avatars');
 const blogImageDir = path.join(__dirname, '../../uploads/blog_images');
+
+
+ensureDir(avatarDir);
+ensureDir(blogImageDir);
 
 console.log(avatarDir);
 // Cấu hình lưu trữ cho avatar

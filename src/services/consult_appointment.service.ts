@@ -62,7 +62,7 @@ export class ConsultAppointmentService {
   }
 
   // Get all consult appointments
-  async getAllConsultAppointments(filter: any, pageVar: any): Promise<ConsultAppointment[]> {
+  async getAllConsultAppointments(filter: any, pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
     let {limit, page} = pageVar;
     if(!limit || !page) {
       limit = 0;
@@ -102,7 +102,7 @@ export class ConsultAppointmentService {
   }
 
   // Get consult appointments by Customer ID
-  async getConsultAppointmentsByCustomerId(customer_id: string, filter:any, pageVar: any): Promise<ConsultAppointment[]> {
+  async getConsultAppointmentsByCustomerId(customer_id: string, filter:any, pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
     let {limit, page} = pageVar;
     if(!limit || !page) {
       limit = 0;

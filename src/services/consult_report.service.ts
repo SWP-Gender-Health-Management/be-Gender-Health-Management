@@ -65,7 +65,7 @@ export class ConsultReportService {
   }
 
   // Get all consult reports
-  async getAllConsultReports(filter: any, pageVar: any): Promise<ConsultReport[]> {
+  async getAllConsultReports(filter: any, pageVar: { limit: number, page: number }): Promise<ConsultReport[]> {
     let {limit, page} = pageVar;
     if(!limit || !page) {
       limit = 0;
