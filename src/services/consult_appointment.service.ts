@@ -8,6 +8,7 @@ import ConsultantPattern from '../models/Entity/consultant_pattern.entity.js'
 import Account from '../models/Entity/account.entity.js'
 import { Role } from '../enum/role.enum.js'
 import { StatusAppointment } from '../enum/statusAppointment.enum.js'
+import LIMIT from '~/constants/limit.js'
 
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
 const consultantPatternRepository = AppDataSource.getRepository(ConsultantPattern)
@@ -62,15 +63,14 @@ export class ConsultAppointmentService {
   }
 
   // Get all consult appointments
-  async getAllConsultAppointments(filter: any, pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
+  async getAllConsultAppointments( pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
     let {limit, page} = pageVar;
     if(!limit || !page) {
-      limit = 0;
+      limit = LIMIT.default;
       page = 1;
     }
     const skip = (page - 1) * limit;
     return await consultAppointmentRepository.find({
-      where: {...filter},
       skip,
       take: limit,
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']
@@ -102,10 +102,10 @@ export class ConsultAppointmentService {
   }
 
   // Get consult appointments by Customer ID
-  async getConsultAppointmentsByCustomerId(customer_id: string, filter:any, pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
+  async getConsultAppointmentsByCustomerId(customer_id: string, pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
     let {limit, page} = pageVar;
     if(!limit || !page) {
-      limit = 0;
+      limit = LIMIT.default;
       page = 1;
     }
     const skip = (page - 1) * limit;
@@ -117,7 +117,7 @@ export class ConsultAppointmentService {
       })
     }
     const consultAppointments = await consultAppointmentRepository.find({
-      where: { customer, ...filter },
+      where: { customer, },
       skip,
       take: limit,
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'consultant_pattern.consultant', 'customer', 'report', 'feedback']

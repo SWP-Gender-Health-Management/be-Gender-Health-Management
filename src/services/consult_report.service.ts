@@ -5,6 +5,7 @@ import { CONSULT_REPORT_MESSAGES } from '../constants/message.js'
 import { ErrorWithStatus } from '../models/Error.js'
 import ConsultReport, { ConsultReportType } from '../models/Entity/consult_report.entity.js'
 import ConsultAppointment from '../models/Entity/consult_appointment.entity.js'
+import LIMIT from '~/constants/limit.js'
 
 const consultReportRepository = AppDataSource.getRepository(ConsultReport)
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
@@ -65,15 +66,14 @@ export class ConsultReportService {
   }
 
   // Get all consult reports
-  async getAllConsultReports(filter: any, pageVar: { limit: number, page: number }): Promise<ConsultReport[]> {
+  async getAllConsultReports(pageVar: { limit: number, page: number }): Promise<ConsultReport[]> {
     let {limit, page} = pageVar;
     if(!limit || !page) {
-      limit = 0;
+      limit = LIMIT.default;
       page = 1;
     }
     const skip = (page - 1) * limit;
     return await consultReportRepository.find({
-      where: {...filter},
       skip,
       take: limit,
       relations: ['consult_appointment']

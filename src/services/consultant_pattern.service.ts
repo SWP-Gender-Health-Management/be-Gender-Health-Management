@@ -7,6 +7,7 @@ import ConsultantPattern, { ConsultantPatternType } from '../models/Entity/consu
 import WorkingSlot from '../models/Entity/working_slot.entity.js'
 import Account from '../models/Entity/account.entity.js'
 import { Role } from '../enum/role.enum.js'
+import LIMIT from '~/constants/limit.js'
 
 const consultantPatternRepository = AppDataSource.getRepository(ConsultantPattern)
 const workingSlotRepository = AppDataSource.getRepository(WorkingSlot)
@@ -60,15 +61,14 @@ export class ConsultantPatternService {
   }
 
   // Get all consultant patterns
-  async getAllConsultantPatterns(filter: any, pageVar: { limit: number, page: number }): Promise<ConsultantPattern[]> {
+  async getAllConsultantPatterns(pageVar: { limit: number, page: number }): Promise<ConsultantPattern[]> {
     let { limit, page } = pageVar;
     if (!limit || !page) {
-      limit = 0;
+      limit = LIMIT.default;
       page = 1;
     }
     const skip = (page - 1) * limit;
     return await consultantPatternRepository.find({
-      where: { ...filter },
       skip,
       take: limit,
       relations: ['working_slot', 'consultant']
@@ -93,8 +93,8 @@ export class ConsultantPatternService {
   }
 
   // Get a consultant pattern by Consultant ID
-  async getConsultantPatternByConsultantId(consultant_id: string, filter: any, pageVar: { limit: number, page: number }): Promise<ConsultantPattern[]> {
-    
+  async getConsultantPatternByConsultantId(consultant_id: string, pageVar: { limit: number, page: number }): Promise<ConsultantPattern[]> {
+
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } });
     if (!consultant) {
       throw new ErrorWithStatus({
@@ -103,15 +103,15 @@ export class ConsultantPatternService {
       })
     }
 
-    let {limit, page} = pageVar;
-    if(!limit || !page) {
-      limit = 0;
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = LIMIT.default;
       page = 1;
     }
     const skip = (page - 1) * limit;
 
     const consultantPattern = await consultantPatternRepository.find({
-      where: { consultant: consultant, ...filter },
+      where: { consultant: consultant },
       skip,
       take: limit,
       relations: ['working_slot', 'consultant']
@@ -128,7 +128,7 @@ export class ConsultantPatternService {
   }
 
   // Get a consultant pattern by Slot ID
-  async getConsultantPatternBySlotId(slot_id: string, filter: any, pageVar:any): Promise<ConsultantPattern[]> {
+  async getConsultantPatternBySlotId(slot_id: string, pageVar: any): Promise<ConsultantPattern[]> {
     const workingSlot = await workingSlotRepository.findOne({ where: { slot_id } });
     if (!workingSlot) {
       throw new ErrorWithStatus({
@@ -137,15 +137,15 @@ export class ConsultantPatternService {
       })
     }
 
-    let {limit, page} = pageVar;
-    if(!limit || !page) {
-      limit = 0;
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
+      limit = LIMIT.default;
       page = 1;
     }
     const skip = (page - 1) * limit;
 
     const consultantPattern = await consultantPatternRepository.find({
-      where: { working_slot: workingSlot, ...filter },
+      where: { working_slot: workingSlot },
       skip,
       take: limit,
       relations: ['working_slot', 'consultant']

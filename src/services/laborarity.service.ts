@@ -4,6 +4,7 @@ import HTTP_STATUS from '../constants/httpStatus.js'
 import { LABORARITY_MESSAGES } from '../constants/message.js'
 import { ErrorWithStatus } from '../models/Error.js'
 import Laboratory, { LaboratoryType } from '../models/Entity/laborarity.entity.js'
+import LIMIT from '~/constants/limit.js'
 
 const laboratoryRepository = AppDataSource.getRepository(Laboratory)
 
@@ -30,16 +31,15 @@ export class LaboratoryService {
   }
 
   // Get all laboratories
-  async getAllLaboratories(filter: any, pageVar: { limit: number, page: number }): Promise<Laboratory[]> {
+  async getAllLaboratories(pageVar: { limit: number, page: number }): Promise<Laboratory[]> {
     let { limit, page } = pageVar;
     if (!limit || !page) {
-      limit = 0;
+      limit = LIMIT.default;
       page = 1;
     }
     const skip = (page - 1) * limit;
 
     return await laboratoryRepository.find({
-      where: {...filter},
       skip,
       take: limit
     })

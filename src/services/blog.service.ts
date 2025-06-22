@@ -8,6 +8,7 @@ import { Role } from '../enum/role.enum.js'
 import fs from 'fs/promises'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
+import LIMIT from '~/constants/limit.js'
 
 const blogRepository = AppDataSource.getRepository(Blog)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -83,16 +84,15 @@ export class BlogService {
   }
 
   // Get all blogs
-  async getAllBlogs(filter: any, pageVar: { limit: number, page: number }): Promise<Blog[]> {
+  async getAllBlogs(pageVar: { limit: number, page: number }): Promise<Blog[]> {
     let { limit, page } = pageVar;
     if (!limit || !page) {
-      limit = 0;
+      limit = LIMIT.default;
       page = 1;
     }
     const skip = (page - 1) * limit;
 
     return await blogRepository.find({
-      where: { ...filter },
       skip,
       take: limit,
       relations: ['account']
@@ -117,7 +117,7 @@ export class BlogService {
   }
 
   // Get blogs by Account ID
-  async getBlogsByAccountId(account_id: string, filter: any, pageVar: { limit: number, page: number }): Promise<Blog[]> {
+  async getBlogsByAccountId(account_id: string, pageVar: { limit: number, page: number }): Promise<Blog[]> {
     const account = await accountRepository.findOne({ where: { account_id } })
     if (!account) {
       throw new ErrorWithStatus({
@@ -128,13 +128,13 @@ export class BlogService {
 
     let { limit, page } = pageVar;
     if (!limit || !page) {
-      limit = 0;
+      limit = LIMIT.default;
       page = 1;
     }
     const skip = (page - 1) * limit;
 
     const blogs = await blogRepository.find({
-      where: { account, ...filter },
+      where: { account},
       skip,
       take: limit,
       relations: ['account']

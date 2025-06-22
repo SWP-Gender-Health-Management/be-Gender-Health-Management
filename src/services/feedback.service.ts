@@ -6,6 +6,7 @@ import { ErrorWithStatus } from '../models/Error.js'
 import Feedback, { FeedbackType } from '../models/Entity/feedback.entity.js'
 import ConsultAppointment from '../models/Entity/consult_appointment.entity.js'
 import LaboratoryAppointment from '../models/Entity/laborarity_appointment.entity.js'
+import LIMIT from '~/constants/limit.js'
 
 const feedbackRepository = AppDataSource.getRepository(Feedback)
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
@@ -111,16 +112,15 @@ export class FeedbackService {
   }
 
   // Get all feedbacks
-  async getAllFeedbacks(filter: any, pageVar: { limit: number, page: number }): Promise<Feedback[]> {
+  async getAllFeedbacks(pageVar: { limit: number, page: number }): Promise<Feedback[]> {
     let { limit, page } = pageVar;
     if (!limit || !page) {
-      limit = 0;
+      limit = LIMIT.default;
       page = 1;
     }
     const skip = (page - 1) * limit;
 
     return await feedbackRepository.find({
-      where: {...filter},
       skip,
       take: limit,
       relations: ['consult_appointment', 'laboratoryAppointment']
