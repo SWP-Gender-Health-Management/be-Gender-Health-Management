@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import express from 'express'
-import http from 'http' 
+import http from 'http'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import swaggerUi from 'swagger-ui-express'
@@ -38,7 +38,10 @@ app.use(
 
 // Add Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
-
+// create server Redis và socket server
+const server = http.createServer(app) //Tạo server HTTP từ app Express
+const socketServer = new SocketServer(server)
+export { socketServer }
 // Initialize app (database and passport)
 initializeApp()
   .then((success) => {
@@ -80,10 +83,6 @@ initializeApp()
       // route blog
       app.use('/blog', blogRoute)
       app.use(defaultErrorHandle)
-
-      // Start server
-      const server = http.createServer(app) //Tạo server HTTP từ app Express
-      const socketServer = new SocketServer(server)
 
       const port = process.env.PORT || 3000
       app.listen(port, () => {
