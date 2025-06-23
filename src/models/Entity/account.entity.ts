@@ -9,18 +9,6 @@ import {
   Timestamp,
   UpdateDateColumn
 } from 'typeorm'
-<<<<<<< HEAD
-import RefreshToken from './refresh_token.entity'
-import MenstrualCycle from './menstrual_cycle.entity'
-import Blog from './blog.entity'
-import Transaction from '../../enum/transaction.entity'
-import ConsultAppointment from './consult_appointment.entity'
-import ConsultantPattern from './consultant_pattern.entity'
-import LaboratoryAppointment from './laborarity_appointment.entity'
-import Reply from './reply.entity'
-import { Role } from '~/enum/role.enum'
-import Question from './question.entity'
-=======
 import { Role } from '../../enum/role.enum.js'
 import RefreshToken from './refresh_token.entity.js'
 import MenstrualCycle from './menstrual_cycle.entity.js'
@@ -32,7 +20,6 @@ import LaboratoryAppointment from './laborarity_appointment.entity.js'
 import Reply from './reply.entity.js'
 import Question from './question.entity.js'
 
->>>>>>> 3132dc8bd12c51015eb9348b825880f910766dda
 export interface AccountType {
   account_id: string
   full_name?: string | null

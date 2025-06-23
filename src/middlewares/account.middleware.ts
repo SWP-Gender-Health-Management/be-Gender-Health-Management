@@ -73,15 +73,15 @@ export const validateLogin = validate(
             accountService.checkEmailExist(value),
             accountService.checkPassword(value, req.body.password)
           ])
+          console.log('Email:', user)
+          console.log('Password:', isPasswordValid)
           if (!user || !isPasswordValid) {
             throw new ErrorWithStatus({
               message: USERS_MESSAGES.EMAIL_OR_PASSWORD_INVALID,
               status: HTTP_STATUS.BAD_REQUEST
             })
           }
-          await redisClient.set(`account:${user.account_id}`, JSON.stringify(user), {
-            EX: 60 * 60
-          })
+          await redisClient.set(`account:${user.account_id}`, JSON.stringify(user), 'EX', 60 * 60)
           req.body.account_id = user.account_id
           return true
         }

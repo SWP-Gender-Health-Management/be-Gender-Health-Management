@@ -27,7 +27,7 @@ class RefreshTokenService {
   async updateRefreshToken({ account, token }: { account: Account; token: string }) {
     // Check if refresh token exists for this account
     const existingToken = await this.getRefreshToken(account.account_id)
-
+    console.log('existingToken:', existingToken)
     if (existingToken) {
       // Update existing token
       await refreshTokenRepository.update(account.account_id, {
