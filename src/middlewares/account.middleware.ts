@@ -79,7 +79,9 @@ export const validateLogin = validate(
               status: HTTP_STATUS.BAD_REQUEST
             })
           }
-          await redisClient.set(`account:${user.account_id}`, JSON.stringify(user), 'EX', 60 * 60)
+          await redisClient.set(`account:${user.account_id}`, JSON.stringify(user), {
+            EX: 60 * 60
+          })
           req.body.account_id = user.account_id
           return true
         }

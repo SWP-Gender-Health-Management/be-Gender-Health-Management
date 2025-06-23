@@ -73,9 +73,10 @@ export const registerController = async (req: Request, res: Response, next: Next
   console.log(result)
 
   const { account_id, accessToken, refreshToken } = result
-  const account = JSON.parse((await redisClient.get(account_id)) as string)
+  const account = (await redisClient.get(account_id)) as string
+  const account_data = JSON.parse(account)
   await Promise.all([
-    refreshTokenService.createRefreshToken({ account: account, token: refreshToken }),
+    refreshTokenService.createRefreshToken({ account: account_data, token: refreshToken }),
     redisClient.set(`accessToken:${account_id}`, accessToken, {
       EX: 60 * 60
     })
@@ -149,10 +150,13 @@ export const loginController = async (req: Request, res: Response, next: NextFun
   const { account_id, email, password } = req.body
   const result = await accountService.login(account_id, email, password)
   const { accessToken, refreshToken } = result
-  const account = JSON.parse((await redisClient.get(`account:${account_id}`)) as string)
+  const account = (await redisClient.get(`account:${account_id}`)) as string
+  const account_data = JSON.parse(account)
   await Promise.all([
-    refreshTokenService.updateRefreshToken({ account: account, token: refreshToken }),
-    redisClient.set(`accessToken:${account_id}`, JSON.stringify(accessToken), 'EX', 60 * 60)
+    refreshTokenService.updateRefreshToken({ account: account_data, token: refreshToken }),
+    redisClient.set(`accessToken:${account_id}`, accessToken, {
+      EX: 60 * 60
+    })
   ])
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
