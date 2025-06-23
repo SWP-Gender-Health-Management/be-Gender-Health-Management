@@ -319,8 +319,8 @@ class AccountService {
    * @returns: Account
    */
   async viewAccount(account_id: string) {
-    const user: Account = JSON.parse((await redisClient.get(account_id)) as string)
-    return user
+    const user = (await redisClient.get(account_id)) as string
+    return JSON.parse(user)
   }
 
   /**

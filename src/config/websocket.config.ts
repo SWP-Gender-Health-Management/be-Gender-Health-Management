@@ -1,25 +1,27 @@
 import { Server, Socket } from 'socket.io'
 import { Server as HttpServer } from 'http'
-import { createAdapter } from '@socket.io/redis-adapter' // Import adapter
-import redisClient from './redis.config.js' // Dùng redis client
-
-import dotenv from 'dotenv'
-dotenv.config()
-
-// Map để lưu: { accountId => socket.id }
-// Bạn có thể chuyển nó vào một service hoặc Redis trong ứng dụng thực tế
+import { createAdapter } from '@socket.io/redis-adapter'
+import redisClient from './redis.config.js'
+import { config } from 'dotenv'
+config()
 
 export class SocketServer {
   public io: Server
 
   constructor(server: HttpServer) {
-    // Khởi tạo Socket.IO server và gắn nó vào HTTP server
     this.io = new Server(server, {
       cors: {
-        origin: process.env.FE_ADDRESS, // Lấy từ file .env
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        origin: process.env.FE_ADDRESS,
         credentials: true
       }
+    })
+
+    // Đây là bộ não giúp Rooms hoạt động trên nhiều server
+    const pubClient = redisClient.duplicate()
+    const subClient = redisClient.duplicate()
+
+    Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+      this.io.adapter(createAdapter(pubClient, subClient))
     })
 
     // Lắng nghe các kết nối
@@ -28,72 +30,39 @@ export class SocketServer {
 
   /**
    * Xử lý logic khi một client mới kết nối
-   * @param socket Đối tượng socket của client vừa kết nối
    */
-  private handleConnection = async (socket: Socket): Promise<void> => {
+  private handleConnection = (socket: Socket): void => {
     console.log(`Một người dùng đã kết nối: ${socket.id}`)
 
-    // Lấy userId từ query khi client kết nối
     const accountId = socket.handshake.query.accountId as string
 
     if (accountId) {
-      console.log(`User ID: ${accountId} được gán cho  Socket ID: ${socket.id}`)
-      const userSocketsKey = `user:sockets:${accountId}`
-      const socketUserKey = `socket:user:${socket.id}`
-
-      // Mapping 1:1: Thêm socket.id vào Set của userId
-      await redisClient.set(userSocketsKey, socketUserKey)
+      // Đơn giản hóa: Cho socket vào một "phòng" có tên là chính userId của họ
+      socket.join(accountId)
+      console.log(`Socket ${socket.id} đã tham gia vào phòng của user ${accountId}`)
     }
 
-    // --- ĐỊNH NGHĨA CÁC EVENT LISTENER CỦA BẠN TẠI ĐÂY ---
-    // Ví dụ: Lắng nghe một sự kiện 'send_message'
-    socket.on('send_message', async (data: { recipientId: string; message: string }) => {
-      console.log('Server nhận được tin nhắn:', data)
-
-      const recipientSocketId = await redisClient.get(data.recipientId)
-      if (recipientSocketId) {
-        // Gửi tin nhắn đến một người dùng cụ thể
-        this.io.to(recipientSocketId).emit('receive_message', {
-          senderId: accountId,
-          message: data.message
-        })
-      } else {
-        console.log(`Người nhận ${data.recipientId} không online.`)
-        // Tại đây bạn có thể lưu tin nhắn vào DB để gửi sau
-      }
+    socket.on('send_private_notification', (data: { recipientId: string; message: string }) => {
+      // 3. DÙNG Room để nhắm đến người nhận và DÙNG Event để gửi dữ liệu đi
+      // Gửi sự kiện 'new_private_message' đến phòng của người nhận
+      this.io.to(data.recipientId).emit('new_private_notification', {
+        sender: accountId,
+        message: data.message
+      })
     })
 
-    // Xử lý khi client ngắt kết nối
-    socket.on('disconnect', async (): Promise<void> => {
+    // Socket.IO sẽ tự động xóa socket khỏi các phòng khi nó ngắt kết nối.
+    socket.on('disconnect', () => {
       console.log(`Người dùng đã ngắt kết nối: ${socket.id}`)
-      if (accountId) {
-        const userSocketsKey = `user:sockets:${accountId}`
-        await redisClient.del(userSocketsKey)
-        console.log(`Đã xóa User ID: ${accountId} khỏi map.`)
-      }
     })
   }
 
   /**
-   * Gửi thông báo đến một người dùng cụ thể bằng userId
-   * @param accountId ID của người dùng cần nhận thông báo
-   * @param eventName Tên của sự kiện (ví dụ: 'new_notification')
-   * @param data Dữ liệu cần gửi
+   * Gửi thông báo đến một người dùng cụ thể bằng cách gửi đến phòng của họ
    */
-  public async sendMessageToUser(accountId: string, eventName: string, data: any): Promise<void> {
-    const userSocketsKey = `user:sockets:${accountId}`
-
-    // Lấy tất cả socket.id đang hoạt động của người dùng
-    const socketId = await redisClient.get(userSocketsKey)
-
-    if (socketId && socketId.length > 0) {
-      // Gửi đến kết nối của người dùng đó
-      // io.to() có thể nhận một mảng các socket id
-      this.io.to(socketId).emit(eventName, data)
-      console.log(`Đã gửi sự kiện '${eventName}' đến ${socketId} kết nối của người dùng ${accountId}`)
-    } else {
-      console.log(`Không tìm thấy kết nối nào cho người dùng ${accountId} để gửi sự kiện '${eventName}'.`)
-      // Tại đây bạn có thể lưu thông báo vào DB để họ xem khi online lại
-    }
+  public sendMessageToUser(recipientId: string, eventName: string, data: any): void {
+    // Gửi thẳng sự kiện đến phòng có tên là userId
+    this.io.to(recipientId).emit(eventName, data)
+    console.log(`Đã gửi sự kiện '${eventName}' đến phòng của người dùng ${recipientId}`)
   }
 }
