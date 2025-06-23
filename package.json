@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@payos/node": "^1.0.10",
+    "@socket.io/redis-adapter": "^8.3.0",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/lodash-es": "^4.17.12",
     "@types/multer": "^1.4.13",

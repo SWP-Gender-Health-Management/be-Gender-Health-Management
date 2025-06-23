@@ -1,8 +1,9 @@
 import { Server, Socket } from 'socket.io'
 import { Server as HttpServer } from 'http'
+import { createAdapter } from '@socket.io/redis-adapter' // Import adapter
+import redisClient from './redis.config.js' // Dùng redis client
+
 import dotenv from 'dotenv'
-import { DefaultEventsMap } from 'socket.io'
-import redisClient from './redis.config.js'
 dotenv.config()
 
 // Map để lưu: { accountId => socket.id }
@@ -14,7 +15,6 @@ export class SocketServer {
   constructor(server: HttpServer) {
     // Khởi tạo Socket.IO server và gắn nó vào HTTP server
     this.io = new Server(server, {
-      // Cấu hình CORS dựa trên các cuộc thảo luận trước
       cors: {
         origin: process.env.FE_ADDRESS, // Lấy từ file .env
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -37,7 +37,7 @@ export class SocketServer {
     const accountId = socket.handshake.query.accountId as string
 
     if (accountId) {
-      console.log(`User ID: ${accountId} được gán cho Socket ID: ${socket.id}`)
+      console.log(`User ID: ${accountId} được gán cho  Socket ID: ${socket.id}`)
       const userSocketsKey = `user:sockets:${accountId}`
       const socketUserKey = `socket:user:${socket.id}`
 
@@ -46,23 +46,22 @@ export class SocketServer {
     }
 
     // --- ĐỊNH NGHĨA CÁC EVENT LISTENER CỦA BẠN TẠI ĐÂY ---
+    // Ví dụ: Lắng nghe một sự kiện 'send_message'
+    socket.on('send_message', async (data: { recipientId: string; message: string }) => {
+      console.log('Server nhận được tin nhắn:', data)
 
-    // // Ví dụ: Lắng nghe một sự kiện 'send_message'
-    // socket.on('send_message', async (data: { recipientId: string; message: string }) => {
-    //   console.log('Server nhận được tin nhắn:', data)
-
-    //   const recipientSocketId = await redisClient.get(data.recipientId)
-    //   if (recipientSocketId) {
-    //     // Gửi tin nhắn đến một người dùng cụ thể
-    //     this.io.to(recipientSocketId).emit('receive_message', {
-    //       senderId: accountId,
-    //       message: data.message
-    //     })
-    //   } else {
-    //     console.log(`Người nhận ${data.recipientId} không online.`)
-    //     // Tại đây bạn có thể lưu tin nhắn vào DB để gửi sau
-    //   }
-    // })
+      const recipientSocketId = await redisClient.get(data.recipientId)
+      if (recipientSocketId) {
+        // Gửi tin nhắn đến một người dùng cụ thể
+        this.io.to(recipientSocketId).emit('receive_message', {
+          senderId: accountId,
+          message: data.message
+        })
+      } else {
+        console.log(`Người nhận ${data.recipientId} không online.`)
+        // Tại đây bạn có thể lưu tin nhắn vào DB để gửi sau
+      }
+    })
 
     // Xử lý khi client ngắt kết nối
     socket.on('disconnect', async (): Promise<void> => {
@@ -82,12 +81,19 @@ export class SocketServer {
    * @param data Dữ liệu cần gửi
    */
   public async sendMessageToUser(accountId: string, eventName: string, data: any): Promise<void> {
-    const socketId = (await redisClient.get(accountId)) as string
-    if (socketId) {
+    const userSocketsKey = `user:sockets:${accountId}`
+
+    // Lấy tất cả socket.id đang hoạt động của người dùng
+    const socketId = await redisClient.get(userSocketsKey)
+
+    if (socketId && socketId.length > 0) {
+      // Gửi đến kết nối của người dùng đó
+      // io.to() có thể nhận một mảng các socket id
       this.io.to(socketId).emit(eventName, data)
-      console.log(`Đã gửi sự kiện '${eventName}' đến người dùng ${accountId}`)
+      console.log(`Đã gửi sự kiện '${eventName}' đến ${socketId} kết nối của người dùng ${accountId}`)
     } else {
-      console.log(`Không thể gửi sự kiện '${eventName}' vì người dùng ${accountId} không online.`)
+      console.log(`Không tìm thấy kết nối nào cho người dùng ${accountId} để gửi sự kiện '${eventName}'.`)
+      // Tại đây bạn có thể lưu thông báo vào DB để họ xem khi online lại
     }
   }
 }
