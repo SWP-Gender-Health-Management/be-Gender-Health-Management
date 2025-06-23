@@ -331,13 +331,8 @@ class AccountService {
    * @returns: Account
    */
   async viewAccount(account_id: string) {
-<<<<<<< Updated upstream
-    const user: Account = JSON.parse((await redisClient.get(account_id)) as string)
-    return user
-=======
     const user = (await redisClient.get(`account:${account_id}`)) as string
     return JSON.parse(user)
->>>>>>> Stashed changes
   }
 
   /**
