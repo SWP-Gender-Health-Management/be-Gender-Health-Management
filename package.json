@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@payos/node": "^1.0.10",
+    "@types/fs-extra": "^11.0.4",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/lodash-es": "^4.17.12",
     "@types/multer": "^1.4.13",
@@ -60,6 +61,7 @@
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "google-auth-library": "^10.1.0",
+    "fs-extra": "^11.3.0",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",

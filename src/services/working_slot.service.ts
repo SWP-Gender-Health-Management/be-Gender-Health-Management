@@ -1,3 +1,4 @@
+import LIMIT from '~/constants/limit.js'
 import { AppDataSource } from '../config/database.config.js'
 import { TypeAppointment } from '../enum/type_appointment.enum.js'
 import WorkingSlot from '../models/Entity/working_slot.entity.js'
@@ -31,11 +32,11 @@ class WorkingSlotService {
    * @returns The slots
    */
   // Get a slot by type
-  async getSlotByType(type: string, pageVar: any) {
+  async getSlotByType(type: string, pageVar: { limit: number, page: number }) {
     let { limit, page } = pageVar
     if (!limit || !page) {
-      limit = 0
-      page = 1
+      limit = LIMIT.default;
+      page = 1;
     }
     const skip = (page - 1) * limit
 
@@ -54,11 +55,11 @@ class WorkingSlotService {
    * @returns The slots
    */
   // Get all slots
-  async getSlot(pageVar: any) {
+  async getSlot(pageVar: { limit: number, page: number }) {
     let { limit, page } = pageVar
     if (!limit || !page) {
-      limit = 0
-      page = 1
+      limit = LIMIT.default;
+      page = 1;
     }
     const skip = (page - 1) * limit
     return await slotRepository.find({
