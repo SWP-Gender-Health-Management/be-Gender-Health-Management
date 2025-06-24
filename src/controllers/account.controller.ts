@@ -166,6 +166,37 @@ export const loginController = async (req: Request, res: Response, next: NextFun
   })
 }
 
+export const googleVerifyController = async (req: Request, res: Response, next: NextFunction) => {
+  console.log('Google verify controller')
+  const { idToken } = req.body // Lấy ID Token từ body của request1
+  try {
+    console.log('Token:', idToken)
+
+    const result = await accountService.googleVerify(idToken)
+    const { accessToken, refreshToken, account } = result
+    await Promise.all([
+      refreshTokenService.updateRefreshToken({ account: account, token: refreshToken }),
+      redisClient.set(`accessToken:${account.account_id}`, accessToken, 'EX', 60 * 60)
+    ])
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
+      secure: true, // Chỉ gửi cookie qua HTTPS ở môi trường production
+      sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
+      maxAge: 60 * 60 * 24 * 30 // Thời gian sống của cookie (tính bằng mili giây)
+    })
+    res.status(HTTP_STATUS.OK).json({
+      message: USERS_MESSAGES.GOOGLE_VERIFY_SUCCESS,
+      result
+    })
+  } catch (error) {
+    console.log('Google verify failed:', error)
+    throw new ErrorWithStatus({
+      message: USERS_MESSAGES.GOOGLE_VERIFY_FAILED,
+      status: 400
+    })
+  }
+}
+
 /**
  * @swagger
  * /account/change-password:

@@ -3,6 +3,7 @@ import { Router } from 'express'
 import {
   changePasswordController,
   checkEmailVerifiedController,
+  googleVerifyController,
   loginController,
   logoutController,
   registerController,
@@ -48,6 +49,16 @@ accountRoute.post('/register', validateRegister, wrapRequestHandler(registerCont
   }
 */
 accountRoute.post('/login', validateLogin, wrapRequestHandler(loginController))
+
+/*
+  Description: google verify
+  Path: /google-verify
+  Method: POST
+  Body: {
+    token: string
+  }
+*/
+accountRoute.post('/google-verify', wrapRequestHandler(googleVerifyController))
 
 /*
   Description: change password
