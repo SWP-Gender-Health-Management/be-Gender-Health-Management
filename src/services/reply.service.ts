@@ -6,6 +6,7 @@ import Reply from '../models/Entity/reply.entity.js'
 import Account from '../models/Entity/account.entity.js'
 import Question from '../models/Entity/question.entity.js'
 import { Role } from '../enum/role.enum.js'
+import LIMIT from '~/constants/limit.js'
 
 const replyRepository = AppDataSource.getRepository(Reply)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -78,16 +79,15 @@ export class ReplyService {
    * @returns The replies
    */
   // Get all replies
-  async getAllReplies(filter: any, pageVar: any): Promise<Reply[]> {
-    let { limit, page } = pageVar
+  async getAllReplies(pageVar: { limit: number, page: number }): Promise<Reply[]> {
+    let { limit, page } = pageVar;
     if (!limit || !page) {
-      limit = 0
-      page = 1
+      limit = LIMIT.default;
+      page = 1;
     }
     const skip = (page - 1) * limit
 
     return await replyRepository.find({
-      where: { ...filter },
       skip,
       take: limit,
       relations: ['consultant', 'question']
@@ -124,7 +124,7 @@ export class ReplyService {
    * @returns The replies
    */
   // Get replies by Consultant ID
-  async getRepliesByConsultantId(consultant_id: string, filter: any, pageVar: any): Promise<Reply[]> {
+  async getRepliesByConsultantId(consultant_id: string, pageVar: { limit: number, page: number }): Promise<Reply[]> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
@@ -135,13 +135,13 @@ export class ReplyService {
 
     let { limit, page } = pageVar
     if (!limit || !page) {
-      limit = 0
-      page = 1
+      limit = LIMIT.default;
+      page = 1;
     }
     const skip = (page - 1) * limit
 
     const replies = await replyRepository.find({
-      where: { consultant: consultant, ...filter },
+      where: { consultant: consultant},
       skip,
       take: limit,
       relations: ['consultant', 'question']

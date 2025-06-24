@@ -5,6 +5,7 @@ import { LABORARITY_MESSAGES } from '../constants/message.js'
 import { ErrorWithStatus } from '../models/Error.js'
 import Laboratory from '../models/Entity/laborarity.entity.js'
 import { DeleteResult } from 'typeorm'
+import LIMIT from '~/constants/limit.js'
 
 const laboratoryRepository = AppDataSource.getRepository(Laboratory)
 
@@ -44,16 +45,15 @@ export class LaboratoryService {
    * @returns The laboratories
    */
   // Get all laboratories
-  async getAllLaboratories(filter: any, pageVar: any): Promise<Laboratory[]> {
-    let { limit, page } = pageVar
+  async getAllLaboratories(pageVar: { limit: number, page: number }): Promise<Laboratory[]> {
+    let { limit, page } = pageVar;
     if (!limit || !page) {
-      limit = 0
-      page = 1
+      limit = LIMIT.default;
+      page = 1;
     }
     const skip = (page - 1) * limit
 
     return await laboratoryRepository.find({
-      where: { ...filter },
       skip,
       take: limit
     })

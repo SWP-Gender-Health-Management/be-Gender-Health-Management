@@ -10,6 +10,7 @@ import { Role } from '../enum/role.enum.js'
 import { StatusAppointment } from '../enum/statusAppointment.enum.js'
 import Feedback from '../models/Entity/feedback.entity.js'
 import { TypeAppointment } from '../enum/type_appointment.enum.js'
+import LIMIT from '~/constants/limit.js'
 
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
 const consultantPatternRepository = AppDataSource.getRepository(ConsultantPattern)
@@ -81,15 +82,14 @@ export class ConsultAppointmentService {
    * @returns The consult appointments
    */
   // Get all consult appointments
-  async getAllConsultAppointments(filter: any, pageVar: any): Promise<ConsultAppointment[]> {
-    let { limit, page } = pageVar
-    if (!limit || !page) {
-      limit = 0
-      page = 1
+  async getAllConsultAppointments( pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = LIMIT.default;
+      page = 1;
     }
     const skip = (page - 1) * limit
     return await consultAppointmentRepository.find({
-      where: { ...filter },
       skip,
       take: limit,
       relations: [
@@ -140,15 +140,11 @@ export class ConsultAppointmentService {
    * @returns The consult appointments
    */
   // Get consult appointments by Customer ID
-  async getConsultAppointmentsByCustomerId(
-    customer_id: string,
-    filter: any,
-    pageVar: any
-  ): Promise<ConsultAppointment[]> {
-    let { limit, page } = pageVar
-    if (!limit || !page) {
-      limit = 0
-      page = 1
+  async getConsultAppointmentsByCustomerId(customer_id: string, pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
+    let {limit, page} = pageVar;
+    if(!limit || !page) {
+      limit = LIMIT.default;
+      page = 1;
     }
     const skip = (page - 1) * limit
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
@@ -159,7 +155,7 @@ export class ConsultAppointmentService {
       })
     }
     const consultAppointments = await consultAppointmentRepository.find({
-      where: { customer, ...filter },
+      where: { customer, },
       skip,
       take: limit,
       relations: [
