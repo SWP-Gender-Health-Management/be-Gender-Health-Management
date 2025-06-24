@@ -21,7 +21,7 @@ class AccountService {
    * @param email: string
    * @returns: Account | null
    */
-  async checkEmailExist(email: string) {
+  async checkEmailExist(email: string): Promise<Account | null> {
     return await accountRepository.findOne({ where: { email } })
   }
 
@@ -31,7 +31,7 @@ class AccountService {
    * @param password: string
    * @returns: boolean
    */
-  async checkPassword(email: string, password: string) {
+  async checkPassword(email: string, password: string): Promise<boolean> {
     const user = await accountRepository.findOne({ where: { email } })
     if (!user) {
       throw new ErrorWithStatus({
@@ -50,7 +50,7 @@ class AccountService {
    * @param password: string
    * @returns: string
    */
-  async createAccessToken(account_id: string, email: string) {
+  async createAccessToken(account_id: string, email: string): Promise<string> {
     const token = await signToken({
       payload: {
         account_id: account_id,
@@ -71,7 +71,7 @@ class AccountService {
    * @param password: string
    * @returns: string
    */
-  async createRefreshToken(account_id: string, email: string) {
+  async createRefreshToken(account_id: string, email: string): Promise<string> {
     return await signToken({
       payload: {
         account_id: account_id,
@@ -90,7 +90,7 @@ class AccountService {
    * @param secretPasscode: string
    * @returns: string
    */
-  async createEmailVerifiedToken(account_id: string, secretPasscode: string) {
+  async createEmailVerifiedToken(account_id: string, secretPasscode: string): Promise<string> {
     return await signToken({
       payload: {
         account_id: account_id,
@@ -114,7 +114,15 @@ class AccountService {
    *   emailVerifiedToken: string
    * }
    */
-  async createAccount(email: string, password: string) {
+  async createAccount(
+    email: string,
+    password: string
+  ): Promise<{
+    account_id: string
+    accessToken: string
+    refreshToken: string
+    emailVerifiedToken: string
+  }> {
     const passwordHash = await hashPassword(password)
     const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
 
@@ -154,7 +162,14 @@ class AccountService {
    *   refreshToken: string
    * }
    */
-  async login(account_id: string, email: string, password: string) {
+  async login(
+    account_id: string,
+    email: string,
+    password: string
+  ): Promise<{
+    accessToken: string
+    refreshToken: string
+  }> {
     const user = (await redisClient.get(`account:${account_id}`)) as string
     const user_data = JSON.parse(user)
     const [accessToken, refreshToken] = await Promise.all([
@@ -166,10 +181,23 @@ class AccountService {
     return { accessToken, refreshToken }
   }
 
-  async googleVerify(token: string) {
+  /**
+   * @description: Xác thực token Google
+   * @param idToken: string
+   * @returns: {
+   *   accessToken: string
+   *   refreshToken: string
+   *   account: Account
+   * }
+   */
+  async googleVerify(idToken: string): Promise<{
+    accessToken: string
+    refreshToken: string
+    account: Account
+  }> {
     // Xác minh token với Google
     const ticket = await client.verifyIdToken({
-      idToken: token,
+      idToken: idToken,
       audience: process.env.GG_AUTH_CLIENTID as string // Xác định rằng token này dành cho ứng dụng của bạn
     })
 
@@ -218,7 +246,13 @@ class AccountService {
    *   refreshToken: string
    * }
    */
-  async changePassword(account_id: string, new_password: string) {
+  async changePassword(
+    account_id: string,
+    new_password: string
+  ): Promise<{
+    accessToken: string
+    refreshToken: string
+  }> {
     const passwordHash = await hashPassword(new_password)
     const [userRedis] = await Promise.all([
       redisClient.get(`account:${account_id}`),
@@ -239,7 +273,7 @@ class AccountService {
    * @param id: string
    * @returns: Account
    */
-  async getAccountById(id: any) {
+  async getAccountById(id: any): Promise<Account> {
     const user = await accountRepository.findOneBy({
       account_id: id
     })
@@ -260,7 +294,12 @@ class AccountService {
    *   message: string
    * }
    */
-  async verifyEmail(account_id: string, secretPasscode: string) {
+  async verifyEmail(
+    account_id: string,
+    secretPasscode: string
+  ): Promise<{
+    message: string
+  }> {
     const userToken = await redisClient.get(`${process.env.JWT_EMAIL_VERIFIED_TOKEN}:${account_id}`)
     // const userTokenParse = JSON.parse(userToken as string)
     console.log(userToken)
@@ -303,7 +342,13 @@ class AccountService {
    * @param gender: string
    * @returns: Account
    */
-  async updateProfile(account_id: string, full_name?: string, phone?: string, dob?: string, gender?: string) {
+  async updateProfile(
+    account_id: string,
+    full_name?: string,
+    phone?: string,
+    dob?: string,
+    gender?: string
+  ): Promise<Account> {
     const [user] = await Promise.all([
       accountRepository.findOne({ where: { account_id } }),
       accountRepository.update(account_id, {
@@ -316,7 +361,7 @@ class AccountService {
     await redisClient.set(`account:${account_id}`, JSON.stringify(user), {
       EX: 60 * 60
     })
-    return user
+    return user as Account
   }
 
   /**
@@ -326,7 +371,7 @@ class AccountService {
    *   message: string
    * }
    */
-  async sendEmailVerified(account_id: string) {
+  async sendEmailVerified(account_id: string): Promise<void> {
     const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
     const emailVerifyToken = await this.createEmailVerifiedToken(account_id, secretPasscode)
     console.log(emailVerifyToken)
@@ -357,7 +402,7 @@ class AccountService {
    * @param account_id: string
    * @returns: Account
    */
-  async checkEmailVerified(account_id: string) {
+  async checkEmailVerified(account_id: string): Promise<Account | boolean> {
     const user: Account = JSON.parse((await redisClient.get(`account:${account_id}`)) as string)
     return user?.is_verified === true ? user : false
   }
@@ -367,7 +412,7 @@ class AccountService {
    * @param account_id: string
    * @returns: Account
    */
-  async viewAccount(account_id: string) {
+  async viewAccount(account_id: string): Promise<Account> {
     const user = (await redisClient.get(`account:${account_id}`)) as string
     return JSON.parse(user)
   }
@@ -378,7 +423,7 @@ class AccountService {
    * @param secretPasscode: string
    * @returns: string
    */
-  async createEmailResetPasswordToken(account_id: string, secretPasscode: string) {
+  async createEmailResetPasswordToken(account_id: string, secretPasscode: string): Promise<string> {
     return await signToken({
       payload: { account_id, secretPasscode },
       secretKey: process.env.JWT_SECRET_RESET_PASSWORD_TOKEN as string,
@@ -394,7 +439,12 @@ class AccountService {
    *   message: string
    * }
    */
-  async sendEmailResetPassword(account_id: string, email: string) {
+  async sendEmailResetPassword(
+    account_id: string,
+    email: string
+  ): Promise<{
+    message: string
+  }> {
     const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
     const resetPasswordToken = await this.createEmailResetPasswordToken(account_id, secretPasscode)
     console.log(resetPasswordToken)
@@ -422,7 +472,7 @@ class AccountService {
    * @param account_id: string
    * @returns: void
    */
-  async verifyPasscodeResetPassword(passcode: string, account_id: string) {
+  async verifyPasscodeResetPassword(passcode: string, account_id: string): Promise<void> {
     const userToken = await redisClient.get(`${process.env.JWT_RESET_PASSWORD_TOKEN}:${account_id}`)
     const userTokenParse = await verifyToken({
       token: userToken as string,
