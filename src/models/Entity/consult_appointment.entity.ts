@@ -11,7 +11,6 @@ import {
   Transaction
 } from 'typeorm'
 import Account from './account.entity.js'
-import Feedback from './feedback.entity.js'
 import ConsultantPattern from './consultant_pattern.entity.js'
 import ConsultReport from './consult_report.entity.js'
 import { StatusAppointment } from '../../enum/statusAppointment.enum.js'
@@ -49,10 +48,6 @@ export default class ConsultAppointment implements ConsultAppointmentType {
   @OneToOne(() => ConsultantPattern, (consultant_pattern: ConsultantPattern) => consultant_pattern.consult_appointment)
   @JoinColumn({ name: 'pattern_id' })
   consultant_pattern: ConsultantPattern
-
-  @OneToOne(() => Feedback, (feedback: Feedback) => feedback.consult_appointment)
-  @JoinColumn({ name: 'feed_id' })
-  feedback: Feedback | null
 
   @OneToOne(() => ConsultReport, (report: ConsultReport) => report.consult_appointment)
   @JoinColumn({ name: 'report_id' })

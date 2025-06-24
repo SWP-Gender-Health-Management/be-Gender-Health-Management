@@ -11,11 +11,18 @@ const consultReportRepository = AppDataSource.getRepository(ConsultReport)
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
 
 export class ConsultReportService {
+  /**
+   * @description Create a new consult report
+   * @param app_id - The ID of the consult appointment
+   * @param name - The name of the consult report
+   * @param description - The description of the consult report
+   * @returns The created consult report
+   */
   // Create a new consult report
-  async createConsultReport(data: any): Promise<ConsultReport> {
+  async createConsultReport(app_id: string, name: string, description: string): Promise<ConsultReport> {
     // Validate consult appointment
     const consultAppointment = await consultAppointmentRepository.findOne({
-      where: { app_id: data.app_id },
+      where: { app_id },
       relations: ['report']
     })
     if (!consultAppointment) {
@@ -34,7 +41,7 @@ export class ConsultReportService {
     }
 
     // Validate name
-    if (!data.name || data.name.trim() === '') {
+    if (!name || name.trim() === '') {
       throw new ErrorWithStatus({
         message: CONSULT_REPORT_MESSAGES.NAME_REQUIRED,
         status: HTTP_STATUS.BAD_REQUEST
@@ -42,7 +49,7 @@ export class ConsultReportService {
     }
 
     // Validate description
-    if (!data.description || data.description.trim() === '') {
+    if (!description || description.trim() === '') {
       throw new ErrorWithStatus({
         message: CONSULT_REPORT_MESSAGES.DESCRIPTION_REQUIRED,
         status: HTTP_STATUS.BAD_REQUEST
@@ -51,8 +58,8 @@ export class ConsultReportService {
 
     const consultReport = consultReportRepository.create({
       consult_appointment: consultAppointment,
-      name: data.name,
-      description: data.description
+      name: name || '',
+      description: description || ''
     })
 
     // Save the consult report
@@ -65,6 +72,12 @@ export class ConsultReportService {
     return savedReport
   }
 
+  /**
+   * @description Get all consult reports
+   * @param filter - The filter for the consult reports
+   * @param pageVar - The page and limit for the consult reports
+   * @returns The consult reports
+   */
   // Get all consult reports
   async getAllConsultReports(pageVar: { limit: number, page: number }): Promise<ConsultReport[]> {
     let {limit, page} = pageVar;
@@ -72,7 +85,7 @@ export class ConsultReportService {
       limit = LIMIT.default;
       page = 1;
     }
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
     return await consultReportRepository.find({
       skip,
       take: limit,
@@ -80,6 +93,11 @@ export class ConsultReportService {
     })
   }
 
+  /**
+   * @description Get a consult report by ID
+   * @param report_id - The ID of the consult report
+   * @returns The consult report
+   */
   // Get a consult report by ID
   async getConsultReportById(report_id: string): Promise<ConsultReport> {
     const consultReport = await consultReportRepository.findOne({
@@ -97,6 +115,11 @@ export class ConsultReportService {
     return consultReport
   }
 
+  /**
+   * @description Get a consult report by Consult Appointment ID
+   * @param app_id - The ID of the consult appointment
+   * @returns The consult report
+   */
   // Get consult report by Consult Appointment ID
   async getConsultReportByAppointmentId(app_id: string): Promise<ConsultReport> {
     const consultAppointment = await consultAppointmentRepository.findOne({ where: { app_id } })
@@ -122,6 +145,12 @@ export class ConsultReportService {
     return consultReport
   }
 
+  /**
+   * @description Update a consult report
+   * @param report_id - The ID of the consult report
+   * @param data - The data for the consult report
+   * @returns The updated consult report
+   */
   // Update a consult report
   async updateConsultReport(report_id: string, data: any): Promise<ConsultReport> {
     const consultReport = await this.getConsultReportById(report_id)
@@ -191,6 +220,11 @@ export class ConsultReportService {
     return updatedReport
   }
 
+  /**
+   * @description Delete a consult report
+   * @param report_id - The ID of the consult report
+   * @returns The deleted consult report
+   */
   // Delete a consult report
   async deleteConsultReport(report_id: string): Promise<void> {
     const consultReport = await this.getConsultReportById(report_id)

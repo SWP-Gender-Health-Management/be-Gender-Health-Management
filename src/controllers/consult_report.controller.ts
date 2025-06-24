@@ -68,7 +68,8 @@ import consultReportService from '~/services/consult_report.service.js'
 // Create a new consult report
 export const createConsultReport = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultReportService.createConsultReport(req.body)
+    const { app_id, name, description } = req.body
+    const result = await consultReportService.createConsultReport(app_id, name, description)
     res.status(HTTP_STATUS.CREATED).json({
       message: CONSULT_REPORT_MESSAGES.REPORT_CREATED_SUCCESS,
       result
@@ -108,7 +109,12 @@ export const createConsultReport = async (req: Request, res: Response, next: Nex
 // Get all consult reports
 export const getAllConsultReports = async (req: Request, res: Response, next: NextFunction) => {
   try {
+<<<<<<< HEAD
     const result = await consultReportService.getAllConsultReports(req.query)
+=======
+    const { email, account_id, ...filter } = req.body
+    const result = await consultReportService.getAllConsultReports(filter, req.query)
+>>>>>>> 4050a932c3c24c9db613a953c041e004acb9f108
     res.status(HTTP_STATUS.OK).json({
       message: CONSULT_REPORT_MESSAGES.REPORTS_RETRIEVED_SUCCESS,
       result

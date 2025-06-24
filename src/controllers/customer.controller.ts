@@ -73,7 +73,8 @@ export const getCustomerController = async (req: Request, res: Response, next: N
  */
 // Track menstrual cycle
 export const trackPeriodController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await customerService.createMenstrualCycle(req.body)
+  const { account_id, start_date, end_date, period, note } = req.body
+  const result = await customerService.createMenstrualCycle(account_id, start_date, end_date, period, note)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.CREATE_MENSTRUAL_CYCLE_SUCCESS,
     data: result
@@ -137,7 +138,8 @@ export const trackPeriodController = async (req: Request, res: Response, next: N
  */
 // Predict menstrual cycle
 export const predictPeriodController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await customerService.predictPeriod(req.body)
+  const { account_id } = req.body
+  const result = await customerService.predictPeriod(account_id)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.PREDICT_PERIOD_SUCCESS,
     data: result
@@ -210,7 +212,8 @@ export const predictPeriodController = async (req: Request, res: Response, next:
  */
 // Update menstrual cycle
 export const updateMenstrualCycleController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await customerService.updateMenstrualCycle(req.body)
+  const { account_id, start_date, end_date, note } = req.body
+  const result = await customerService.updateMenstrualCycle(account_id, start_date, end_date, note)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_UPDATED,
     data: result
@@ -259,7 +262,8 @@ export const updateMenstrualCycleController = async (req: Request, res: Response
  */
 // Create notification
 export const createNotificationController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await customerService.createNotification(req.body)
+  const { account_id } = req.body
+  const result = await customerService.createNotification(account_id)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_SCHEDULED_NOTIFICATION,
     data: result
@@ -332,7 +336,8 @@ export const createNotificationController = async (req: Request, res: Response, 
  */
 // Create laboratory appointment
 export const createLaborarityAppointmentController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await customerService.createLaborarityAppointment(req.body)
+  const { account_id, laborarity_id, slot_id, date } = req.body
+  const result = await customerService.createLaborarityAppointment(account_id, laborarity_id, slot_id, date)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.LABORARITY_APPOINTMENT_CREATED_SUCCESS,
     data: result

@@ -53,7 +53,13 @@ export const USERS_MESSAGES = {
   EMAIL_NOT_EXIST: 'Email is not exist',
   SEND_PASSCODE_RESET_PASSWORD_SUCCESS: 'Send passcode reset password successfully',
   VERIFY_PASSCODE_RESET_PASSWORD_SUCCESS: 'Verify passcode reset password successfully',
-  PERMISSION_DENIED: 'Permission denied'
+  PERMISSION_DENIED: 'Permission denied',
+  REFRESH_TOKEN_SUCCESS: 'Refresh token successfully'
+}
+
+export const REFRESH_TOKEN_MESSAGES = {
+  REFRESH_TOKEN_NOT_FOUND: 'Refresh token not found',
+  INVALID_REFRESH_TOKEN: 'Invalid refresh token'
 }
 
 export const CUSTOMER_MESSAGES = {
@@ -137,7 +143,8 @@ export const LABORARITY_MESSAGES = {
   LABORATORY_DELETED_SUCCESS: 'Laboratory deleted successfully',
   LABORATORY_NAME_INVALID: 'Laboratory name is invalid',
   LABORATORY_DESCRIPTION_REQUIRED: 'Laboratory description is required',
-  LABORATORY_PRICE_INVALID: 'Laboratory price is invalid'
+  LABORATORY_PRICE_INVALID: 'Laboratory price is invalid',
+  LABORATORY_NAME_REQUIRED: 'Laboratory name is required'
 }
 
 export const TRANSACTION_MESSAGES = {

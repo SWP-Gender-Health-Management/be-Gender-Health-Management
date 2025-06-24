@@ -71,7 +71,8 @@ import feedbackService from '~/services/feedback.service.js'
 // Create a new feedback
 export const createFeedback = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await feedbackService.createFeedback(req.body)
+    const { app_id, lab_id, content, rating } = req.body
+    const result = await feedbackService.createFeedback(app_id, lab_id, content, rating)
     res.status(HTTP_STATUS.CREATED).json({
       message: FEEDBACK_MESSAGES.FEEDBACK_CREATED_SUCCESS,
       result
@@ -111,8 +112,13 @@ export const createFeedback = async (req: Request, res: Response, next: NextFunc
 // Get all feedbacks
 export const getAllFeedbacks = async (req: Request, res: Response, next: NextFunction) => {
   try {
+<<<<<<< HEAD
     
     const result = await feedbackService.getAllFeedbacks(req.query)
+=======
+    const { email, account_id, ...filter } = req.body
+    const result = await feedbackService.getAllFeedbacks(filter, req.query)
+>>>>>>> 4050a932c3c24c9db613a953c041e004acb9f108
     res.status(HTTP_STATUS.OK).json({
       message: FEEDBACK_MESSAGES.FEEDBACKS_RETRIEVED_SUCCESS,
       result
@@ -167,7 +173,8 @@ export const getAllFeedbacks = async (req: Request, res: Response, next: NextFun
 // Get a feedback by ID
 export const getByIdFeedback = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await feedbackService.getFeedbackById(req.params.feed_id)
+    const { feed_id } = req.params
+    const result = await feedbackService.getFeedbackById(feed_id)
     res.status(HTTP_STATUS.OK).json({
       message: FEEDBACK_MESSAGES.FEEDBACK_RETRIEVED_SUCCESS,
       result
@@ -222,7 +229,8 @@ export const getByIdFeedback = async (req: Request, res: Response, next: NextFun
 // Get feedback by Consult Appointment ID
 export const getFeedbackByConsultAppointmentId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await feedbackService.getFeedbackByConsultAppointmentId(req.params.app_id)
+    const { app_id } = req.params
+    const result = await feedbackService.getFeedbackByConsultAppointmentId(app_id)
     res.status(HTTP_STATUS.OK).json({
       message: FEEDBACK_MESSAGES.FEEDBACK_RETRIEVED_SUCCESS,
       result
@@ -277,7 +285,8 @@ export const getFeedbackByConsultAppointmentId = async (req: Request, res: Respo
 // Get feedback by Laboratory Appointment ID
 export const getFeedbackByLaboratoryAppointmentId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await feedbackService.getFeedbackByLaboratoryAppointmentId(req.params.lab_id)
+    const { lab_id } = req.params
+    const result = await feedbackService.getFeedbackByLaboratoryAppointmentId(lab_id)
     res.status(HTTP_STATUS.OK).json({
       message: FEEDBACK_MESSAGES.FEEDBACK_RETRIEVED_SUCCESS,
       result
@@ -362,7 +371,9 @@ export const getFeedbackByLaboratoryAppointmentId = async (req: Request, res: Re
 // Update a feedback
 export const updateFeedback = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await feedbackService.updateFeedback(req.params.feed_id, req.body)
+    const { feed_id } = req.params
+    const { app_id, lab_id, content, rating } = req.body
+    const result = await feedbackService.updateFeedback(feed_id, app_id, lab_id, content, rating)
     res.status(HTTP_STATUS.OK).json({
       message: FEEDBACK_MESSAGES.FEEDBACK_UPDATED_SUCCESS,
       result
@@ -415,7 +426,8 @@ export const updateFeedback = async (req: Request, res: Response, next: NextFunc
 // Delete a feedback
 export const deleteFeedback = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await feedbackService.deleteFeedback(req.params.feed_id)
+    const { feed_id } = req.params
+    await feedbackService.deleteFeedback(feed_id)
     res.status(HTTP_STATUS.OK).json({
       message: FEEDBACK_MESSAGES.FEEDBACK_DELETED_SUCCESS
     })

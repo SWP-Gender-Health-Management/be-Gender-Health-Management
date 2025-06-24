@@ -7,13 +7,14 @@ import {
   trackPeriodController,
   updateMenstrualCycleController
 } from '../controllers/customer.controller.js'
-import { validateAccessToken } from '../middlewares/account.middleware.js'
+import { restrictTo, validateAccessToken } from '../middlewares/account.middleware.js'
 import {
   validateCreateLaborarityAppointment,
   validateTrackPeriod,
   validateUpdateMenstrualCycle
 } from '../middlewares/customer.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
+import { Role } from '~/enum/role.enum.js'
 
 const customerRoute = Router()
 //customer
@@ -29,7 +30,12 @@ customerRoute.get('/get-customer', wrapRequestHandler(getCustomerController))
     end_date: string
   }
 */
-customerRoute.post('/track-period', validateAccessToken, validateTrackPeriod, wrapRequestHandler(trackPeriodController))
+customerRoute.post(
+  '/track-period',
+  restrictTo(Role.CUSTOMER),
+  validateTrackPeriod,
+  wrapRequestHandler(trackPeriodController)
+)
 
 /*
   Description: xem dự đoán chu kì kinh nguyệt
@@ -39,7 +45,7 @@ customerRoute.post('/track-period', validateAccessToken, validateTrackPeriod, wr
     account_id: string
   }
 */
-customerRoute.get('/predict-period', validateAccessToken, wrapRequestHandler(predictPeriodController))
+customerRoute.get('/predict-period', restrictTo(Role.CUSTOMER), wrapRequestHandler(predictPeriodController))
 
 /*
   Description: cập nhật thông tin chu kì kinh nguyệt
@@ -67,7 +73,7 @@ customerRoute.put(
     access_token: string
   }
 */
-customerRoute.post('/create-notification', validateAccessToken, wrapRequestHandler(createNotificationController))
+customerRoute.post('/create-notification', restrictTo(Role.CUSTOMER), wrapRequestHandler(createNotificationController))
 
 /*
   description: đăng kí lịch xét nghiệm
@@ -98,7 +104,7 @@ customerRoute.post('/create-notification', validateAccessToken, wrapRequestHandl
 
 customerRoute.post(
   '/create-laborarity-appointment',
-  validateAccessToken,
+  restrictTo(Role.CUSTOMER),
   validateCreateLaborarityAppointment,
   wrapRequestHandler(createLaborarityAppointmentController)
 )

@@ -13,10 +13,17 @@ const accountRepository = AppDataSource.getRepository(Account)
 const questionRepository = AppDataSource.getRepository(Question)
 
 export class ReplyService {
+  /**
+   * @description Create a new reply
+   * @param consultant_id - The ID of the consultant
+   * @param ques_id - The ID of the question
+   * @param content - The content of the reply
+   * @returns The created reply
+   */
   // Create a new reply
-  async createReply(data: any): Promise<Reply> {
+  async createReply(consultant_id: string, ques_id: string, content: string): Promise<Reply> {
     // Validate consultant (account)
-    const consultant = await accountRepository.findOne({ where: { account_id: data.consultant_id } })
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
         message: REPLY_MESSAGES.CONSULTANT_NOT_FOUND,
@@ -25,7 +32,7 @@ export class ReplyService {
     }
 
     // Validate question
-    const question = await questionRepository.findOne({ where: { ques_id: data.ques_id }, relations: ['reply'] })
+    const question = await questionRepository.findOne({ where: { ques_id: ques_id }, relations: ['reply'] })
     if (!question) {
       throw new ErrorWithStatus({
         message: REPLY_MESSAGES.QUESTION_NOT_FOUND,
@@ -42,7 +49,7 @@ export class ReplyService {
     }
 
     // Validate content
-    if (!data.content || data.content.trim() === '') {
+    if (!content || content.trim() === '') {
       throw new ErrorWithStatus({
         message: REPLY_MESSAGES.CONTENT_REQUIRED,
         status: HTTP_STATUS.BAD_REQUEST
@@ -52,7 +59,7 @@ export class ReplyService {
     const reply = replyRepository.create({
       consultant: consultant,
       question: question,
-      content: data.content
+      content: content
     })
 
     // Save the reply
@@ -65,6 +72,12 @@ export class ReplyService {
     return savedReply
   }
 
+  /**
+   * @description Get all replies
+   * @param filter - The filter for the replies
+   * @param pageVar - The page and limit for the replies
+   * @returns The replies
+   */
   // Get all replies
   async getAllReplies(pageVar: { limit: number, page: number }): Promise<Reply[]> {
     let { limit, page } = pageVar;
@@ -72,7 +85,7 @@ export class ReplyService {
       limit = LIMIT.default;
       page = 1;
     }
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
 
     return await replyRepository.find({
       skip,
@@ -81,6 +94,11 @@ export class ReplyService {
     })
   }
 
+  /**
+   * @description Get a reply by ID
+   * @param reply_id - The ID of the reply
+   * @returns The reply
+   */
   // Get a reply by ID
   async getReplyById(reply_id: string): Promise<Reply> {
     const reply = await replyRepository.findOne({
@@ -98,6 +116,13 @@ export class ReplyService {
     return reply
   }
 
+  /**
+   * @description Get replies by Consultant ID
+   * @param consultant_id - The ID of the consultant
+   * @param filter - The filter for the replies
+   * @param pageVar - The page and limit for the replies
+   * @returns The replies
+   */
   // Get replies by Consultant ID
   async getRepliesByConsultantId(consultant_id: string, pageVar: { limit: number, page: number }): Promise<Reply[]> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
@@ -108,12 +133,12 @@ export class ReplyService {
       })
     }
 
-    let { limit, page } = pageVar;
+    let { limit, page } = pageVar
     if (!limit || !page) {
       limit = LIMIT.default;
       page = 1;
     }
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
 
     const replies = await replyRepository.find({
       where: { consultant: consultant},
@@ -132,6 +157,11 @@ export class ReplyService {
     return replies
   }
 
+  /**
+   * @description Get a reply by Question ID
+   * @param ques_id - The ID of the question
+   * @returns The reply
+   */
   // Get reply by Question ID
   async getReplyByQuestionId(ques_id: string): Promise<Reply> {
     const question = await questionRepository.findOne({ where: { ques_id } })
@@ -157,14 +187,21 @@ export class ReplyService {
     return reply
   }
 
+  /**
+   * @description Update a reply
+   * @param reply_id - The ID of the reply
+   * @param consultant_id - The ID of the consultant
+   * @param content - The content of the reply
+   * @returns The updated reply
+   */
   // Update a reply
-  async updateReply(reply_id: string, data: any): Promise<Reply> {
+  async updateReply(reply_id: string, consultant_id: string, content: string): Promise<Reply> {
     const reply = await this.getReplyById(reply_id)
     let consultant
 
     // Validate consultant if provided
-    if (data.consultant_id && data.consultant_id !== reply.consultant.account_id) {
-      consultant = await accountRepository.findOne({ where: { account_id: data.consultant_id } })
+    if (consultant_id && consultant_id !== reply.consultant.account_id) {
+      consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
       if (!consultant || consultant.role !== Role.CONSULTANT) {
         throw new ErrorWithStatus({
           message: REPLY_MESSAGES.CONSULTANT_NOT_FOUND,
@@ -174,7 +211,7 @@ export class ReplyService {
     }
 
     // Validate content if provided
-    if (data.content && data.content.trim() === '') {
+    if (content && content.trim() === '') {
       throw new ErrorWithStatus({
         message: REPLY_MESSAGES.CONTENT_REQUIRED,
         status: HTTP_STATUS.BAD_REQUEST
@@ -183,12 +220,17 @@ export class ReplyService {
 
     Object.assign(reply, {
       consultant: consultant || reply.consultant,
-      content: data.content || reply.content
+      content: content || reply.content
     })
 
     return await replyRepository.save(reply)
   }
 
+  /**
+   * @description Delete a reply
+   * @param reply_id - The ID of the reply
+   * @returns The deleted reply
+   */
   // Delete a reply
   async deleteReply(reply_id: string): Promise<void> {
     const reply = await this.getReplyById(reply_id)
