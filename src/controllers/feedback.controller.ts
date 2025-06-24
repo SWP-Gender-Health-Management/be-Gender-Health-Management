@@ -112,13 +112,8 @@ export const createFeedback = async (req: Request, res: Response, next: NextFunc
 // Get all feedbacks
 export const getAllFeedbacks = async (req: Request, res: Response, next: NextFunction) => {
   try {
-<<<<<<< HEAD
     
     const result = await feedbackService.getAllFeedbacks(req.query)
-=======
-    const { email, account_id, ...filter } = req.body
-    const result = await feedbackService.getAllFeedbacks(filter, req.query)
->>>>>>> 4050a932c3c24c9db613a953c041e004acb9f108
     res.status(HTTP_STATUS.OK).json({
       message: FEEDBACK_MESSAGES.FEEDBACKS_RETRIEVED_SUCCESS,
       result

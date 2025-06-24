@@ -99,12 +99,7 @@ export const createLaboratory = async (req: Request, res: Response, next: NextFu
 // Get all laboratories
 export const getAllLaboratories = async (req: Request, res: Response, next: NextFunction) => {
   try {
-<<<<<<< HEAD
     const result = await laboratoryService.getAllLaboratories(req.query)
-=======
-    const { email, account_id, ...filter } = req.body
-    const result = await laboratoryService.getAllLaboratories(filter, req.query)
->>>>>>> 4050a932c3c24c9db613a953c041e004acb9f108
     res.status(HTTP_STATUS.OK).json({
       message: LABORARITY_MESSAGES.LABORARITY_CREATED_SUCCESS,
       result

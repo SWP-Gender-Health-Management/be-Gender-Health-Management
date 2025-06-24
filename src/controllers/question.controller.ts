@@ -222,12 +222,7 @@ export const getQuestionById = async (req: Request, res: Response, next: NextFun
 // Get questions by Customer ID
 export const getQuestionsByCustomerId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-<<<<<<< HEAD
     const result = await questionService.getQuestionsByCustomerId(req.params.customer_id, req.query)
-=======
-    const { customer_id, ...filter } = req.body
-    const result = await questionService.getQuestionsByCustomerId(customer_id, filter, req.query)
->>>>>>> 4050a932c3c24c9db613a953c041e004acb9f108
     res.status(HTTP_STATUS.OK).json({
       message: QUESTION_MESSAGES.QUESTIONS_RETRIEVED_SUCCESS,
       result
