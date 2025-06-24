@@ -6,7 +6,7 @@ import { TransactionStatus } from '../enum/transaction.enum.js'
 import { TRANSACTION_MESSAGES } from '../constants/message.js'
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { sendMail } from './email.service.js'
-import { WebhookDataType, WebhookType } from '@payos/node/lib/type.js'
+import { CheckoutResponseDataType, PaymentLinkDataType, WebhookDataType, WebhookType } from '@payos/node/lib/type.js'
 import LaboratoryAppointment from '../models/Entity/laborarity_appointment.entity.js'
 
 const transactionRepository = AppDataSource.getRepository(Transaction)
@@ -21,7 +21,7 @@ export class createTransactionService {
    * @returns The transaction
    */
   // Create a consult transaction
-  async createConsultTransaction(app_id: string, amount: number, description: string) {
+  async createConsultTransaction(app_id: string, amount: number, description: string): Promise<Transaction> {
     const appointment = await labAppointmentRepository.findOne({
       where: {
         app_id: app_id
@@ -48,7 +48,12 @@ export class createTransactionService {
    * @returns The transaction
    */
   // Create a laborarity transaction
-  async createLaborarityTransaction(app_id: string, orderCode: number, amount: number, description: string) {
+  async createLaborarityTransaction(
+    app_id: string,
+    orderCode: number,
+    amount: number,
+    description: string
+  ): Promise<Transaction> {
     const appointment: LaboratoryAppointment | null = await labAppointmentRepository.findOne({
       where: {
         app_id: app_id
@@ -82,7 +87,7 @@ export class createTransactionService {
    * @returns The payment url
    */
   // Create a payment url
-  async createPaymentUrlService(orderCode: string) {
+  async createPaymentUrlService(orderCode: string): Promise<CheckoutResponseDataType> {
     if (!orderCode) {
       throw new ErrorWithStatus({
         message: 'Passcode is required',
@@ -123,7 +128,7 @@ export class createTransactionService {
    * @returns The link payment
    */
   // Get a link payment
-  async getLinkPaymentService(orderCode: string) {
+  async getLinkPaymentService(orderCode: string): Promise<PaymentLinkDataType> {
     const linkPayment = await payos.getPaymentLinkInformation(orderCode)
     if (!linkPayment) {
       throw new ErrorWithStatus({
@@ -140,7 +145,7 @@ export class createTransactionService {
    * @returns The cancel payment
    */
   // Cancel a payment
-  async cancelPaymentService(orderCode: string) {
+  async cancelPaymentService(orderCode: string): Promise<PaymentLinkDataType> {
     const cancelPayment = await payos.cancelPaymentLink(orderCode)
     if (!cancelPayment) {
       throw new ErrorWithStatus({ message: TRANSACTION_MESSAGES.TRANSACTION_NOT_FOUND, status: HTTP_STATUS.NOT_FOUND })
@@ -154,7 +159,7 @@ export class createTransactionService {
    * @returns The verified data
    */
   // Confirm a webhook
-  async confirmWebhookService(webhookData: WebhookType) {
+  async confirmWebhookService(webhookData: WebhookType): Promise<WebhookDataType> {
     const verifiedData: WebhookDataType = payos.verifyPaymentWebhookData(webhookData)
     console.log('Webhook data verified successfully:', verifiedData)
     return verifiedData
@@ -166,7 +171,7 @@ export class createTransactionService {
    * @returns The verified data
    */
   // Receive a hook
-  async receiveHookService(webhookData: WebhookType) {
+  async receiveHookService(webhookData: WebhookType): Promise<{ message: string; data: WebhookDataType }> {
     // Sử dụng SDK để xác thực dữ liệu webhook
     // Thao tác này sẽ kiểm tra chữ ký (signature) để đảm bảo dữ liệu là từ PayOS
     const verifiedData: WebhookDataType = payos.verifyPaymentWebhookData(webhookData)

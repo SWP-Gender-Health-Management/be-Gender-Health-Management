@@ -265,8 +265,9 @@ export const changePasswordController = async (req: Request, res: Response, next
       status: 400
     })
   }
-  const account = JSON.parse((await redisClient.get(req.body.account_id)) as string)
-  await refreshTokenService.updateRefreshToken({ account: account, token: result.refreshToken })
+  const account = (await redisClient.get(`account:${account_id}`)) as string
+  const account_data = JSON.parse(account)
+  await refreshTokenService.updateRefreshToken({ account: account_data, token: result.refreshToken })
 
   // res.cookie('refreshToken', result.refreshToken, {
   //   httpOnly: true,
