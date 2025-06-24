@@ -29,8 +29,8 @@ const blogRoute = Router()
 */
 blogRoute.post(
   '/create-blog',
-  validateAccessToken,
-  restrictTo(Role.CONSULTANT),
+  // validateAccessToken,
+  // restrictTo(Role.CONSULTANT),
   uploadBlogImagesMiddleware.array('images', 10),
   wrapRequestHandler(createBlog)
 )
@@ -56,7 +56,7 @@ blogRoute.get(
 */
 blogRoute.get(
   '/get-blog-by-id/:blog_id',
-  validateAccessToken,
+  // validateAccessToken,
   restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
   wrapRequestHandler(getBlogById)
 )
@@ -69,7 +69,7 @@ blogRoute.get(
 */
 blogRoute.get(
   '/get-blog-by-account/:account_id',
-  validateAccessToken,
+  // validateAccessToken,
   restrictTo(Role.ADMIN, Role.CONSULTANT),
   wrapRequestHandler(getBlogsByAccountId)
 )
@@ -90,7 +90,7 @@ blogRoute.get(
 */
 blogRoute.put(
   '/update-blog/:blog_id',
-  validateAccessToken,
+  // validateAccessToken,
   restrictTo(Role.CONSULTANT),
   uploadBlogImagesMiddleware.array('images', 10),
   wrapRequestHandler(updateBlog)
@@ -104,7 +104,7 @@ blogRoute.put(
 */
 blogRoute.delete(
   '/delete-blog/:blog_id',
-  validateAccessToken,
+  // validateAccessToken,
   restrictTo(Role.ADMIN, Role.CONSULTANT),
   wrapRequestHandler(deleteBlog)
 )

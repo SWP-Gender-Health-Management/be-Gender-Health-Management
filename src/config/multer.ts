@@ -9,10 +9,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Đường dẫn thư mục lưu trữ
+const uploadDir = path.join(__dirname, '../../uploads');
 const avatarDir = path.join(__dirname, '../../uploads/avatars');
 const blogImageDir = path.join(__dirname, '../../uploads/blog_images');
 
-
+ensureDir(uploadDir);
 ensureDir(avatarDir);
 ensureDir(blogImageDir);
 
