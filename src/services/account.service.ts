@@ -9,9 +9,12 @@ import Account from '../models/Entity/account.entity.js'
 import { ErrorWithStatus } from '../models/Error.js'
 import { USERS_MESSAGES } from '../constants/message.js'
 import redisClient from '../config/redis.config.js'
+import { OAuth2Client } from 'google-auth-library'
 
 config()
 const accountRepository = AppDataSource.getRepository(Account)
+const client = new OAuth2Client(process.env.GG_AUTH_CLIENTID as string) // Lấy Client ID từ Doppler/.env
+
 class AccountService {
   /**
    * @description: Kiểm tra email đã tồn tại trong database
@@ -47,12 +50,11 @@ class AccountService {
    * @param password: string
    * @returns: string
    */
-  async createAccessToken(account_id: string, email: string, password: string) {
+  async createAccessToken(account_id: string, email: string) {
     const token = await signToken({
       payload: {
         account_id: account_id,
-        email: email,
-        password: password
+        email: email
       },
       secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
       options: {
@@ -69,12 +71,11 @@ class AccountService {
    * @param password: string
    * @returns: string
    */
-  async createRefreshToken(account_id: string, email: string, password: string) {
+  async createRefreshToken(account_id: string, email: string) {
     return await signToken({
       payload: {
         account_id: account_id,
-        email: email,
-        password: password
+        email: email
       },
       secretKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
       options: {
@@ -124,8 +125,8 @@ class AccountService {
     await accountRepository.save(user)
 
     const [accessToken, refreshToken, emailVerifiedToken] = await Promise.all([
-      this.createAccessToken(user.account_id, email, passwordHash),
-      this.createRefreshToken(user.account_id, email, passwordHash),
+      this.createAccessToken(user.account_id, email),
+      this.createRefreshToken(user.account_id, email),
       this.createEmailVerifiedToken(user.account_id, secretPasscode)
     ])
     // await this.sendEmailVerified(user.account_id)
@@ -157,12 +158,55 @@ class AccountService {
     const user = (await redisClient.get(`account:${account_id}`)) as string
     const user_data = JSON.parse(user)
     const [accessToken, refreshToken] = await Promise.all([
-      this.createAccessToken(user_data.account_id, email, password),
-      this.createRefreshToken(user_data.account_id, email, password)
+      this.createAccessToken(user_data.account_id, email),
+      this.createRefreshToken(user_data.account_id, email)
     ])
     console.log('accessToken:', accessToken)
     console.log('refreshToken:', refreshToken)
     return { accessToken, refreshToken }
+  }
+
+  async googleVerify(token: string) {
+    // Xác minh token với Google
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GG_AUTH_CLIENTID as string // Xác định rằng token này dành cho ứng dụng của bạn
+    })
+
+    const payload = ticket.getPayload()
+    if (!payload) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.GOOGLE_ACCOUNT_NOT_FOUND,
+        status: 400
+      })
+    }
+    // payload chứa thông tin người dùng: { sub, email, name, picture, ... }
+    const googleId = payload.sub
+    const email = payload.email
+    const displayName = payload.name
+    const avatar = payload.picture
+
+    // Tìm hoặc tạo người dùng trong database của bạn (logic tương tự Passport)
+    let account = await accountRepository.findOne({ where: { email: email } })
+
+    if (!account) {
+      // Nếu người dùng không tồn tại, tạo mới
+      account = accountRepository.create({
+        email: email,
+        full_name: displayName,
+        avatar: avatar
+      })
+      await accountRepository.save(account)
+    }
+
+    // Tạo JWT token của riêng ứng dụng để trả về cho client
+    const [accessToken, refreshToken] = await Promise.all([
+      this.createAccessToken(account.account_id, email as string),
+      this.createRefreshToken(account.account_id, email as string)
+    ])
+
+    // Trả về token và thông tin người dùng
+    return { accessToken, refreshToken, account }
   }
 
   /**
@@ -183,8 +227,8 @@ class AccountService {
     const user: Account = JSON.parse(userRedis as string)
     user.password = passwordHash
     const [accessToken, refreshToken] = await Promise.all([
-      this.createAccessToken(account_id, user.email, passwordHash),
-      this.createRefreshToken(account_id, user.email, passwordHash),
+      this.createAccessToken(account_id, user.email as string),
+      this.createRefreshToken(account_id, user.email as string),
       redisClient.set(`account:${account_id}`, JSON.stringify(user), 'EX', 60 * 60)
     ])
     return { accessToken, refreshToken }
