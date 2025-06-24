@@ -7,10 +7,12 @@ import {
   loginController,
   logoutController,
   registerController,
+  resetPasswordController,
   sendEmailVerifiedController,
-  sendPasscodeResetPasswordController,
+  sendResetPasswordController,
   updateAccountController,
   verifyEmailController,
+  verifyResetPasswordController,
   viewAccountController
   // getAccountFromRedis
 } from '../controllers/account.controller.js'
@@ -21,6 +23,7 @@ import {
   validateLogin,
   validatePassCode,
   validateRegister,
+  validateResetPassword,
   validateUpdateAccount
 } from '../middlewares/account.middleware.js'
 import wrapRequestHandler from '~/utils/handle.js'
@@ -79,27 +82,35 @@ accountRoute.post(
 
 /*
   Description: send passcode to email to reset password
-  Path: /send-passcode-reset-password
+  Path: /send-reset-password
   Method: POST
   Body: {
     email: string
   }
 */
-accountRoute.post(
-  '/send-passcode-reset-password',
-  validateEmail,
-  wrapRequestHandler(sendPasscodeResetPasswordController)
-)
+accountRoute.post('/send-reset-password', validateEmail, wrapRequestHandler(sendResetPasswordController))
 
 /*
   Description: verify passcode to reset password
-  Path: /verify-passcode-reset-password
+  Path: /verify-reset-password
   Method: POST
   Body: {
     secretPasscode: string
   }
 */
-// accountRoute.post('/verify-passcode-reset-password', wrapRequestHandler(verifyPasscodeResetPasswordController))
+accountRoute.post('/verify-reset-password', validatePassCode, wrapRequestHandler(verifyResetPasswordController))
+
+/*
+  Description: change password
+  Path: /reset-password
+  Method: POST
+  Body: {
+    email: string
+    password: string 
+    new_password: string
+  }
+*/
+accountRoute.post('/reset-password', validateResetPassword, wrapRequestHandler(resetPasswordController))
 
 /*
   Description: verify email
