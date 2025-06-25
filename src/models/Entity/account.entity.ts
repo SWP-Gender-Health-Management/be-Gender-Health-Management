@@ -33,6 +33,7 @@ export interface AccountType {
   avatar?: string | null
   role: Role
   is_verified?: boolean
+  is_banned?: boolean
   // created_at: Timestamp
   // updated_at: Timestamp
 }
@@ -69,6 +70,9 @@ export default class Account implements AccountType {
   @Column({ type: 'boolean', default: false })
   is_verified: boolean
 
+  @Column({ type: 'boolean', default: false })
+  is_banned: boolean
+
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
@@ -88,7 +92,9 @@ export default class Account implements AccountType {
   @OneToMany(() => Blog, (blog: Blog) => blog.account)
   blog: Blog[]
 
-  @OneToMany(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.customer, { cascade: true })
+  @OneToMany(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.customer, {
+    cascade: true
+  })
   consult_appointment: ConsultAppointment[]
 
   @OneToMany(() => ConsultantPattern, (consultantPattern: ConsultantPattern) => consultantPattern.consultant)
@@ -105,7 +111,7 @@ export default class Account implements AccountType {
 
   @OneToMany(() => Notification, (notification: Notification) => notification.account)
   notification: Notification[]
-  
+
   @OneToMany(() => Feedback, (feedback: Feedback) => feedback.account)
   feedback: Feedback[]
 }

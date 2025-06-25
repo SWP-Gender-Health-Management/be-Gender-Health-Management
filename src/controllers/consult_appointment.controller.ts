@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 import HTTP_STATUS from '~/constants/httpStatus.js'
 import { CONSULTANT_APPOINTMENTS_MESSAGES } from '~/constants/message.js'
 import consultAppointmentService from '~/services/consult_appointment.service.js'
+import notificationService from '~/services/notification.service.js'
+import { TypeNoti } from '~/enum/type_noti.enum.js'
 
 /**
  * @swagger
@@ -78,6 +80,14 @@ export const createConsultAppointment = async (req: Request, res: Response, next
       customer_id,
       description,
       status
+    )
+    await notificationService.createNotification(
+      {
+        type: TypeNoti.APPOINTMENT_BOOKED,
+        title: 'Appointment booked successfully',
+        message: 'Your appointment has been booked successfully'
+      },
+      customer_id
     )
     res.status(HTTP_STATUS.CREATED).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_CREATED_SUCCESS,

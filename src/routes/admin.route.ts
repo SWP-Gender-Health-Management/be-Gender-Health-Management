@@ -7,7 +7,7 @@ import {
   createCustomerController,
   getAllStaffController
 } from '../controllers/admin.controller.js'
-import { validateCreateAccount } from '../middlewares/admin.middleware.js'
+import { validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
 import { restrictTo } from '~/middlewares/account.middleware.js'
 import { Role } from '~/enum/role.enum.js'
@@ -105,5 +105,15 @@ adminRoute.post(
   validateCreateAccount,
   wrapRequestHandler(createCustomerController)
 )
+
+/*
+  description: ban account
+  method: POST
+  path: /admin/ban-account
+  body: {
+    account_id: string
+  }
+*/
+adminRoute.post('/ban-account', restrictTo(Role.ADMIN), validateBanAccount, wrapRequestHandler(banAccountController))
 
 export default adminRoute

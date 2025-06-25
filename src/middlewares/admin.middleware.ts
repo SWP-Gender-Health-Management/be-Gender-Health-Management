@@ -51,3 +51,14 @@ export const validateCreateAccount = validate(
     }
   })
 )
+
+export const validateBanAccount = validate(
+  checkSchema({
+    account_id: {
+      isUUID: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: ADMIN_MESSAGES.ACCOUNT_ID_REQUIRED
+    }
+  })
+)

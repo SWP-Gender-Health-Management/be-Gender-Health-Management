@@ -124,7 +124,10 @@ export const ADMIN_MESSAGES = {
   FULL_NAME_REQUIRED: 'Full name is required',
   EMAIL_REQUIRED: 'Email is required',
   PASSWORD_REQUIRED: 'Password is required',
-  EMAIL_ALREADY_EXISTS: 'Email already exists'
+  EMAIL_ALREADY_EXISTS: 'Email already exists',
+  ACCOUNT_ID_REQUIRED: 'Account id is required',
+  ACCOUNT_BANNED_SUCCESS: 'Account banned successfully',
+  ACCOUNT_NOT_FOUND: 'Account not found'
 }
 
 export const LABORARITY_MESSAGES = {

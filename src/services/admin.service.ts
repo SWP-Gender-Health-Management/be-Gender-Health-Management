@@ -2,6 +2,8 @@ import { AppDataSource } from '../config/database.config.js'
 import Account from '../models/Entity/account.entity.js'
 import { Role } from '../enum/role.enum.js'
 import { hashPassword } from '../utils/crypto.js'
+import { ADMIN_MESSAGES, USERS_MESSAGES } from '~/constants/message.js'
+import { ErrorWithStatus } from '~/models/Error.js'
 
 const accountRepository = AppDataSource.getRepository(Account)
 
@@ -113,6 +115,22 @@ class AdminService {
     })
     await accountRepository.save(newCustomer)
     return newCustomer
+  }
+
+  async banAccount(account_id: string) {
+    const account = await accountRepository.findOne({
+      where: { account_id }
+    })
+    if (!account) {
+      throw new ErrorWithStatus({
+        message: ADMIN_MESSAGES.ACCOUNT_NOT_FOUND,
+        status: 404
+      })
+    }
+    await accountRepository.update(account_id, { is_banned: true })
+    return {
+      message: ADMIN_MESSAGES.ACCOUNT_BANNED_SUCCESS
+    }
   }
 }
 
