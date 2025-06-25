@@ -268,7 +268,7 @@ class AccountService {
     const [accessToken, refreshToken] = await Promise.all([
       this.createAccessToken(account_id, user.email as string),
       this.createRefreshToken(account_id, user.email as string),
-            redisClient.set(account_id, JSON.stringify(user), {
+      redisClient.set(account_id, JSON.stringify(user), {
         EX: 60 * 60
       })
     ])
@@ -370,7 +370,7 @@ class AccountService {
     await redisClient.set(account_id, JSON.stringify(user), {
       EX: 60 * 60
     })
-    return user
+    return user as Account
   }
 
   /**
