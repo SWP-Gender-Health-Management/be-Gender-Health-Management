@@ -23,6 +23,7 @@ import consultReportRoute from './routes/consult_report.route.js'
 import feedbackRoute from './routes/feedback.route.js'
 import blogRoute from './routes/blog.route.js'
 import { SocketServer } from './config/websocket.config.js'
+import { SocketIOService } from './services/websocket.service.js'
 
 dotenv.config()
 
@@ -41,7 +42,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 // create server Redis và socket server
 const server = http.createServer(app) //Tạo server HTTP từ app Express
 const socketServer = new SocketServer(server)
-export { socketServer }
+const websocketService = new SocketIOService(socketServer.io)
+export { socketServer, websocketService }
 // Initialize app (database and passport)
 initializeApp()
   .then((success) => {

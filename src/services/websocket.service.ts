@@ -1,8 +1,6 @@
 import { Server } from 'socket.io'
 import Notification from 'src/models/Entity/notification.entity.js'
 import { AppDataSource } from '~/config/database.config.js'
-import { TypeNoti } from '~/enum/type_noti.enum.js'
-import Account from '~/models/Entity/account.entity.js'
 
 const notificationRepository = AppDataSource.getRepository(Notification)
 
@@ -20,21 +18,22 @@ export class SocketIOService {
    * @param userId ID của người dùng cần nhận
    * @param data Dữ liệu của thông báo (ví dụ: { message: '...' })
    */
-  public async sendNotification(account_id: string, data: { type: TypeNoti; title: string; message: string }) {
+  public async sendNotification(account_id: string, data: Notification) {
     console.log(`Service đang gửi thông báo cho user: ${account_id}`)
 
     try {
       // Bước 1: Luôn luôn lưu thông báo vào DB trước
-      const notification = notificationRepository.create({
-        account: {
-          account_id: account_id
-        } as Account,
-        type: data.type,
-        title: data.title,
-        message: data.message,
-        is_read: false
+      const notification = await notificationRepository.findOne({
+        where: {
+          account: {
+            account_id: account_id
+          },
+          noti_id: data.noti_id
+        }
       })
-      await notificationRepository.save(notification)
+      if (!notification) {
+        throw new Error('Notification not found')
+      }
 
       // Bước 2: Dùng instance `this.io` để gửi sự kiện real-time đến phòng của user
       this.io.to(account_id).emit('new_notification', JSON.stringify(notification))

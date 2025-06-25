@@ -1,5 +1,3 @@
-// src/redis-client.ts
-
 import { createClient } from 'redis'
 import { config } from 'dotenv'
 config()
@@ -10,7 +8,7 @@ const port = process.env.REDIS_PORT as string
 console.log('Đang kết nối đến Redis...')
 const redisClient = createClient({ url: `redis://${host}:${port}` })
 
-redisClient.on('error', (err) => console.error('Lỗi Redis Client:', err))
+redisClient.on('error', (err: any) => console.error('Lỗi Redis Client:', err))
 redisClient.on('connect', () => console.log('✅ Đã kết nối Redis thành công!'))
 
 // Chỉ cần kết nối một lần
