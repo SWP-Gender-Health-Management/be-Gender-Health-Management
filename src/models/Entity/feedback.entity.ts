@@ -1,5 +1,14 @@
-import { Entity, Column, Timestamp, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm'
+import {
+  Entity,
+  Column,
+  Timestamp,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
+  ManyToOne
+} from 'typeorm'
 import { TypeAppointment } from '~/enum/type_appointment.enum.js'
+import Account from './account.entity.js'
 
 export interface FeedbackType {
   feed_id: string
@@ -33,4 +42,7 @@ export default class Feedback implements FeedbackType {
 
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
+
+  @ManyToOne(() => Account, (account: Account) => account.feedback)
+  account: Account
 }

@@ -16,7 +16,7 @@ class StaffPatternService {
    * @returns The staff pattern
    */
   // Add a staff pattern
-  async addStaffPattern(date: string, account_id: string, working_slot_id: string) {
+  async addStaffPattern(date: string, account_id: string, working_slot_id: string): Promise<StaffPattern> {
     // const [account, workingSlot] = await Promise.all([
     //   accountRepository.findOneBy({ account_id: account_id }),
     //   workingSlotRepository.findOneBy({ slot_id: working_slot_id })
@@ -37,7 +37,7 @@ class StaffPatternService {
    */
   // Get a staff pattern by date
   // get staff pattern by date
-  async getStaffPattern(date: string) {
+  async getStaffPattern(date: string): Promise<StaffPattern[]> {
     const staffPattern = await staffPatternRepository.find({
       where: { date: new Date(date) }
     })
@@ -49,7 +49,7 @@ class StaffPatternService {
    * @returns The staff patterns
    */
   // Get all staff patterns
-  async getAllStaffPattern() {
+  async getAllStaffPattern(): Promise<StaffPattern[]> {
     const staffPattern = await staffPatternRepository.find({
       where: { is_active: true }
     })
@@ -65,7 +65,12 @@ class StaffPatternService {
    * @returns The staff pattern
    */
   // Update a staff pattern
-  async updateStaffPattern(pattern_id: string, date?: string, account_id?: string, working_slot_id?: string) {
+  async updateStaffPattern(
+    pattern_id: string,
+    date?: string,
+    account_id?: string,
+    working_slot_id?: string
+  ): Promise<StaffPattern> {
     const staffPattern = await staffPatternRepository.findOneBy({ pattern_id })
     if (!staffPattern) {
       throw new Error(STAFF_PATTERN_MESSAGES.STAFF_PATTERN_NOT_FOUND)
@@ -87,7 +92,7 @@ class StaffPatternService {
    * @returns The staff pattern
    */
   // Delete a staff pattern
-  async deleteStaffPattern(pattern_id: string) {
+  async deleteStaffPattern(pattern_id: string): Promise<{ message: string }> {
     const staffPattern = await staffPatternRepository.findOneBy({ pattern_id })
     if (!staffPattern) {
       throw new Error(STAFF_PATTERN_MESSAGES.STAFF_PATTERN_NOT_FOUND)

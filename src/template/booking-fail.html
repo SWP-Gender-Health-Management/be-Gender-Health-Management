@@ -3,124 +3,540 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đặt Lịch Không Thành Công</title>
+    <title>Thanh Toán Thất Bại - MediCare</title>
     <style>
-      /* Sử dụng CSS tương tự như mẫu thành công, chỉ thay đổi màu sắc và nội dung */
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        background-color: #f7f7f7;
+      /* Reset và Base Styles */
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+
       .email-wrapper {
         width: 100%;
-        background-color: #f7f7f7;
-        padding: 20px 0;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: table;
       }
+
       .email-container {
-        max-width: 600px;
+        max-width: 650px;
         margin: 0 auto;
-        background-color: #ffffff;
-        border: 1px solid #e6e6e6;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        position: relative;
       }
+
+      .email-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ff4757 0%, #ff6b7a 100%);
+      }
+
+      /* Header Styles */
       .header {
-        background-color: #dc3545; /* Màu đỏ cho thất bại/lỗi */
+        background: linear-gradient(135deg, #ff4757 0%, #ff6b7a 100%);
         color: #ffffff;
-        padding: 30px;
+        padding: 40px 30px;
         text-align: center;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
+        position: relative;
+        overflow: hidden;
       }
+
+      .header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .error-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .error-icon::before {
+        content: '⚠️';
+        font-size: 40px;
+      }
+
       .header h1 {
+        font-size: 32px;
+        font-weight: 700;
         margin: 0;
-        font-size: 26px;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
+
+      .header-subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+        margin-top: 8px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Content Styles */
       .content {
-        padding: 30px 35px;
+        padding: 40px 35px;
+        background: #ffffff;
       }
-      .content h2 {
-        color: #333;
+
+      .greeting {
         font-size: 20px;
-        margin-top: 0;
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
       }
-      .content p {
+
+      .user-name {
+        color: #667eea;
+      }
+
+      .error-message {
         font-size: 16px;
         color: #555;
-      }
-      .appointment-details {
-        background-color: #f9f9f9;
-        border: 1px solid #eeeeee;
-        border-radius: 5px;
-        padding: 20px;
-        margin: 20px 0;
-      }
-      .appointment-details p {
-        margin: 5px 0;
-      }
-      .cta-button {
-        display: inline-block;
-        background-color: #007bff;
-        color: #ffffff;
-        padding: 12px 25px;
-        text-decoration: none;
-        border-radius: 5px;
-        font-weight: bold;
-        margin-top: 20px;
-      }
-      .footer {
+        margin-bottom: 25px;
         text-align: center;
+        line-height: 1.6;
+      }
+
+      .reason-box {
+        background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+        border: 1px solid #feb2b2;
+        border-radius: 12px;
         padding: 20px;
-        font-size: 12px;
+        margin: 25px 0;
+        border-left: 4px solid #f56565;
+      }
+
+      .reason-box .reason-label {
+        font-weight: 600;
+        color: #c53030;
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+
+      .reason-box .reason-text {
+        color: #742a2a;
+        font-size: 15px;
+      }
+
+      /* No Charge Notice */
+      .no-charge-notice {
+        background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+        border: 1px solid #9ae6b4;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 25px 0;
+        text-align: center;
+        border-left: 4px solid #48bb78;
+      }
+
+      .no-charge-notice p {
+        margin: 0;
+        color: #276749;
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      .no-charge-notice .icon {
+        font-size: 24px;
+        margin-right: 10px;
+      }
+
+      /* Appointment Info */
+      .appointment-info {
+        background: linear-gradient(135deg, #f8faff 0%, #eef5ff 100%);
+        border: 1px solid #e8f2ff;
+        border-radius: 16px;
+        padding: 25px;
+        margin: 30px 0;
+        border-left: 4px solid #667eea;
+      }
+
+      .appointment-info h3 {
+        color: #1a1a1a;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .appointment-info h3::before {
+        content: '📋';
+        margin-right: 10px;
+        font-size: 20px;
+      }
+
+      .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .info-item:last-child {
+        border-bottom: none;
+      }
+
+      .info-label {
+        font-weight: 600;
+        color: #333;
+        min-width: 120px;
+      }
+
+      .info-value {
+        color: #667eea;
+        font-weight: 500;
+        text-align: right;
+        flex: 1;
+      }
+
+      .services-list {
+        margin-top: 15px;
+      }
+
+      .services-list ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .services-list li {
+        background: rgba(102, 126, 234, 0.1);
+        padding: 8px 12px;
+        margin: 5px 0;
+        border-radius: 8px;
+        color: #667eea;
+        font-weight: 500;
+      }
+
+      .services-list li::before {
+        content: '•';
+        color: #667eea;
+        font-weight: bold;
+        margin-right: 8px;
+      }
+
+      /* Action Steps */
+      .action-steps {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        border: 1px solid #ffcc02;
+        border-radius: 16px;
+        padding: 25px;
+        margin: 30px 0;
+        border-left: 4px solid #ff9800;
+      }
+
+      .action-steps h3 {
+        color: #e65100;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .action-steps h3::before {
+        content: '🔄';
+        margin-right: 10px;
+        font-size: 20px;
+      }
+
+      .action-steps p {
+        color: #ef6c00;
+        line-height: 1.6;
+        margin-bottom: 15px;
+      }
+
+      /* CTA Buttons */
+      .cta-container {
+        text-align: center;
+        margin: 30px 0;
+      }
+
+      .primary-cta {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        margin: 0 10px 10px 0;
+      }
+
+      .primary-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: #ffffff;
+        text-decoration: none;
+      }
+
+      .secondary-cta {
+        display: inline-block;
+        background: transparent;
+        color: #667eea;
+        border: 2px solid #667eea;
+        padding: 13px 28px;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        margin: 0 10px 10px 0;
+      }
+
+      .secondary-cta:hover {
+        background: #667eea;
+        color: #ffffff;
+        text-decoration: none;
+      }
+
+      /* Footer */
+      .footer {
+        background: #f8faff;
+        padding: 30px 35px;
+        text-align: center;
+        border-top: 1px solid #e8f2ff;
+      }
+
+      .footer p {
+        margin: 8px 0;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .footer p:first-child {
+        font-weight: 600;
+        color: #1a1a1a;
+        font-size: 16px;
+      }
+
+      .footer p:last-child {
         color: #999;
+        font-size: 13px;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 600px) {
+        .email-wrapper {
+          padding: 20px 10px;
+        }
+
+        .content {
+          padding: 25px 20px;
+        }
+
+        .footer {
+          padding: 20px 15px;
+        }
+
+        .header h1 {
+          font-size: 26px;
+        }
+
+        .appointment-info,
+        .action-steps,
+        .reason-box,
+        .no-charge-notice {
+          padding: 20px;
+        }
+
+        .info-item {
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+        }
+
+        .info-value {
+          text-align: left;
+          margin-top: 4px;
+        }
+
+        .cta-container {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .primary-cta,
+        .secondary-cta {
+          margin: 0;
+          display: block;
+        }
+      }
+
+      /* Animation */
+      .error-icon {
+        animation: shake 0.8s ease-in-out;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
       }
     </style>
   </head>
   <body>
     <div class="email-wrapper">
       <div class="email-container">
+        <!-- Header -->
         <div class="header">
-          <h1>Thanh Toán Không Thành Công</h1>
+          <div class="error-icon"></div>
+          <h1>Thanh Toán Thất Bại</h1>
+          <p class="header-subtitle">Đặt lịch chưa được xác nhận</p>
         </div>
+
+        <!-- Content -->
         <div class="content">
-          <h2>Chào {{USER_NAME}},</h2>
-          <p>
-            Chúng tôi rất tiếc phải thông báo rằng giao dịch thanh toán cho lịch hẹn xét nghiệm của bạn đã không thành
-            công. Do đó, lịch hẹn của bạn **chưa được xác nhận** trong hệ thống của chúng tôi.
-          </p>
-          <p><strong>Lý do:</strong> Thanh toán thất bại.</p>
-          <p>Đừng lo lắng, **chưa có khoản phí nào được tính** vào tài khoản của bạn.</p>
+          <h2 class="greeting">
+            Chào <span class="user-name">{{USER_NAME}}</span>,
+          </h2>
 
-          <div class="appointment-details">
-            <h3>Thông tin lịch hẹn đã thử đặt:</h3>
-            <p><strong>Thời gian:</strong> {{SLOT_NAME}} ngày {{DATE}}</p>
-            <p><strong>Các dịch vụ đã chọn:</strong></p>
-            <ul>
-              {{LABORATORY_LIST}}
-            </ul>
-          </div>
-
-          <h3>Bạn cần làm gì?</h3>
-          <p>
-            Bạn có thể thử lại bằng cách nhấp vào nút bên dưới. Chúng tôi vẫn đang tạm giữ khung giờ này cho bạn trong
-            một thời gian ngắn.
+          <p class="error-message">
+            Chúng tôi rất tiếc phải thông báo rằng giao dịch thanh toán cho lịch
+            hẹn xét nghiệm của bạn đã không thành công. Do đó, lịch hẹn của bạn
+            <strong>chưa được xác nhận</strong> trong hệ thống của chúng tôi.
           </p>
 
-          <div style="text-align: center">
-            <a href="{{RETRY_PAYMENT_URL}}" class="cta-button">Thử thanh toán lại</a>
+          <!-- Reason -->
+          <div class="reason-box">
+            <div class="reason-label">🚫 Lý do thất bại:</div>
+            <div class="reason-text">
+              Thanh toán không thành công - vui lòng kiểm tra lại thông tin thẻ
+              hoặc tài khoản.
+            </div>
           </div>
 
-          <p style="margin-top: 25px">
-            Nếu bạn tiếp tục gặp sự cố hoặc muốn sử dụng phương thức thanh toán khác, vui lòng liên hệ với bộ phận hỗ
-            trợ của chúng tôi.
+          <!-- No Charge Notice -->
+          <div class="no-charge-notice">
+            <p>
+              <span class="icon">💳</span>
+              <strong>Đừng lo lắng!</strong> Chưa có khoản phí nào được tính vào
+              tài khoản của bạn.
+            </p>
+          </div>
+
+          <!-- Appointment Info -->
+          <div class="appointment-info">
+            <h3>Thông tin lịch hẹn đã thử đặt</h3>
+
+            <div class="info-item">
+              <span class="info-label">Thời gian:</span>
+              <span class="info-value">{{SLOT_NAME}}</span>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Ngày:</span>
+              <span class="info-value">{{DATE}}</span>
+            </div>
+
+            <div class="services-list">
+              <div class="info-label" style="margin-bottom: 10px">
+                Các dịch vụ đã chọn:
+              </div>
+              <ul>
+                {{LABORATORY_LIST}}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Action Steps -->
+          <div class="action-steps">
+            <h3>Bước tiếp theo</h3>
+            <p>
+              Bạn có thể thử thanh toán lại ngay bây giờ. Chúng tôi vẫn đang tạm
+              giữ khung giờ này cho bạn trong thời gian ngắn.
+            </p>
+            <p>
+              Nếu bạn tiếp tục gặp sự cố, vui lòng thử sử dụng phương thức thanh
+              toán khác hoặc liên hệ với bộ phận hỗ trợ của chúng tôi.
+            </p>
+          </div>
+
+          <!-- CTA Buttons -->
+          <div class="cta-container">
+            <a href="{{RETRY_PAYMENT_URL}}" class="primary-cta">
+              🔄 Thử thanh toán lại
+            </a>
+            <a href="{{CONTACT_SUPPORT_URL}}" class="secondary-cta">
+              💬 Liên hệ hỗ trợ
+            </a>
+          </div>
+
+          <p
+            style="
+              text-align: center;
+              margin-top: 25px;
+              color: #666;
+              font-size: 14px;
+            "
+          >
+            Chúng tôi luôn sẵn sàng hỗ trợ bạn. Vui lòng liên hệ nếu cần thêm
+            trợ giúp!
           </p>
         </div>
+
+        <!-- Footer -->
         <div class="footer">
-          <p>&copy; {{CURRENT_YEAR}} Tên Công Ty Của Bạn. Bảo lưu mọi quyền.</p>
-          <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email: {{SUPPORT_EMAIL}}</p>
+          <p>Chúng tôi xin lỗi về sự bất tiện này</p>
+          <p>Đội ngũ hỗ trợ MediCare luôn sẵn sàng giúp đỡ bạn 24/7</p>
+          <p>
+            © {{CURRENT_YEAR}} MediCare. Bảo lưu mọi quyền. | Hỗ trợ:
+            {{SUPPORT_EMAIL}}
+          </p>
         </div>
       </div>
     </div>

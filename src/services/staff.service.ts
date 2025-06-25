@@ -18,7 +18,7 @@ class StaffService {
    * @returns The number of staff available
    */
   // Count the number of staff available for a given date and slot
-  async countStaff(date: string, slot_id: string) {
+  async countStaff(date: string, slot_id: string): Promise<number> {
     const appointmentDate = new Date(date)
     const staff = await staffPatternRepository.count({
       where: {
@@ -39,7 +39,7 @@ class StaffService {
    * @returns The result entities
    */
   // Update the result of a laboratory appointment
-  async updateResult(app_id: string, result: any[]) {
+  async updateResult(app_id: string, result: any[]): Promise<Result[] | boolean> {
     const resultEntities = []
     for (const item of result) {
       const laborarity = await laborarityRepository.findOne({
@@ -73,7 +73,7 @@ class StaffService {
    * @returns The laboratory appointment entity
    */
   // Update the status of a laboratory appointment
-  async updateAppointmentStatus(appointment_id: string, status: number) {
+  async updateAppointmentStatus(appointment_id: string, status: number): Promise<LaboratoryAppointment | boolean> {
     const appointment = await laboratoryAppointmentRepository.findOne({
       where: { app_id: appointment_id }
     })
