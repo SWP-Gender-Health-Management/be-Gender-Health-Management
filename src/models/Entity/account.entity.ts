@@ -19,6 +19,7 @@ import ConsultantPattern from './consultant_pattern.entity.js'
 import LaboratoryAppointment from './laborarity_appointment.entity.js'
 import Reply from './reply.entity.js'
 import Question from './question.entity.js'
+import Notification from './notification.entity.js'
 
 export interface AccountType {
   account_id: string
@@ -100,4 +101,7 @@ export default class Account implements AccountType {
 
   @OneToMany(() => Question, (question: Question) => question.customer)
   question: Question[]
+
+  @OneToMany(() => Notification, (notification: Notification) => notification.account)
+  notification: Notification[]
 }
