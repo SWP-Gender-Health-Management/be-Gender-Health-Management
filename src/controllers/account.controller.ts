@@ -257,17 +257,15 @@ export const googleVerifyController = async (req: Request, res: Response, next: 
  *         description: Unauthorized (invalid token)
  */
 export const changePasswordController = async (req: Request, res: Response, next: NextFunction) => {
-  const { account_id, new_password } = req.body
-  const result = await accountService.changePassword(account_id, new_password)
+  const { account, newPassword } = req.body
+  const result = await accountService.changePassword(account.account_id, newPassword)
   if (!result) {
     throw new ErrorWithStatus({
       message: USERS_MESSAGES.CHANGE_PASSWORD_FAILED,
       status: 400
     })
   }
-  const account = (await redisClient.get(`account:${account_id}`)) as string
-  const account_data = JSON.parse(account)
-  await refreshTokenService.updateRefreshToken({ account: account_data, token: result.refreshToken })
+  await refreshTokenService.updateRefreshToken({ account: account, token: result.refreshToken })
 
   // res.cookie('refreshToken', result.refreshToken, {
   //   httpOnly: true,
@@ -284,20 +282,32 @@ export const changePasswordController = async (req: Request, res: Response, next
   })
 }
 
-export const sendPasscodeResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
-  const { account_id, email } = req.body
-  const result = await accountService.sendEmailResetPassword(account_id, email)
+export const sendResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
+  const { account, email } = req.body
+  console.log('account:', account)
+  const result = await accountService.sendEmailResetPassword(account.account_id, email)
   res.status(HTTP_STATUS.OK).json({
-    message: USERS_MESSAGES.SEND_PASSCODE_RESET_PASSWORD_SUCCESS,
+    message: USERS_MESSAGES.SEND_RESET_PASSWORD_SUCCESS,
     result
   })
 }
 
-export const verifyPasscodeResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
-  const { secretPasscode, account_id } = req.body
-  const result = await accountService.verifyPasscodeResetPassword(secretPasscode, account_id)
+export const verifyResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
+  const { passcode, account } = req.body
+  console.log(account)
+  const result = await accountService.verifyPasscodeResetPassword(passcode, account.account_id)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.VERIFY_PASSCODE_RESET_PASSWORD_SUCCESS,
+    result
+  })
+}
+
+export const resetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
+  const { account, newPassword } = req.body
+  console.log('newPassword:', newPassword)
+  const result = await accountService.resetPassword(account.account_id, newPassword)
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS,
     result
   })
 }

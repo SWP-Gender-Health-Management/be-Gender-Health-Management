@@ -10,6 +10,7 @@ import { ErrorWithStatus } from '../models/Error.js'
 import { USERS_MESSAGES } from '../constants/message.js'
 import redisClient from '../config/redis.config.js'
 import { OAuth2Client } from 'google-auth-library'
+import crypto from 'crypto'
 
 config()
 const accountRepository = AppDataSource.getRepository(Account)
@@ -248,12 +249,12 @@ class AccountService {
    */
   async changePassword(
     account_id: string,
-    new_password: string
+    newPassword: string
   ): Promise<{
     accessToken: string
     refreshToken: string
   }> {
-    const passwordHash = await hashPassword(new_password)
+    const passwordHash = await hashPassword(newPassword)
     const [userRedis] = await Promise.all([
       redisClient.get(`account:${account_id}`),
       accountRepository.update(account_id, { password: passwordHash })
@@ -445,13 +446,13 @@ class AccountService {
   ): Promise<{
     message: string
   }> {
-    const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
+    const secretPasscode = crypto.randomInt(100000, 999999).toString()
     const resetPasswordToken = await this.createEmailResetPasswordToken(account_id, secretPasscode)
-    console.log(resetPasswordToken)
+    console.log('resetPasswordToken:', resetPasswordToken)
 
     await Promise.all([
       //lưu token vào redis
-      redisClient.set(`${process.env.JWT_EMAIL_VERIFIED_TOKEN}:${account_id}`, resetPasswordToken, 'EX', 60 * 5),
+      redisClient.set(`${process.env.JWT_FORFOT_PASSWORD_TOKEN}:${account_id}`, resetPasswordToken, 'EX', 60 * 5),
       //gửi email
       sendMail(email, 'Verify your email', `Your passcode is ${secretPasscode}`, 'template/reset-password.html', {
         EMAIL: email,
@@ -462,7 +463,7 @@ class AccountService {
       })
     ])
     return {
-      message: USERS_MESSAGES.SEND_PASSCODE_RESET_PASSWORD_SUCCESS
+      message: USERS_MESSAGES.SEND_RESET_PASSWORD_SUCCESS
     }
   }
 
@@ -473,16 +474,33 @@ class AccountService {
    * @returns: void
    */
   async verifyPasscodeResetPassword(passcode: string, account_id: string): Promise<void> {
-    const userToken = await redisClient.get(`${process.env.JWT_RESET_PASSWORD_TOKEN}:${account_id}`)
+    const userToken = await redisClient.get(`${process.env.JWT_FORFOT_PASSWORD_TOKEN}:${account_id}`)
+    console.log('userToken:', userToken)
     const userTokenParse = await verifyToken({
       token: userToken as string,
       secretKey: process.env.JWT_SECRET_RESET_PASSWORD_TOKEN as string
     })
+    console.log(userTokenParse)
+    console.log(passcode)
     if (passcode !== userTokenParse.secretPasscode || userTokenParse.account_id !== account_id) {
       throw new ErrorWithStatus({
         message: USERS_MESSAGES.SECRET_PASSCODE_MISMATCH,
         status: 400
       })
+    }
+  }
+
+  async resetPassword(
+    account_id: string,
+    new_password: string
+  ): Promise<{
+    message: string
+  }> {
+    const passwordHash = await hashPassword(new_password)
+    await accountRepository.update(account_id, { password: passwordHash })
+    // await redisClient.del(`${process.env.JWT_FORFOT_PASSWORD_TOKEN}:${account_id}`)
+    return {
+      message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS
     }
   }
 }
