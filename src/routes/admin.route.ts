@@ -5,7 +5,8 @@ import {
   createStaffController,
   createConsultantController,
   createCustomerController,
-  getAllStaffController
+  getAllStaffController,
+  banAccountController
 } from '../controllers/admin.controller.js'
 import { validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
