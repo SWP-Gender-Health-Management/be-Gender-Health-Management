@@ -7,6 +7,7 @@ import Account from '../models/Entity/account.entity.js'
 import Reply from '../models/Entity/reply.entity.js'
 import { Role } from '../enum/role.enum.js'
 import { DeleteResult } from 'typeorm'
+import LIMIT from '~/constants/limit.js'
 
 const questionRepository = AppDataSource.getRepository(Question)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -47,16 +48,15 @@ export class QuestionService {
    * @returns The questions
    */
   // Get all questions
-  async getAllQuestions(filter: any, pageVar: any): Promise<Question[]> {
-    let { limit, page } = pageVar
+  async getAllQuestions(pageVar: { limit: number, page: number }): Promise<Question[]> {
+    let { limit, page } = pageVar;
     if (!limit || !page) {
-      limit = 0
-      page = 1
+      limit = LIMIT.default;
+      page = 1;
     }
     const skip = (page - 1) * limit
 
     return await questionRepository.find({
-      where: { ...filter },
       skip,
       take: limit,
       relations: ['customer', 'reply']
@@ -93,7 +93,7 @@ export class QuestionService {
    * @returns The questions
    */
   // Get questions by Customer ID
-  async getQuestionsByCustomerId(customer_id: string, filter: any, pageVar: any): Promise<Question[]> {
+  async getQuestionsByCustomerId(customer_id: string, pageVar: { limit: number, page: number }): Promise<Question[]> {
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -104,13 +104,13 @@ export class QuestionService {
 
     let { limit, page } = pageVar
     if (!limit || !page) {
-      limit = 0
-      page = 1
+      limit = LIMIT.default;
+      page = 1;
     }
     const skip = (page - 1) * limit
 
     const questions = await questionRepository.find({
-      where: { customer: customer, ...filter },
+      where: { customer: customer},
       skip,
       take: limit,
       relations: ['customer', 'reply']

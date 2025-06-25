@@ -51,10 +51,14 @@ export const USERS_MESSAGES = {
   PASSWORD_INVALID_OLD: 'Password is invalid',
   AUTHORIZATION_INVALID: 'Authorization is invalid',
   EMAIL_NOT_EXIST: 'Email is not exist',
-  SEND_PASSCODE_RESET_PASSWORD_SUCCESS: 'Send passcode reset password successfully',
+  SEND_RESET_PASSWORD_SUCCESS: 'Send reset password successfully',
   VERIFY_PASSCODE_RESET_PASSWORD_SUCCESS: 'Verify passcode reset password successfully',
   PERMISSION_DENIED: 'Permission denied',
-  REFRESH_TOKEN_SUCCESS: 'Refresh token successfully'
+  REFRESH_TOKEN_SUCCESS: 'Refresh token successfully',
+  GOOGLE_ACCOUNT_NOT_FOUND: 'Google account not found',
+  GOOGLE_VERIFY_SUCCESS: 'Google verify successfully',
+  GOOGLE_VERIFY_FAILED: 'Google verify failed',
+  RESET_PASSWORD_SUCCESS: 'Reset password successfully'
 }
 
 export const REFRESH_TOKEN_MESSAGES = {

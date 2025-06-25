@@ -1,6 +1,8 @@
+import LIMIT from '~/constants/limit.js'
 import { AppDataSource } from '../config/database.config.js'
 import { TypeAppointment } from '../enum/type_appointment.enum.js'
 import WorkingSlot from '../models/Entity/working_slot.entity.js'
+import { UpdateResult } from 'typeorm'
 
 const slotRepository = AppDataSource.getRepository(WorkingSlot)
 
@@ -14,7 +16,7 @@ class WorkingSlotService {
    * @returns The added slot
    */
   // Add a slot
-  async addSlot(name: string, start_at: string, end_at: string, type: string) {
+  async addSlot(name: string, start_at: string, end_at: string, type: string): Promise<WorkingSlot> {
     const slot: WorkingSlot = slotRepository.create({
       name: name,
       start_at: start_at,
@@ -31,10 +33,10 @@ class WorkingSlotService {
    * @returns The slots
    */
   // Get a slot by type
-  async getSlotByType(type: string, pageVar: any) {
+  async getSlotByType(type: string, pageVar: { limit: number; page: number }): Promise<WorkingSlot[]> {
     let { limit, page } = pageVar
     if (!limit || !page) {
-      limit = 0
+      limit = LIMIT.default
       page = 1
     }
     const skip = (page - 1) * limit
@@ -54,10 +56,10 @@ class WorkingSlotService {
    * @returns The slots
    */
   // Get all slots
-  async getSlot(pageVar: any) {
+  async getSlot(pageVar: { limit: number; page: number }): Promise<WorkingSlot[]> {
     let { limit, page } = pageVar
     if (!limit || !page) {
-      limit = 0
+      limit = LIMIT.default
       page = 1
     }
     const skip = (page - 1) * limit
@@ -77,7 +79,7 @@ class WorkingSlotService {
    * @returns The updated slot
    */
   // Update a slot
-  async updateSlot(id: string, name: string, start_at: string, end_at: string, type: number) {
+  async updateSlot(id: string, name: string, start_at: string, end_at: string, type: number): Promise<UpdateResult> {
     const slot = await slotRepository.findOne({
       where: {
         slot_id: id

@@ -73,6 +73,8 @@ export const validateLogin = validate(
             accountService.checkEmailExist(value),
             accountService.checkPassword(value, req.body.password)
           ])
+          console.log('Email:', user)
+          console.log('Password:', isPasswordValid)
           if (!user || !isPasswordValid) {
             throw new ErrorWithStatus({
               message: USERS_MESSAGES.EMAIL_OR_PASSWORD_INVALID,
@@ -185,6 +187,30 @@ export const validateEmail = validate(
       errorMessage: USERS_MESSAGES.EMAIL_NOT_EXIST,
       custom: {
         options: async (value, { req }) => {
+          const account = await accountService.checkEmailExist(value)
+          if (!account) {
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.EMAIL_NOT_EXIST,
+              status: HTTP_STATUS.BAD_REQUEST
+            })
+          }
+          req.body.account = account
+          return true
+        }
+      }
+    }
+  })
+)
+
+export const validatePassCode = validate(
+  checkSchema({
+    email: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: USERS_MESSAGES.EMAIL_NOT_EXIST,
+      custom: {
+        options: async (value, { req }) => {
           const user = await accountService.checkEmailExist(value)
           if (!user) {
             throw new ErrorWithStatus({
@@ -196,19 +222,62 @@ export const validateEmail = validate(
           return true
         }
       }
-    }
-  })
-)
-
-export const validatePassCode = validate(
-  checkSchema({
-    secretPasscode: {
+    },
+    passcode: {
       isString: true,
       trim: true,
       isLength: {
         options: { min: 6, max: 6 },
         errorMessage: USERS_MESSAGES.SECRET_PASSCODE_MUST_BE_6_CHARACTERS
       }
+    }
+  })
+)
+
+export const validateResetPassword = validate(
+  checkSchema({
+    email: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: USERS_MESSAGES.EMAIL_NOT_EXIST,
+      custom: {
+        options: async (value, { req }) => {
+          const user = await accountService.checkEmailExist(value)
+          if (!user) {
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.EMAIL_NOT_EXIST,
+              status: HTTP_STATUS.BAD_REQUEST
+            })
+          }
+          req.body.account = user
+          return true
+        }
+      }
+    },
+    newPassword: {
+      isLength: {
+        options: { min: 6 },
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_AT_LEAST_6_CHARACTERS
+      },
+      isString: true,
+      trim: true,
+      custom: {
+        options: async (value, { req }) => {
+          console.log('value:', value)
+          console.log('req.body.confirmPassword:', req.body.confirmPassword)
+          if (value !== req.body.confirmPassword) {
+            throw new Error(USERS_MESSAGES.NEW_PASSWORD_MUST_BE_DIFFERENT)
+          }
+          return true
+        }
+      }
+    },
+    confirmPassword: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_MATCH
     }
   })
 )

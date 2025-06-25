@@ -8,6 +8,7 @@ import { Role } from '../enum/role.enum.js'
 import fs from 'fs/promises'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
+import LIMIT from '~/constants/limit.js'
 
 const blogRepository = AppDataSource.getRepository(Blog)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -45,28 +46,28 @@ export class BlogService {
     }
 
     // Generate blog_id
-    const blogId = uuidv4();
+    const blogId = uuidv4()
 
     // Process images
-    let images: string[] = [];
+    let images: string[] = []
     if (files && files.length > 0) {
       images = await Promise.all(
         files.map(async (file) => {
-          const oldPath = file.path;
-          const ext = path.extname(oldPath);
-          const newFileName = `blog_${blogId}_${uuidv4()}${ext}`;
-          const newPath = path.join(path.dirname(oldPath), newFileName);
+          const oldPath = file.path
+          const ext = path.extname(oldPath)
+          const newFileName = `blog_${blogId}_${uuidv4()}${ext}`
+          const newPath = path.join(path.dirname(oldPath), newFileName)
           try {
-            await fs.rename(oldPath, newPath);
-            return newPath;
-          } catch (error) {
+            await fs.rename(oldPath, newPath)
+            return newPath
+          } catch (error: any) {
             throw new ErrorWithStatus({
               message: `Failed to rename image: ${error.message}`,
               status: HTTP_STATUS.INTERNAL_SERVER_ERROR
-            });
+            })
           }
         })
-      );
+      )
     }
 
     const blog = blogRepository.create({
@@ -83,16 +84,15 @@ export class BlogService {
   }
 
   // Get all blogs
-  async getAllBlogs(filter: any, pageVar: any): Promise<Blog[]> {
-    let { limit, page } = pageVar;
+  async getAllBlogs(pageVar: { limit: number; page: number }): Promise<Blog[]> {
+    let { limit, page } = pageVar
     if (!limit || !page) {
-      limit = 0;
-      page = 1;
+      limit = LIMIT.default
+      page = 1
     }
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
 
     return await blogRepository.find({
-      where: { ...filter },
       skip,
       take: limit,
       relations: ['account']
@@ -117,7 +117,7 @@ export class BlogService {
   }
 
   // Get blogs by Account ID
-  async getBlogsByAccountId(account_id: string, filter: any, pageVar: any): Promise<Blog[]> {
+  async getBlogsByAccountId(account_id: string, pageVar: { limit: number; page: number }): Promise<Blog[]> {
     const account = await accountRepository.findOne({ where: { account_id } })
     if (!account) {
       throw new ErrorWithStatus({
@@ -126,15 +126,15 @@ export class BlogService {
       })
     }
 
-    let { limit, page } = pageVar;
+    let { limit, page } = pageVar
     if (!limit || !page) {
-      limit = 0;
-      page = 1;
+      limit = LIMIT.default
+      page = 1
     }
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
 
     const blogs = await blogRepository.find({
-      where: { account, ...filter },
+      where: { account },
       skip,
       take: limit,
       relations: ['account']
@@ -181,37 +181,37 @@ export class BlogService {
     }
 
     // Process images
-    let images = blog.images || [];
+    let images = blog.images || []
     if (files && files.length > 0) {
       const newImages = await Promise.all(
         files.map(async (file) => {
-          const oldPath = file.path;
-          const ext = path.extname(oldPath);
-          const newFileName = `blog_${blog_id}_${uuidv4()}${ext}`;
-          const newPath = path.join(path.dirname(oldPath), newFileName);
+          const oldPath = file.path
+          const ext = path.extname(oldPath)
+          const newFileName = `blog_${blog_id}_${uuidv4()}${ext}`
+          const newPath = path.join(path.dirname(oldPath), newFileName)
           try {
-            await fs.rename(oldPath, newPath);
-            return newPath;
-          } catch (error) {
+            await fs.rename(oldPath, newPath)
+            return newPath
+          } catch (error: any) {
             throw new ErrorWithStatus({
               message: `Failed to rename image: ${error.message}`,
               status: HTTP_STATUS.INTERNAL_SERVER_ERROR
-            });
+            })
           }
         })
-      );
-      images = data.replaceImages === 'true' ? newImages : [...images, ...newImages];
+      )
+      images = data.replaceImages === 'true' ? newImages : [...images, ...newImages]
       // Delete old images if replacing
       if (data.replaceImages === 'true' && blog.images && blog.images.length > 0) {
         for (const imagePath of blog.images) {
           try {
-            await fs.unlink(imagePath);
-          } catch (error) {
+            await fs.unlink(imagePath)
+          } catch (error: any) {
             if (error.code !== 'ENOENT') {
               throw new ErrorWithStatus({
                 message: `Failed to delete image: ${error.message}`,
                 status: HTTP_STATUS.INTERNAL_SERVER_ERROR
-              });
+              })
             }
           }
         }
@@ -220,10 +220,10 @@ export class BlogService {
 
     Object.assign(blog, {
       account: account || blog.account,
-      major: data.major || blog.major,
+      major: data.content && data.content.trim() === '' ? data.major : blog.major,
       title: data.title || blog.title,
       content: data.content || blog.content,
-      status: data.status !== undefined ? (data.status === 'true' || data.status === true) : blog.status,
+      status: data.status !== undefined ? data.status === 'true' || data.status === true : blog.status,
       images
     })
 
@@ -238,13 +238,13 @@ export class BlogService {
     if (blog.images && blog.images.length > 0) {
       for (const imagePath of blog.images) {
         try {
-          await fs.unlink(imagePath);
-        } catch (error) {
+          await fs.unlink(imagePath)
+        } catch (error: any) {
           if (error.code !== 'ENOENT') {
             throw new ErrorWithStatus({
               message: `Failed to delete image: ${error.message}`,
               status: HTTP_STATUS.INTERNAL_SERVER_ERROR
-            });
+            })
           }
         }
       }

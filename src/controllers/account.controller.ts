@@ -73,12 +73,11 @@ export const registerController = async (req: Request, res: Response, next: Next
   console.log(result)
 
   const { account_id, accessToken, refreshToken } = result
-  const account = JSON.parse((await redisClient.get(account_id)) as string)
+  const account = (await redisClient.get(account_id)) as string
+  const account_data = JSON.parse(account)
   await Promise.all([
-    refreshTokenService.createRefreshToken({ account: account, token: refreshToken }),
-    redisClient.set(`accessToken:${account_id}`, accessToken, {
-      EX: 60 * 60
-    })
+    refreshTokenService.createRefreshToken({ account: account_data, token: refreshToken }),
+    redisClient.set(`accessToken:${account_id}`, accessToken, 'EX', 60 * 60)
   ])
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
@@ -148,7 +147,8 @@ export const loginController = async (req: Request, res: Response, next: NextFun
   const { account_id, email, password } = req.body
   const result = await accountService.login(account_id, email, password)
   const { accessToken, refreshToken } = result
-  const account = JSON.parse((await redisClient.get(`account:${account_id}`)) as string)
+  const account = (await redisClient.get(`account:${account_id}`)) as string
+  const account_data = JSON.parse(account)
   await Promise.all([
     refreshTokenService.updateRefreshToken({ account: account, token: refreshToken }),
     redisClient.set(`accessToken:${account_id}`, JSON.stringify(accessToken), {
@@ -165,6 +165,37 @@ export const loginController = async (req: Request, res: Response, next: NextFun
     message: USERS_MESSAGES.USER_LOGGED_IN_SUCCESS,
     result
   })
+}
+
+export const googleVerifyController = async (req: Request, res: Response, next: NextFunction) => {
+  console.log('Google verify controller')
+  const { idToken } = req.body // Lấy ID Token từ body của request1
+  try {
+    console.log('Token:', idToken)
+
+    const result = await accountService.googleVerify(idToken)
+    const { accessToken, refreshToken, account } = result
+    await Promise.all([
+      refreshTokenService.updateRefreshToken({ account: account, token: refreshToken }),
+      redisClient.set(`accessToken:${account.account_id}`, accessToken, 'EX', 60 * 60)
+    ])
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
+      secure: true, // Chỉ gửi cookie qua HTTPS ở môi trường production
+      sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
+      maxAge: 60 * 60 * 24 * 30 // Thời gian sống của cookie (tính bằng mili giây)
+    })
+    res.status(HTTP_STATUS.OK).json({
+      message: USERS_MESSAGES.GOOGLE_VERIFY_SUCCESS,
+      result
+    })
+  } catch (error) {
+    console.log('Google verify failed:', error)
+    throw new ErrorWithStatus({
+      message: USERS_MESSAGES.GOOGLE_VERIFY_FAILED,
+      status: 400
+    })
+  }
 }
 
 /**
@@ -227,15 +258,14 @@ export const loginController = async (req: Request, res: Response, next: NextFun
  *         description: Unauthorized (invalid token)
  */
 export const changePasswordController = async (req: Request, res: Response, next: NextFunction) => {
-  const { account_id, new_password } = req.body
-  const result = await accountService.changePassword(account_id, new_password)
+  const { account, newPassword } = req.body
+  const result = await accountService.changePassword(account.account_id, newPassword)
   if (!result) {
     throw new ErrorWithStatus({
       message: USERS_MESSAGES.CHANGE_PASSWORD_FAILED,
       status: 400
     })
   }
-  const account = JSON.parse((await redisClient.get(req.body.account_id)) as string)
   await refreshTokenService.updateRefreshToken({ account: account, token: result.refreshToken })
 
   // res.cookie('refreshToken', result.refreshToken, {
@@ -253,20 +283,32 @@ export const changePasswordController = async (req: Request, res: Response, next
   })
 }
 
-export const sendPasscodeResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
-  const { account_id, email } = req.body
-  const result = await accountService.sendEmailResetPassword(account_id, email)
+export const sendResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
+  const { account, email } = req.body
+  console.log('account:', account)
+  const result = await accountService.sendEmailResetPassword(account.account_id, email)
   res.status(HTTP_STATUS.OK).json({
-    message: USERS_MESSAGES.SEND_PASSCODE_RESET_PASSWORD_SUCCESS,
+    message: USERS_MESSAGES.SEND_RESET_PASSWORD_SUCCESS,
     result
   })
 }
 
-export const verifyPasscodeResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
-  const { secretPasscode, account_id } = req.body
-  const result = await accountService.verifyPasscodeResetPassword(secretPasscode, account_id)
+export const verifyResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
+  const { passcode, account } = req.body
+  console.log(account)
+  const result = await accountService.verifyPasscodeResetPassword(passcode, account.account_id)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.VERIFY_PASSCODE_RESET_PASSWORD_SUCCESS,
+    result
+  })
+}
+
+export const resetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
+  const { account, newPassword } = req.body
+  console.log('newPassword:', newPassword)
+  const result = await accountService.resetPassword(account.account_id, newPassword)
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS,
     result
   })
 }
