@@ -23,9 +23,9 @@ const consultantPatternRoute = Router()
   }
 */
 consultantPatternRoute.post(
-  '/create-onsultant-attern',
-  validateAccessToken,
-  restrictTo(Role.ADMIN),
+  '/create-consultant-pattern',
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN),
   wrapRequestHandler(createConsultantPattern)
 )
 
@@ -39,8 +39,8 @@ consultantPatternRoute.post(
 */
 consultantPatternRoute.get(
   '/get-all-consultant-patterns',
-  validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CUSTOMER),
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getAllConsultantPatterns)
 )
 
@@ -114,8 +114,8 @@ consultantPatternRoute.put(
 */
 consultantPatternRoute.delete(
   '/delete-consultant-pattern/:pattern_id',
-  validateAccessToken,
-  restrictTo(Role.ADMIN),
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteConsultantPattern)
 )
 

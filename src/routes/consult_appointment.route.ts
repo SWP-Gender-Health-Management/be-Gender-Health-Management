@@ -24,8 +24,8 @@ const consultAppointmentRoute = Router()
 */
 consultAppointmentRoute.post(
   '/create-consult-appointment',
-  validateAccessToken,
-  restrictTo(Role.CUSTOMER),
+  // validateAccessToken,
+  // restrictTo(Role.CUSTOMER),
   wrapRequestHandler(createConsultAppointment)
 )
 
@@ -39,8 +39,8 @@ consultAppointmentRoute.post(
 */
 consultAppointmentRoute.get(
   '/get-all-consult-appointments',
-  validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN, Role.CONSULTANT),
   wrapRequestHandler(getAllConsultAppointments)
 )
 
@@ -114,8 +114,8 @@ consultAppointmentRoute.put(
 */
 consultAppointmentRoute.delete(
   '/delete-consult-appointment/:app_id',
-  validateAccessToken,
-  restrictTo(Role.ADMIN),
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteConsultAppointment)
 )
 

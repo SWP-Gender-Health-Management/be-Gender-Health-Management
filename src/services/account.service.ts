@@ -177,12 +177,13 @@ class AccountService {
   }> {
     const user = (await redisClient.get(`account:${account_id}`)) as string
     const user_data = JSON.parse(user)
+    console.log(user_data)
     const [accessToken, refreshToken] = await Promise.all([
       this.createAccessToken(user_data.account_id, email),
       this.createRefreshToken(user_data.account_id, email)
     ])
-    console.log('accessToken:', accessToken)
-    console.log('refreshToken:', refreshToken)
+    // console.log('accessToken:', accessToken)
+    // console.log('refreshToken:', refreshToken)
     return { accessToken, refreshToken }
   }
 

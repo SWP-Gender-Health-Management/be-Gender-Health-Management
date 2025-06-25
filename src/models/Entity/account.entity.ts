@@ -88,7 +88,7 @@ export default class Account implements AccountType {
   @OneToMany(() => Blog, (blog: Blog) => blog.account)
   blog: Blog[]
 
-  @OneToMany(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.customer)
+  @OneToMany(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.customer, { cascade: true })
   consult_appointment: ConsultAppointment[]
 
   @OneToMany(() => ConsultantPattern, (consultantPattern: ConsultantPattern) => consultantPattern.consultant)
