@@ -72,9 +72,12 @@ class CustomerService {
    * @returns The next period
    */
   async predictPeriod(account_id: string) {
+    console.log('account_id', account_id)
     const menstrualCycle: MenstrualCycle | null = await menstrualCycleRepository.findOne({
-      where: { account: { account_id } }
+      where: { account: { account_id } },
+      relations: ['account']
     })
+    console.log('menstrualCycle', menstrualCycle)
     if (!menstrualCycle) {
       throw new ErrorWithStatus({
         message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_NOT_FOUND,

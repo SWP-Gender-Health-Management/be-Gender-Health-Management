@@ -5,12 +5,10 @@ export const initializeApp = async () => {
     // Initialize database connection
     if (!AppDataSource.isInitialized) {
       await AppDataSource.initialize()
-      console.log('Database connection established')
+      console.log('✅ Database connection established')
     }
-
     // Initialize notification worker
     startNotificationWorker()
-
     return true
   } catch (error) {
     console.error('Error initializing app:', error)
