@@ -139,6 +139,7 @@ export const trackPeriodController = async (req: Request, res: Response, next: N
 // Predict menstrual cycle
 export const predictPeriodController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id } = req.body
+  // console.log('account_id', account_id)
   const result = await customerService.predictPeriod(account_id)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.PREDICT_PERIOD_SUCCESS,

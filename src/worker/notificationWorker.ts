@@ -22,7 +22,7 @@ async function processDueNotifications(): Promise<void> {
   const currentTimeInSeconds = Math.floor(Date.now() / 1000)
 
   try {
-    const dueNotificationStrings: string[] = await redisClient.zrangebyscore(
+    const dueNotificationStrings: string[] = await redisClient.zRangeByScore(
       SCHEDULED_NOTIFICATIONS_KEY,
       0, // min score
       currentTimeInSeconds.toString() // max score
@@ -52,7 +52,7 @@ async function processDueNotifications(): Promise<void> {
           }
         )
 
-        const removedCount = await redisClient.zrem(SCHEDULED_NOTIFICATIONS_KEY, notificationString)
+        const removedCount = await redisClient.zRem(SCHEDULED_NOTIFICATIONS_KEY, notificationString)
         if (removedCount < 0) {
           console.warn(`${notificationPayload.notificationId} is done, but cannot to delete worker`)
         }
@@ -80,7 +80,7 @@ export default function startNotificationWorker(): void {
     return
   }
   console.log(
-    `Notification worker scheduled to run with cron expression: ${CRON_EXPRESSION} at ${new Date().toISOString()}.`
+    `✅ Notification worker scheduled to run with cron expression: ${CRON_EXPRESSION} at ${new Date().toISOString()}.`
   )
   cron.schedule(
     CRON_EXPRESSION,
