@@ -65,14 +65,20 @@ export class ConsultAppointmentService {
       description: description || '',
       status: status || StatusAppointment.PENDING
     })
+    const savedConsultAppointment = await consultAppointmentRepository.save(consultAppointment)
 
-    // Update consultant pattern to mark as booked
-    if (consultAppointment) {
-      consultantPattern.is_booked = true
-      await consultantPatternRepository.save(consultantPattern)
+    if (savedConsultAppointment) {
+      await consultantPatternRepository.update(consultantPattern.pattern_id, {
+        is_booked: true,
+        consult_appointment: savedConsultAppointment
+      });
     }
-
-    return await consultAppointmentRepository.save(consultAppointment)
+    const updatedAccount = await accountRepository.findOne({
+      where: { account_id: customer_id },
+      relations: ['consult_appointment'],
+    });
+    console.log('Updated consult_appointment array:', updatedAccount);
+    return savedConsultAppointment
   }
 
   /**
@@ -82,9 +88,9 @@ export class ConsultAppointmentService {
    * @returns The consult appointments
    */
   // Get all consult appointments
-  async getAllConsultAppointments( pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
-    let {limit, page} = pageVar;
-    if(!limit || !page) {
+  async getAllConsultAppointments(pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
       limit = LIMIT.default;
       page = 1;
     }
@@ -97,8 +103,7 @@ export class ConsultAppointmentService {
         'consultant_pattern.working_slot',
         'consultant_pattern.consultant',
         'customer',
-        'report',
-        'feedback'
+        'report'
       ]
     })
   }
@@ -117,8 +122,7 @@ export class ConsultAppointmentService {
         'consultant_pattern.working_slot',
         'consultant_pattern.consultant',
         'customer',
-        'report',
-        'feedback'
+        'report'
       ]
     })
 
@@ -141,8 +145,8 @@ export class ConsultAppointmentService {
    */
   // Get consult appointments by Customer ID
   async getConsultAppointmentsByCustomerId(customer_id: string, pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
-    let {limit, page} = pageVar;
-    if(!limit || !page) {
+    let { limit, page } = pageVar;
+    if (!limit || !page) {
       limit = LIMIT.default;
       page = 1;
     }
@@ -155,7 +159,7 @@ export class ConsultAppointmentService {
       })
     }
     const consultAppointments = await consultAppointmentRepository.find({
-      where: { customer, },
+      where: { customer: { account_id: customer_id } },
       skip,
       take: limit,
       relations: [
@@ -163,8 +167,7 @@ export class ConsultAppointmentService {
         'consultant_pattern.working_slot',
         'consultant_pattern.consultant',
         'customer',
-        'report',
-        'feedback'
+        'report'
       ]
     })
 
@@ -200,10 +203,7 @@ export class ConsultAppointmentService {
         'consultant_pattern.working_slot',
         'consultant_pattern.consultant',
         'customer',
-        'report',
-        'feedback',
-        'report',
-        'feedback'
+        'report'
       ]
     })
 
@@ -290,16 +290,16 @@ export class ConsultAppointmentService {
   // Delete a consult appointment
   async deleteConsultAppointment(app_id: string): Promise<void> {
     const consultAppointment = await this.getConsultAppointmentById(app_id)
-    const feedback = await feedbackRepository.findOne({
-      where: { app_id: consultAppointment.app_id, type: TypeAppointment.CONSULT }
-    })
-    // Check if appointment has associated feedback
-    if (feedback) {
-      throw new ErrorWithStatus({
-        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_CANNOT_DELETE,
-        status: HTTP_STATUS.BAD_REQUEST
-      })
-    }
+    // const feedback = await feedbackRepository.findOne({
+    //   where: { app_id: consultAppointment.app_id, type: TypeAppointment.CONSULT }
+    // })
+    // // Check if appointment has associated feedback
+    // if (feedback) {
+    //   throw new ErrorWithStatus({
+    //     message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_CANNOT_DELETE,
+    //     status: HTTP_STATUS.BAD_REQUEST
+    //   })
+    // }
 
     // Update consultant pattern to unbooked
     const consultantPattern = await consultantPatternRepository.findOne({
