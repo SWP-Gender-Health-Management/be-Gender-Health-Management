@@ -1,4 +1,3 @@
-// src/services/emailService.ts (ví dụ)
 import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
 import path from 'path'
@@ -9,6 +8,10 @@ dotenv.config()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+/**
+ * @description Create a transporter for sending emails
+ * @returns The transporter
+ */
 async function createTransporter() {
   // Nếu dùng Gmail, bạn nên sử dụng biến môi trường cho email và mật khẩu ứng dụng
   const transporter = nodemailer.createTransport({
@@ -44,6 +47,14 @@ interface MailOptions {
   placeholders?: { [key: string]: string }
 }
 
+/**
+ * @description Send an email
+ * @param to - The email address of the recipient
+ * @param subject - The subject of the email
+ * @param text - The text of the email
+ * @param htmlPath - The path to the HTML file
+ * @param placeholders - The placeholders to be replaced in the HTML file
+ */
 export async function sendMail(
   to: string, // Địa chỉ người nhận
   subject: string, // Tiêu đề email

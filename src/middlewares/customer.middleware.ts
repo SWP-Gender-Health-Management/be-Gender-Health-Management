@@ -1,6 +1,5 @@
 import { checkSchema } from 'express-validator'
-import { max, min } from 'lodash'
-import { CUSTOMER_MESSAGES, USERS_MESSAGES } from '../constants/message.js'
+import { CUSTOMER_MESSAGES } from '../constants/message.js'
 import { validate } from '../utils/validations.js'
 
 export const validateTrackPeriod = validate(

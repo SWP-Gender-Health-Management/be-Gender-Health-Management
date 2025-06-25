@@ -6,9 +6,11 @@ import {
   createConsultantController,
   createCustomerController,
   getAllStaffController
-} from '~/controllers/admin.controller'
-import { validateCreateAccount } from '~/middlewares/admin.middleware'
-import wrapRequestHandler from '~/utils/handle'
+} from '../controllers/admin.controller.js'
+import { validateCreateAccount } from '../middlewares/admin.middleware.js'
+import wrapRequestHandler from '../utils/handle.js'
+import { restrictTo } from '~/middlewares/account.middleware.js'
+import { Role } from '~/enum/role.enum.js'
 
 const adminRoute = Router()
 
@@ -22,7 +24,12 @@ const adminRoute = Router()
     password: string
   }
 */
-adminRoute.post('/create-admin', validateCreateAccount, wrapRequestHandler(createAdminController))
+adminRoute.post(
+  '/create-admin',
+  restrictTo(Role.ADMIN),
+  validateCreateAccount,
+  wrapRequestHandler(createAdminController)
+)
 
 /*
   description: create new manager
@@ -34,7 +41,12 @@ adminRoute.post('/create-admin', validateCreateAccount, wrapRequestHandler(creat
     password: string
   }
 */
-adminRoute.post('/create-manager', validateCreateAccount, wrapRequestHandler(createManagerController))
+adminRoute.post(
+  '/create-manager',
+  restrictTo(Role.ADMIN),
+  validateCreateAccount,
+  wrapRequestHandler(createManagerController)
+)
 
 /*
   description: create new staff
@@ -46,7 +58,12 @@ adminRoute.post('/create-manager', validateCreateAccount, wrapRequestHandler(cre
     password: string
   }
 */
-adminRoute.post('/create-staff', validateCreateAccount, wrapRequestHandler(createStaffController))
+adminRoute.post(
+  '/create-staff',
+  restrictTo(Role.ADMIN),
+  validateCreateAccount,
+  wrapRequestHandler(createStaffController)
+)
 
 /*
   description: get all staff
@@ -65,7 +82,12 @@ adminRoute.get('/get-all-staff', wrapRequestHandler(getAllStaffController))
     password: string
   }
 */
-adminRoute.post('/create-consultant', validateCreateAccount, wrapRequestHandler(createConsultantController))
+adminRoute.post(
+  '/create-consultant',
+  restrictTo(Role.ADMIN),
+  validateCreateAccount,
+  wrapRequestHandler(createConsultantController)
+)
 
 /*
   description: create new customer
@@ -77,6 +99,11 @@ adminRoute.post('/create-consultant', validateCreateAccount, wrapRequestHandler(
     password: string
   }
 */
-adminRoute.post('/create-customer', validateCreateAccount, wrapRequestHandler(createCustomerController))
+adminRoute.post(
+  '/create-customer',
+  restrictTo(Role.ADMIN),
+  validateCreateAccount,
+  wrapRequestHandler(createCustomerController)
+)
 
 export default adminRoute

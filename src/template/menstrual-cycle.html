@@ -3,169 +3,559 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nhắc Nhở Chu Kỳ Kinh Nguyệt Sắp Tới</title>
+    <title>Nhắc Nhở Chu Kỳ Kinh Nguyệt - MediCare</title>
     <style>
-      body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji',
-          'Segoe UI Emoji', 'Segoe UI Symbol';
-        line-height: 1.6;
-        color: #333333;
-        background-color: #f8f9fa; /* Màu nền nhẹ nhàng hơn */
+      /* Reset và Base Styles */
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+
       .email-wrapper {
         width: 100%;
-        background-color: #f8f9fa;
-        padding: 20px 0;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: table;
       }
+
       .email-container {
-        max-width: 600px;
+        max-width: 650px;
         margin: 0 auto;
-        background-color: #ffffff;
-        border: 1px solid #dee2e6;
-        border-radius: 10px; /* Bo tròn nhiều hơn */
+        background: #ffffff;
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        position: relative;
       }
+
+      .email-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #e83e8c 0%, #ff6b9d 100%);
+      }
+
+      /* Header Styles */
       .header {
-        background-color: #e83e8c; /* Màu hồng nữ tính, bạn có thể thay đổi */
+        background: linear-gradient(135deg, #e83e8c 0%, #ff6b9d 100%);
         color: #ffffff;
-        padding: 30px 25px;
+        padding: 40px 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .cycle-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .cycle-icon::before {
+        content: '🌸';
+        font-size: 40px;
+      }
+
+      .header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+        margin-top: 8px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Content Styles */
+      .content {
+        padding: 40px 35px;
+        background: #ffffff;
+      }
+
+      .greeting {
+        font-size: 20px;
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-bottom: 20px;
         text-align: center;
       }
-      .header h1 {
-        margin: 0;
-        font-size: 26px;
-        font-weight: 600;
-      }
-      .content {
-        padding: 30px 35px;
-        text-align: left; /* Căn trái cho nội dung chính */
-      }
-      .content h2 {
-        color: #343a40;
-        font-size: 20px;
-        margin-top: 0;
-        margin-bottom: 15px;
-      }
-      .content p {
-        margin-bottom: 15px;
-        font-size: 16px;
-        color: #495057;
-      }
-      .highlight-info {
-        background-color: #fff3cd; /* Màu vàng nhạt cho thông tin nổi bật */
-        border-left: 4px solid #ffeeba;
-        padding: 15px;
-        margin: 20px 0;
-        border-radius: 4px;
-      }
-      .highlight-info p {
-        margin: 0;
-        font-size: 16px;
-        color: #856404;
-      }
-      .highlight-info strong {
-        font-weight: 600;
-      }
-      .tips-section {
-        margin-top: 25px;
-      }
-      .tips-section h3 {
-        font-size: 18px;
+
+      .user-name {
         color: #e83e8c;
+      }
+
+      .reminder-message {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 25px;
+        text-align: center;
+        line-height: 1.6;
+      }
+
+      .reminder-message .highlight {
+        color: #e83e8c;
+        font-weight: 600;
+      }
+
+      /* Prediction Box */
+      .prediction-box {
+        background: linear-gradient(135deg, #fef5f8 0%, #fce4ec 100%);
+        border: 2px dashed #e83e8c;
+        border-radius: 16px;
+        padding: 30px;
+        margin: 30px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .prediction-box::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(232, 62, 140, 0.05) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .prediction-label {
+        font-size: 16px;
+        color: #ad1457;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+        font-weight: 600;
+      }
+
+      .prediction-details {
+        position: relative;
+        z-index: 1;
+      }
+
+      .days-count {
+        font-size: 42px;
+        font-weight: 700;
+        color: #e83e8c;
+        margin: 10px 0;
+        text-shadow: 0 2px 4px rgba(232, 62, 140, 0.2);
+      }
+
+      .predicted-date {
+        font-size: 18px;
+        color: #ad1457;
+        font-weight: 600;
+        margin-top: 10px;
+      }
+
+      /* Motivation Box */
+      .motivation-box {
+        background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+        border: 1px solid #ce93d8;
+        border-radius: 16px;
+        padding: 25px;
+        margin: 30px 0;
+        text-align: center;
+        border-left: 4px solid #9c27b0;
+      }
+
+      .motivation-box p {
+        margin: 0;
+        color: #4a148c;
+        font-size: 16px;
+        font-weight: 500;
+        font-style: italic;
+      }
+
+      .motivation-box .icon {
+        font-size: 24px;
+        margin-right: 10px;
+      }
+
+      /* Tips Section */
+      .tips-section {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 1px solid #bae6fd;
+        border-radius: 16px;
+        padding: 25px;
+        margin: 30px 0;
+        border-left: 4px solid #0ea5e9;
+      }
+
+      .tips-section h3 {
+        color: #0c4a6e;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      .tips-section h3::before {
+        content: '💡';
+        margin-right: 12px;
+        font-size: 24px;
+      }
+
+      .tips-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .tip-item {
+        background: rgba(14, 165, 233, 0.1);
+        padding: 15px;
+        border-radius: 12px;
+        border-left: 3px solid #0ea5e9;
+      }
+
+      .tip-item h4 {
+        color: #0c4a6e;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+      }
+
+      .tip-item h4::before {
+        content: '✨';
+        margin-right: 8px;
+        font-size: 14px;
+      }
+
+      .tip-item p {
+        color: #0369a1;
+        font-size: 13px;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      /* Health Insights */
+      .health-insights {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        border: 1px solid #ffcc02;
+        border-radius: 16px;
+        padding: 25px;
+        margin: 30px 0;
+        border-left: 4px solid #ff9800;
+      }
+
+      .health-insights h3 {
+        color: #e65100;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .health-insights h3::before {
+        content: '🩺';
+        margin-right: 10px;
+        font-size: 20px;
+      }
+
+      .health-insights p {
+        color: #ef6c00;
+        line-height: 1.6;
         margin-bottom: 10px;
       }
-      .tips-section ul {
-        list-style-type: disc; /* Hoặc '✓ ' nếu bạn muốn tùy chỉnh */
-        padding-left: 20px;
-        margin: 0;
-      }
-      .tips-section li {
-        margin-bottom: 8px;
-        color: #495057;
-      }
-      .cta-button-container {
+
+      /* CTA Button */
+      .cta-container {
         text-align: center;
-        margin-top: 25px;
+        margin: 30px 0;
       }
+
       .cta-button {
-        background-color: #e83e8c;
-        color: #ffffff;
-        padding: 12px 25px;
-        text-decoration: none;
-        border-radius: 25px; /* Nút bo tròn hơn */
-        font-weight: bold;
-        font-size: 16px;
         display: inline-block;
+        background: linear-gradient(135deg, #e83e8c 0%, #ff6b9d 100%);
+        color: #ffffff;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(232, 62, 140, 0.3);
       }
-      .footer {
-        text-align: center;
-        padding: 25px;
-        font-size: 13px; /* Tăng kích thước chữ footer */
-        color: #6c757d;
-        background-color: #f1f3f5;
-        border-top: 1px solid #dee2e6;
-      }
-      .footer a {
-        color: #e83e8c;
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(232, 62, 140, 0.4);
+        color: #ffffff;
         text-decoration: none;
       }
+
+      /* Footer */
+      .footer {
+        background: #f8faff;
+        padding: 30px 35px;
+        text-align: center;
+        border-top: 1px solid #e8f2ff;
+      }
+
       .footer p {
-        margin: 5px 0;
+        margin: 8px 0;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .footer p:first-child {
+        font-weight: 600;
+        color: #1a1a1a;
+        font-size: 16px;
+      }
+
+      .footer p:last-child {
+        color: #999;
+        font-size: 13px;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 600px) {
+        .email-wrapper {
+          padding: 20px 10px;
+        }
+
+        .content {
+          padding: 25px 20px;
+        }
+
+        .footer {
+          padding: 20px 15px;
+        }
+
+        .header h1 {
+          font-size: 26px;
+        }
+
+        .days-count {
+          font-size: 36px;
+        }
+
+        .tips-grid {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+
+        .prediction-box,
+        .motivation-box,
+        .tips-section,
+        .health-insights {
+          padding: 20px;
+        }
+      }
+
+      /* Animation */
+      .cycle-icon {
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .prediction-box {
+        animation: fadeInUp 0.8s ease-out;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     </style>
   </head>
   <body>
     <div class="email-wrapper">
       <div class="email-container">
+        <!-- Header -->
         <div class="header">
-          <h1>Nhắc Nhở Chu Kỳ Sắp Tới</h1>
+          <div class="cycle-icon"></div>
+          <h1>Nhắc Nhở Chu Kỳ</h1>
+          <p class="header-subtitle">Theo dõi sức khỏe phụ khoa của bạn</p>
         </div>
+
+        <!-- Content -->
         <div class="content">
-          <h2>Chào {{USER_NAME}},</h2>
-          <p>
-            Đây là lời nhắc thân thiện rằng chu kỳ kinh nguyệt của bạn được dự đoán sẽ bắt đầu trong khoảng
-            <strong>{{DAYS_UNTIL_PERIOD}} ngày</strong> nữa, vào khoảng ngày <strong>{{PREDICTED_PERIOD_DATE}}</strong>.
+          <h2 class="greeting">
+            Chào <span class="user-name">{{USER_NAME}}</span>,
+          </h2>
+
+          <p class="reminder-message">
+            Đây là lời nhắc thân thiện rằng chu kỳ kinh nguyệt của bạn được dự
+            đoán sẽ bắt đầu trong khoảng
+            <span class="highlight">{{DAYS_UNTIL_PERIOD}} ngày</span> nữa. Hãy
+            chuẩn bị sẵn sàng và lắng nghe cơ thể của bạn nhé! 💕
           </p>
 
-          <div class="highlight-info">
-            <p>Hãy chuẩn bị sẵn sàng và lắng nghe cơ thể của bạn nhé!</p>
+          <!-- Prediction Box -->
+          <div class="prediction-box">
+            <p class="prediction-label">📅 Dự đoán chu kỳ tiếp theo</p>
+            <div class="prediction-details">
+              <div class="days-count">{{DAYS_UNTIL_PERIOD}} ngày</div>
+              <div class="predicted-date">
+                Ngày dự kiến: {{PREDICTED_PERIOD_DATE}}
+              </div>
+            </div>
           </div>
 
-          <p>
-            Việc theo dõi chu kỳ có thể giúp bạn hiểu rõ hơn về sức khỏe của mình. Dưới đây là một vài gợi ý nhỏ cho
-            những ngày sắp tới:
-          </p>
+          <!-- Motivation -->
+          <div class="motivation-box">
+            <p>
+              <span class="icon">🌟</span>
+              <strong>Hãy yêu thương bản thân!</strong> Việc theo dõi chu kỳ
+              giúp bạn hiểu rõ hơn về cơ thể và sức khỏe của mình.
+            </p>
+          </div>
 
+          <!-- Tips Section -->
           <div class="tips-section">
-            <h3>Mẹo Nhỏ Cho Bạn:</h3>
-            <ul>
-              <li>Mang theo các sản phẩm vệ sinh cần thiết.</li>
-              <li>Uống đủ nước và ăn uống lành mạnh.</li>
-              <li>Nếu bạn thường gặp các triệu chứng tiền kinh nguyệt (PMS), hãy chuẩn bị các biện pháp giảm nhẹ.</li>
-              <li>Lắng nghe cơ thể và nghỉ ngơi khi cần thiết.</li>
-            </ul>
+            <h3>Mẹo chăm sóc bản thân</h3>
+
+            <div class="tips-grid">
+              <div class="tip-item">
+                <h4>Chuẩn bị vật dụng</h4>
+                <p>
+                  Mang theo băng vệ sinh, tampon hoặc cốc nguyệt san. Luôn có dự
+                  phòng trong túi xách.
+                </p>
+              </div>
+
+              <div class="tip-item">
+                <h4>Chế độ dinh dưỡng</h4>
+                <p>
+                  Uống đủ nước, ăn nhiều rau xanh, hoa quả và thực phẩm giàu sắt
+                  để bổ sung năng lượng.
+                </p>
+              </div>
+
+              <div class="tip-item">
+                <h4>Quản lý cảm xúc</h4>
+                <p>
+                  Thực hành thiền, yoga nhẹ nhàng hoặc nghe nhạc yêu thích để
+                  giảm căng thẳng.
+                </p>
+              </div>
+
+              <div class="tip-item">
+                <h4>Nghỉ ngơi đầy đủ</h4>
+                <p>
+                  Đảm bảo ngủ 7-8 tiếng mỗi ngày và tránh căng thẳng quá mức
+                  trong thời gian này.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <!-- {{#if HAS_APP_LINK}}
-          <div class="cta-button-container"> -->
-            <!-- <a href="{{APP_CALENDAR_LINK}}" class="cta-button">Xem Lịch Chu Kỳ Trong Ứng Dụng</a> -->
+          <!-- Health Insights -->
+          <div class="health-insights">
+            <h3>Lưu ý sức khỏe</h3>
+            <p>
+              <strong>Theo dõi triệu chứng:</strong> Ghi lại những thay đổi
+              trong cơ thể như đau bụng, thay đổi tâm trạng, hoặc các triệu
+              chứng khác để có thể tham khảo ý kiến bác sĩ khi cần thiết.
+            </p>
+            <p>
+              <strong>Khi nào cần gặp bác sĩ:</strong> Nếu chu kỳ có thay đổi
+              bất thường, đau quá mức, hoặc có bất kỳ dấu hiệu lo ngại nào khác.
+            </p>
           </div>
-          <!-- {{/if}} -->
 
-          <p style="margin-top: 25px">
-            Nếu bạn có bất kỳ thay đổi nào trong chu kỳ hoặc có điều gì bất thường, đừng ngần ngại ghi lại và tham khảo
-            ý kiến bác sĩ nhé.
+          <!-- CTA Button -->
+          <div class="cta-container">
+            <a href="{{APP_CALENDAR_LINK}}" class="cta-button">
+              📱 Xem lịch chu kỳ trong ứng dụng
+            </a>
+          </div>
+
+          <p
+            style="
+              text-align: center;
+              margin-top: 25px;
+              color: #666;
+              font-size: 14px;
+            "
+          >
+            Chúng tôi luôn đồng hành cùng bạn trong hành trình chăm sóc sức khỏe
+            phụ khoa. Hãy yêu thương và lắng nghe cơ thể của bạn! 💖
           </p>
         </div>
+
+        <!-- Footer -->
         <div class="footer">
-          <p>&copy; {{CURRENT_YEAR}} Tên Ứng Dụng/Dịch Vụ Của Bạn</p>
-          <p>Đây là email tự động. Vui lòng không trả lời trực tiếp email này.</p>
-          <p>Bạn nhận được email này vì bạn đã đăng ký nhận thông báo từ chúng tôi.</p>
-          <!-- <p><a href="{{YOUR_WEBSITE_URL}}">Website</a> | <a href="{{UNSUBSCRIBE_LINK}}">Hủy đăng ký nhận thông báo</a></p> -->
+          <p>MediCare - Đồng hành cùng sức khỏe phụ nữ</p>
+          <p>Email tự động được gửi dựa trên chu kỳ theo dõi của bạn.</p>
+          <p>
+            © {{CURRENT_YEAR}} MediCare. Bảo lưu mọi quyền. |
+            <!-- <a href="{{UNSUBSCRIBE_LINK}}">Hủy đăng ký thông báo</a> -->
+          </p>
         </div>
       </div>
     </div>

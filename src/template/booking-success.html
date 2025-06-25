@@ -3,150 +3,542 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Xác nhận Lịch hẹn Thành công</title>
+    <title>Đặt Lịch Thành Công - MediCare</title>
     <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        background-color: #f7f7f7;
+      /* Reset và Base Styles */
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+
       .email-wrapper {
         width: 100%;
-        background-color: #f7f7f7;
-        padding: 20px 0;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: table;
       }
+
       .email-container {
-        max-width: 600px;
+        max-width: 650px;
         margin: 0 auto;
-        background-color: #ffffff;
-        border: 1px solid #e6e6e6;
-        border-radius: 8px;
-        box-shadow: 0 2px Succeeded(10px rgba(0, 0, 0, 0.05));
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        position: relative;
       }
+
+      .email-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #52c41a 0%, #73d13d 100%);
+      }
+
+      /* Header Styles */
       .header {
-        background-color: #28a745; /* Màu xanh lá cây cho thành công */
+        background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
         color: #ffffff;
-        padding: 30px;
+        padding: 40px 30px;
         text-align: center;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
+        position: relative;
+        overflow: hidden;
       }
+
+      .header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .success-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .success-icon::before {
+        content: '✓';
+        font-size: 40px;
+        font-weight: bold;
+        color: #ffffff;
+      }
+
       .header h1 {
+        font-size: 32px;
+        font-weight: 700;
         margin: 0;
-        font-size: 26px;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
+
+      .header-subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+        margin-top: 8px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Content Styles */
       .content {
-        padding: 30px 35px;
+        padding: 40px 35px;
+        background: #ffffff;
       }
-      .content h2 {
-        color: #333;
+
+      .greeting {
         font-size: 20px;
-        margin-top: 0;
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
       }
-      .content p {
+
+      .user-name {
+        color: #667eea;
+      }
+
+      .success-message {
         font-size: 16px;
         color: #555;
-      }
-      .appointment-details {
-        background-color: #f9f9f9;
-        border: 1px solid #eeeeee;
-        border-radius: 5px;
-        padding: 20px;
-        margin: 20px 0;
-      }
-      .appointment-details p {
-        margin: 5px 0;
-        line-height: 1.5;
-      }
-      .appointment-details strong {
-        color: #333;
-      }
-      .queue-number-box {
+        margin-bottom: 30px;
         text-align: center;
-        background-color: #eaf5ff;
-        border: 1px dashed #3498db;
-        border-radius: 8px;
-        padding: 20px;
-        margin: 25px 0;
+        line-height: 1.6;
       }
-      .queue-number-box p {
-        margin: 0;
+
+      /* Appointment Details */
+      .appointment-details {
+        background: linear-gradient(135deg, #f8faff 0%, #eef5ff 100%);
+        border: 1px solid #e8f2ff;
+        border-radius: 16px;
+        padding: 25px;
+        margin: 30px 0;
+        border-left: 4px solid #667eea;
+      }
+
+      .appointment-details h3 {
+        color: #1a1a1a;
         font-size: 18px;
-        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
       }
-      .queue-number-box .number {
-        font-size: 42px;
+
+      .appointment-details h3::before {
+        content: '📅';
+        margin-right: 10px;
+        font-size: 20px;
+      }
+
+      .detail-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .detail-item:last-child {
+        border-bottom: none;
+      }
+
+      .detail-label {
+        font-weight: 600;
+        color: #333;
+        min-width: 140px;
+      }
+
+      .detail-value {
+        color: #667eea;
+        font-weight: 500;
+        text-align: right;
+        flex: 1;
+      }
+
+      .services-list {
+        margin-top: 15px;
+      }
+
+      .services-list ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .services-list li {
+        background: rgba(102, 126, 234, 0.1);
+        padding: 8px 12px;
+        margin: 5px 0;
+        border-radius: 8px;
+        color: #667eea;
+        font-weight: 500;
+      }
+
+      .services-list li::before {
+        content: '✓';
+        color: #52c41a;
         font-weight: bold;
-        color: #007bff;
-        display: block;
-        margin-top: 10px;
+        margin-right: 8px;
       }
+
+      /* Queue Number Box */
+      .queue-number-box {
+        background: linear-gradient(135deg, #fff9f0 0%, #fef5e7 100%);
+        border: 2px dashed #ff8c00;
+        border-radius: 16px;
+        padding: 30px;
+        margin: 30px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .queue-number-box::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 140, 0, 0.05) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .queue-label {
+        font-size: 16px;
+        color: #d68910;
+        margin-bottom: 15px;
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
+      }
+
+      .queue-number {
+        font-size: 48px;
+        font-weight: 700;
+        color: #ff8c00;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 4px rgba(255, 140, 0, 0.2);
+      }
+
+      /* Important Notes */
+      .important-notes {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 1px solid #bae6fd;
+        border-radius: 16px;
+        padding: 25px;
+        margin: 30px 0;
+        border-left: 4px solid #0ea5e9;
+      }
+
+      .important-notes h3 {
+        color: #0c4a6e;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .important-notes h3::before {
+        content: '💡';
+        margin-right: 10px;
+        font-size: 20px;
+      }
+
+      .important-notes ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .important-notes li {
+        color: #0c4a6e;
+        margin-bottom: 10px;
+        padding-left: 20px;
+        position: relative;
+        line-height: 1.6;
+      }
+
+      .important-notes li::before {
+        content: '•';
+        color: #0ea5e9;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+      }
+
+      /* CTA Button */
+      .cta-container {
+        text-align: center;
+        margin: 30px 0;
+      }
+
       .cta-button {
         display: inline-block;
-        background-color: #007bff;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: #ffffff;
-        padding: 12px 25px;
+        padding: 15px 30px;
         text-decoration: none;
-        border-radius: 5px;
-        font-weight: bold;
-        margin-top: 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
       }
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: #ffffff;
+        text-decoration: none;
+      }
+
+      /* Footer */
       .footer {
+        background: #f8faff;
+        padding: 30px 35px;
         text-align: center;
-        padding: 20px;
-        font-size: 12px;
+        border-top: 1px solid #e8f2ff;
+      }
+
+      .footer p {
+        margin: 8px 0;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .footer p:first-child {
+        font-weight: 600;
+        color: #1a1a1a;
+        font-size: 16px;
+      }
+
+      .footer p:last-child {
         color: #999;
+        font-size: 13px;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 600px) {
+        .email-wrapper {
+          padding: 20px 10px;
+        }
+
+        .content {
+          padding: 25px 20px;
+        }
+
+        .footer {
+          padding: 20px 15px;
+        }
+
+        .header h1 {
+          font-size: 26px;
+        }
+
+        .queue-number {
+          font-size: 40px;
+        }
+
+        .appointment-details,
+        .important-notes,
+        .queue-number-box {
+          padding: 20px;
+        }
+
+        .detail-item {
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+        }
+
+        .detail-value {
+          text-align: left;
+          margin-top: 4px;
+        }
+      }
+
+      /* Animation */
+      .success-icon {
+        animation: bounceIn 0.8s ease-out;
+      }
+
+      @keyframes bounceIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.3);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.05);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
       }
     </style>
   </head>
   <body>
     <div class="email-wrapper">
       <div class="email-container">
+        <!-- Header -->
         <div class="header">
+          <div class="success-icon"></div>
           <h1>Đặt Lịch Thành Công!</h1>
+          <p class="header-subtitle">Lịch hẹn của bạn đã được xác nhận</p>
         </div>
-        <div class="content">
-          <h2>Chào {{USER_NAME}},</h2>
-          <p>Lịch hẹn xét nghiệm của bạn đã được xác nhận thành công. Vui lòng kiểm tra lại các thông tin dưới đây.</p>
 
+        <!-- Content -->
+        <div class="content">
+          <h2 class="greeting">
+            Chào <span class="user-name">{{USER_NAME}}</span>,
+          </h2>
+
+          <p class="success-message">
+            🎉 Chúc mừng! Lịch hẹn xét nghiệm của bạn đã được đặt thành công và
+            xác nhận trong hệ thống. Vui lòng kiểm tra lại thông tin chi tiết
+            bên dưới.
+          </p>
+
+          <!-- Appointment Details -->
           <div class="appointment-details">
-            <h3>Chi tiết lịch hẹn:</h3>
-            <p><strong>Khách hàng:</strong> {{USER_NAME}}</p>
-            <p><strong>Email:</strong> {{CUSTOMER_EMAIL}}</p>
-            <p><strong>Thời gian hẹn:</strong> {{SLOT_NAME}}</p>
-            <p><strong>Ngày đặt lịch:</strong> {{DATE}}</p>
-            <p><strong>Địa điểm:</strong> {{LOCATION_NAME}} - {{LOCATION_ADDRESS}}</p>
-            <p><strong>Các dịch vụ đã đăng ký:</strong></p>
+            <h3>Chi tiết lịch hẹn</h3>
+
+            <div class="detail-item">
+              <span class="detail-label">Khách hàng:</span>
+              <span class="detail-value">{{USER_NAME}}</span>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Email:</span>
+              <span class="detail-value">{{CUSTOMER_EMAIL}}</span>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Thời gian hẹn:</span>
+              <span class="detail-value">{{SLOT_NAME}}</span>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Ngày đặt lịch:</span>
+              <span class="detail-value">{{DATE}}</span>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Địa điểm:</span>
+              <span class="detail-value"
+                >{{LOCATION_NAME}}<br />{{LOCATION_ADDRESS}}</span
+              >
+            </div>
+
+            <div class="services-list">
+              <div class="detail-label" style="margin-bottom: 10px">
+                Dịch vụ đã đăng ký:
+              </div>
+              <ul>
+                {{LABORATORY_LIST}}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Queue Number -->
+          <div class="queue-number-box">
+            <p class="queue-label">🎫 Số thứ tự của bạn</p>
+            <p class="queue-number">{{QUEUE_NUMBER}}</p>
+          </div>
+
+          <!-- Important Notes -->
+          <div class="important-notes">
+            <h3>Lưu ý quan trọng</h3>
             <ul>
-              {{LABORATORY_LIST}}
+              <li>
+                <strong>Theo dõi số thứ tự:</strong> Khi đến nơi, vui lòng theo
+                dõi bảng hiển thị điện tử và chờ đến lượt theo số thứ tự
+                <strong>{{QUEUE_NUMBER}}</strong>.
+              </li>
+              <li>
+                <strong>Đến sớm 15 phút:</strong> Vui lòng có mặt trước 15 phút
+                để hoàn tất thủ tục check-in.
+              </li>
+              <li>
+                <strong>Giấy tờ cần thiết:</strong> Mang theo CCCD/CMND và email
+                xác nhận này.
+              </li>
+              <li><strong>Chuẩn bị:</strong> {{PREPARATION_NOTES}}</li>
             </ul>
           </div>
 
-          <div class="queue-number-box">
-            <p>Số thứ tự của bạn là:</p>
-            <span class="number">{{QUEUE_NUMBER}}</span>
+          <!-- CTA Button -->
+          <div class="cta-container">
+            <a href="{{MANAGE_APPOINTMENT_URL}}" class="cta-button">
+              📱 Quản lý lịch hẹn
+            </a>
           </div>
 
-          <h3>Lưu ý quan trọng:</h3>
-          <ul>
-            <li>
-              Khi đến nơi, vui lòng theo dõi bảng hiển thị điện tử và chờ đến lượt theo **số thứ tự {{QUEUE_NUMBER}}**.
-            </li>
-            <li>Vui lòng đến trước 15 phút để làm thủ tục.</li>
-            <li>Mang theo giấy tờ tùy thân (CCCD/CMND) và email xác nhận này.</li>
-            <li>{{PREPARATION_NOTES}}</li>
-          </ul>
-
-          <div style="text-align: center">
-            <a href="{{MANAGE_APPOINTMENT_URL}}" class="cta-button">Quản lý Lịch hẹn</a>
-          </div>
+          <p
+            style="
+              text-align: center;
+              margin-top: 25px;
+              color: #666;
+              font-size: 14px;
+            "
+          >
+            Cảm ơn bạn đã tin tưởng lựa chọn dịch vụ của MediCare. Chúng tôi sẽ
+            mang đến cho bạn trải nghiệm tốt nhất!
+          </p>
         </div>
+
+        <!-- Footer -->
         <div class="footer">
-          <p>&copy; {{CURRENT_YEAR}} Tên Công Ty Của Bạn. Bảo lưu mọi quyền.</p>
-          <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email: {{SUPPORT_EMAIL}}</p>
+          <p>Cảm ơn bạn đã chọn MediCare</p>
+          <p>Đội ngũ chăm sóc khách hàng luôn sẵn sàng hỗ trợ bạn 24/7</p>
+          <p>
+            © {{CURRENT_YEAR}} MediCare. Bảo lưu mọi quyền. | Hỗ trợ:
+            {{SUPPORT_EMAIL}}
+          </p>
         </div>
       </div>
     </div>

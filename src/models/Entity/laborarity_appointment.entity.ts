@@ -5,7 +5,6 @@ import {
   UpdateDateColumn,
   Timestamp,
   ManyToOne,
-  OneToOne,
   ManyToMany,
   JoinTable,
   PrimaryGeneratedColumn,
@@ -15,9 +14,7 @@ import {
 import WorkingSlot from '../Entity/working_slot.entity.js'
 import Account from '../Entity/account.entity.js'
 import Result from '../Entity/result.entity.js'
-import Feedback from '../Entity/feedback.entity.js'
 import Laborarity from '../Entity/laborarity.entity.js'
-import Transaction from '../Entity/transaction.entity.js'
 import { StatusAppointment } from '../../enum/statusAppointment.enum.js'
 
 export interface LaboratoryAppointmentType {
@@ -78,8 +75,4 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
 
   @OneToMany(() => Result, (result: Result) => result.laboratoryAppointment)
   result: Result[]
-
-  @OneToOne(() => Feedback, (feedback: Feedback) => feedback.laboratoryAppointment)
-  @JoinColumn({ name: 'feed_id' })
-  feedback: Feedback
 }

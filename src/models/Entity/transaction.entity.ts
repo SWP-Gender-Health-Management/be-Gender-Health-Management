@@ -9,7 +9,7 @@ import {
   Generated
 } from 'typeorm'
 import Account from './account.entity.js'
-import { TransactionStatus } from '~/enum/transaction.enum.js'
+import { TransactionStatus } from '../../enum/transaction.enum.js'
 
 export interface TransactionType {
   transaction_id: string

@@ -5,14 +5,17 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   CreateDateColumn,
-  OneToOne
+  ManyToOne
 } from 'typeorm'
-import ConsultAppointment from '~/models/Entity/consult_appointment.entity'
-import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity'
+import { TypeAppointment } from '~/enum/type_appointment.enum.js'
+import Account from './account.entity.js'
+
 export interface FeedbackType {
   feed_id: string
+  app_id: string
   content: string
   rating: number
+  type: TypeAppointment
   // created_at: Timestamp
   // updated_at: Timestamp
 }
@@ -22,11 +25,17 @@ export default class Feedback implements FeedbackType {
   @PrimaryGeneratedColumn('uuid')
   feed_id: string
 
+  @Column({ type: 'uuid', nullable: true })
+  app_id: string
+
   @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })
   content: string
 
   @Column({ type: 'integer', nullable: true })
   rating: number
+
+  @Column({ type: 'enum', enum: TypeAppointment, nullable: false })
+  type: TypeAppointment
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
@@ -34,12 +43,6 @@ export default class Feedback implements FeedbackType {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Timestamp
 
-  @OneToOne(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.feedback)
-  consult_appointment: ConsultAppointment
-
-  @OneToOne(
-    () => LaboratoryAppointment,
-    (laboratoryAppointment: LaboratoryAppointment) => laboratoryAppointment.feedback
-  )
-  laboratoryAppointment: LaboratoryAppointment
+  @ManyToOne(() => Account, (account: Account) => account.feedback)
+  account: Account
 }

@@ -1,7 +1,7 @@
 import { checkSchema } from 'express-validator'
-import { ADMIN_MESSAGES } from '~/constants/message'
-import accountService from '~/services/account.service'
-import { validate } from '~/utils/validations'
+import { ADMIN_MESSAGES } from '../constants/message.js'
+import accountService from '../services/account.service.js'
+import { validate } from '../utils/validations.js'
 
 export const validateCreateAccount = validate(
   checkSchema({

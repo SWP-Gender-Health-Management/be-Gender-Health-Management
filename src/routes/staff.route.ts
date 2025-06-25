@@ -3,7 +3,7 @@ import { updateAppointmentStatusController, updateResultController } from '~/con
 import { validateUpdateAppointmentStatus, validateUpdateResult } from '~/middlewares/staff.middleware.js'
 import wrapRequestHandler from '~/utils/handle.js'
 
-const staffRouter = express.Router()
+const staffRoute = express.Router()
 /*
   description: update result
   method: POST
@@ -12,7 +12,7 @@ const staffRouter = express.Router()
     
   }
 */
-staffRouter.post('/update-result', validateUpdateResult, wrapRequestHandler(updateResultController))
+staffRoute.post('/update-result', validateUpdateResult, wrapRequestHandler(updateResultController))
 
 /*
   description: update appointmet status
@@ -23,10 +23,10 @@ staffRouter.post('/update-result', validateUpdateResult, wrapRequestHandler(upda
     status: number
   }
 */
-staffRouter.post(
+staffRoute.post(
   '/update-appointment-status',
   validateUpdateAppointmentStatus,
   wrapRequestHandler(updateAppointmentStatusController)
 )
 
-export default staffRouter
+export default staffRoute
