@@ -1,9 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm'
 import { Timestamp } from 'typeorm/browser'
 import Account from './account.entity.js'
+import { TypeNoti } from '~/enum/type_noti.enum.js'
 
 export interface NotificationType {
-  notification_id: string
+  noti_id: string
+  type: TypeNoti
   title: string
   message: string
   is_read: boolean
@@ -14,7 +16,10 @@ export interface NotificationType {
 @Entity('notification')
 export default class Notification implements NotificationType {
   @PrimaryGeneratedColumn('uuid')
-  notification_id: string
+  noti_id: string
+
+  @Column({ type: 'enum', nullable: false, enum: TypeNoti })
+  type: TypeNoti
 
   @Column({ type: 'varchar', length: 1000, nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
   title: string

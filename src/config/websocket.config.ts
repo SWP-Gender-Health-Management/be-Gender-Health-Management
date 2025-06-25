@@ -3,6 +3,7 @@ import { Server as HttpServer } from 'http'
 import { createAdapter } from '@socket.io/redis-adapter'
 import redisClient from './redis.config.js'
 import { config } from 'dotenv'
+import { NotificationType } from 'src/models/Entity/notification.entity.js'
 config()
 
 export class SocketServer {
@@ -29,25 +30,26 @@ export class SocketServer {
   }
 
   /**
-   * Xử lý logic khi một client mới kết nối
+   * Xử lý kết nối của client
+   * @param socket - Socket được tạo khi client kết nối
    */
   private handleConnection = (socket: Socket): void => {
     console.log(`Một người dùng đã kết nối: ${socket.id}`)
 
-    const accountId = socket.handshake.query.accountId as string
+    const account_id = socket.handshake.query.account_id as string
 
-    if (accountId) {
-      // Đơn giản hóa: Cho socket vào một "phòng" có tên là chính userId của họ
-      socket.join(accountId)
-      console.log(`Socket ${socket.id} đã tham gia vào phòng của user ${accountId}`)
+    if (account_id) {
+      // Cho socket vào một "phòng" có tên là chính account_id của họ
+      socket.join(account_id)
+      console.log(`Socket ${socket.id} đã tham gia vào phòng của user ${account_id}`)
     }
 
-    socket.on('send_private_notification', (data: { recipientId: string; message: string }) => {
-      // 3. DÙNG Room để nhắm đến người nhận và DÙNG Event để gửi dữ liệu đi
+    socket.on('send_private_notification', (data: { recipientId: string; noti: NotificationType }) => {
+      // DÙNG Room để nhắm đến người nhận và DÙNG Event để gửi dữ liệu đi
       // Gửi sự kiện 'new_private_message' đến phòng của người nhận
       this.io.to(data.recipientId).emit('new_private_notification', {
-        sender: accountId,
-        message: data.message
+        sender: account_id,
+        noti: data.noti
       })
     })
 
@@ -55,14 +57,5 @@ export class SocketServer {
     socket.on('disconnect', () => {
       console.log(`Người dùng đã ngắt kết nối: ${socket.id}`)
     })
-  }
-
-  /**
-   * Gửi thông báo đến một người dùng cụ thể bằng cách gửi đến phòng của họ
-   */
-  public sendMessageToUser(recipientId: string, eventName: string, data: any): void {
-    // Gửi thẳng sự kiện đến phòng có tên là userId
-    this.io.to(recipientId).emit(eventName, data)
-    console.log(`Đã gửi sự kiện '${eventName}' đến phòng của người dùng ${recipientId}`)
   }
 }
