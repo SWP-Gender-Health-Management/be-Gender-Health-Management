@@ -3,111 +3,371 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mã Xác Minh Tài Khoản Của Bạn</title>
+    <title>Xác Thực Tài Khoản - MediCare</title>
     <style>
-      body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji',
-          'Segoe UI Emoji', 'Segoe UI Symbol';
-        line-height: 1.6;
-        color: #333333;
-        background-color: #f4f5f6;
+      /* Reset và Base Styles */
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+
       .email-wrapper {
         width: 100%;
-        background-color: #f4f5f6;
-        padding: 20px 0;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: table;
       }
+
       .email-container {
         max-width: 580px;
         margin: 0 auto;
-        background-color: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        overflow: hidden; /* Để bo tròn áp dụng cho cả header/footer */
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        position: relative;
       }
+
+      .email-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      }
+
+      /* Header Styles */
       .header {
-        background-color: #007bff; /* Màu chủ đạo của bạn */
-        color: #ffffff;
-        padding: 25px;
+        padding: 40px 30px 30px;
         text-align: center;
+        background: #ffffff;
+        position: relative;
       }
-      .header h1 {
-        margin: 0;
+
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .logo-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .logo-icon::before {
+        content: '✨';
         font-size: 24px;
+      }
+
+      .brand-title {
+        font-size: 28px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+      }
+
+      .header-subtitle {
+        font-size: 18px;
+        color: #1a1a1a;
+        margin-top: 10px;
         font-weight: 600;
       }
+
+      /* Content Styles */
       .content {
-        padding: 30px;
-        text-align: center; /* Căn giữa nội dung */
-      }
-      .content p {
-        margin-bottom: 15px;
-        font-size: 16px;
-        color: #555555;
-      }
-      .passcode-label {
-        font-size: 16px;
-        color: #555555;
-        margin-bottom: 10px;
-      }
-      .passcode {
-        font-size: 36px; /* Kích thước lớn cho mã */
-        font-weight: bold;
-        color: #333333; /* Màu cho mã OTP */
-        letter-spacing: 8px; /* Tăng khoảng cách giữa các số cho dễ đọc */
-        padding: 15px 0;
-        margin: 10px auto 25px auto; /* Căn giữa và tạo khoảng cách */
-        display: inline-block; /* Để có thể căn giữa */
-        border: 1px dashed #cccccc; /* (Tùy chọn) Khung viền cho mã */
-        border-radius: 5px;
-        background-color: #f9f9f9; /* (Tùy chọn) Nền nhẹ cho mã */
-        min-width: 200px; /* Đảm bảo đủ rộng */
-      }
-      .note {
-        font-size: 14px;
-        color: #777777;
-        margin-top: 20px;
-      }
-      .footer {
+        padding: 30px 40px;
         text-align: center;
-        padding: 20px;
-        font-size: 12px;
-        color: #999999;
-        background-color: #f8f9fa;
-        border-top: 1px solid #e0e0e0;
+        background: #ffffff;
       }
+
+      .welcome-message {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 25px;
+        line-height: 1.6;
+      }
+
+      .welcome-message .user-name {
+        color: #667eea;
+        font-weight: 600;
+      }
+
+      .instruction-text {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 30px;
+        line-height: 1.6;
+      }
+
+      /* OTP Container */
+      .otp-container {
+        background: linear-gradient(135deg, #f8faff 0%, #eef5ff 100%);
+        border: 2px dashed #667eea;
+        border-radius: 16px;
+        padding: 35px 20px;
+        margin: 30px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .otp-container::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(102, 126, 234, 0.05) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .otp-label {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+        font-weight: 500;
+      }
+
+      .otp-code {
+        font-size: 42px;
+        font-weight: 700;
+        color: #667eea;
+        letter-spacing: 10px;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+        font-family: 'Courier New', monospace;
+      }
+
+      /* Info Boxes */
+      .info-box {
+        background: linear-gradient(135deg, #fff9f0 0%, #fef5e7 100%);
+        border: 1px solid #ffd6a5;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 25px 0;
+        border-left: 4px solid #ff8c00;
+      }
+
+      .info-box .expiry-text {
+        font-size: 14px;
+        color: #d68910;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .info-box .security-text {
+        font-size: 14px;
+        color: #856404;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      /* Security Notice */
+      .security-notice {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 1px solid #bae6fd;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 25px 0;
+        border-left: 4px solid #0ea5e9;
+      }
+
+      .security-notice p {
+        margin: 0;
+        font-size: 14px;
+        color: #0c4a6e;
+        line-height: 1.6;
+      }
+
+      .security-notice .icon {
+        display: inline-block;
+        margin-right: 8px;
+        font-size: 16px;
+      }
+
+      /* Footer */
+      .footer {
+        background: #f8faff;
+        padding: 30px 40px;
+        text-align: center;
+        border-top: 1px solid #e8f2ff;
+      }
+
+      .footer p {
+        margin: 8px 0;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .footer p:first-child {
+        font-weight: 600;
+        color: #1a1a1a;
+        font-size: 16px;
+      }
+
+      .footer p:last-child {
+        color: #999;
+        font-size: 13px;
+      }
+
       .footer a {
-        color: #007bff;
+        color: #667eea;
         text-decoration: none;
+        font-weight: 500;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 600px) {
+        .email-wrapper {
+          padding: 20px 10px;
+        }
+
+        .content {
+          padding: 20px 25px;
+        }
+
+        .footer {
+          padding: 20px 25px;
+        }
+
+        .brand-title {
+          font-size: 24px;
+        }
+
+        .otp-code {
+          font-size: 36px;
+          letter-spacing: 8px;
+        }
+
+        .otp-container {
+          padding: 25px 15px;
+        }
+
+        .logo {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .logo-icon {
+          margin: 0 0 10px 0;
+        }
+      }
+
+      /* Animation */
+      .otp-container {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     </style>
   </head>
   <body>
     <div class="email-wrapper">
       <div class="email-container">
+        <!-- Header -->
         <div class="header">
-          <h1>Mã Xác Minh Tài Khoản</h1>
+          <div class="logo">
+            <div class="logo-icon"></div>
+            <h1 class="brand-title">MediCare</h1>
+          </div>
+          <h2 class="header-subtitle">Xác Thực Tài Khoản</h2>
         </div>
+
+        <!-- Content -->
         <div class="content">
-          <p>Chào {{USER_NAME}},</p>
-          <p>
-            Vui lòng sử dụng mã xác minh gồm 6 chữ số dưới đây để hoàn tất việc đăng nhập hoặc xác thực yêu cầu của bạn:
+          <p class="welcome-message">
+            Chào <span class="user-name">{{USER_NAME}}</span>,
           </p>
-          <div class="passcode-label">Mã đăng nhập của bạn:</div>
-          <div class="passcode">{{OTP_CODE}}</div>
-          <p class="note">Mã này sẽ hết hạn sau {{OTP_EXPIRATION_MINUTES}} phút.</p>
-          <p class="note">
-            Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Vì lý do bảo mật, không chia sẻ mã này với
-            bất kỳ ai.
+
+          <p class="instruction-text">
+            Cảm ơn bạn đã đăng ký tài khoản MediCare! Để hoàn tất quá trình đăng
+            ký và bảo mật tài khoản của bạn, vui lòng sử dụng mã xác thực bên
+            dưới:
           </p>
+
+          <div class="otp-container">
+            <p class="otp-label">Mã xác thực của bạn</p>
+            <p class="otp-code">{{OTP_CODE}}</p>
+          </div>
+
+          <div class="info-box">
+            <p class="expiry-text">⏰ Thời gian hiệu lực</p>
+            <p class="security-text">
+              Mã này sẽ hết hạn sau {{OTP_EXPIRATION_MINUTES}} phút kể từ khi
+              được gửi.
+            </p>
+          </div>
+
+          <div class="security-notice">
+            <p>
+              <span class="icon">🔒</span>
+              <strong>Lưu ý bảo mật:</strong> Nếu bạn không thực hiện yêu cầu
+              này, vui lòng bỏ qua email này. Vì lý do bảo mật, không chia sẻ mã
+              này với bất kỳ ai khác.
+            </p>
+          </div>
         </div>
+
+        <!-- Footer -->
         <div class="footer">
-          <p>&copy; {{CURRENT_YEAR}} Tên Ứng Dụng Của Bạn. Bảo lưu mọi quyền.</p>
+          <p>Chào mừng bạn đến với cộng đồng MediCare!</p>
           <p>
-            Nếu bạn có bất kỳ câu hỏi nào, vui lòng <a href="mailto:{{SUPPORT_EMAIL}}">liên hệ với bộ phận hỗ trợ</a>.
+            Chúng tôi cam kết bảo vệ thông tin cá nhân và cung cấp dịch vụ chăm
+            sóc sức khỏe tốt nhất.
+          </p>
+          <p>
+            © {{CURRENT_YEAR}} MediCare. Bảo lưu mọi quyền. |
+            <a href="mailto:{{SUPPORT_EMAIL}}">Liên hệ hỗ trợ</a>
           </p>
         </div>
       </div>
