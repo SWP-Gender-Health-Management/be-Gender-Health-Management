@@ -5,7 +5,8 @@ import { USERS_MESSAGES } from '~/constants/message.js'
 import { ErrorWithStatus } from '~/models/Error.js'
 import accountService from '~/services/account.service.js'
 import refreshTokenService from '~/services/refresh_token.service.js'
-
+import notificationService from '~/services/notification.service.js'
+import { TypeNoti } from '~/enum/type_noti.enum.js'
 /**
  * @swagger
  * /account/register:
@@ -87,6 +88,14 @@ export const registerController = async (req: Request, res: Response, next: Next
     sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
     maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string) // Thời gian sống của cookie (tính bằng mili giây)
   })
+  await notificationService.createNotification(
+    {
+      type: TypeNoti.ACCOUNT_REGISTER_SUCCESS,
+      title: 'Account registered successfully',
+      message: 'Your account has been registered successfully'
+    },
+    account_id
+  )
   res.status(HTTP_STATUS.CREATED).json({
     message: USERS_MESSAGES.USER_CREATED_SUCCESS,
     result
@@ -272,15 +281,23 @@ export const changePasswordController = async (req: Request, res: Response, next
   }
   await refreshTokenService.updateRefreshToken({ account: account, token: result.refreshToken })
 
-  // res.cookie('refreshToken', result.refreshToken, {
-  //   httpOnly: true,
-  //   secure: process.env.NODE_ENV === 'production', // Quan trọng: Chỉ gửi cookie qua HTTPS (true cho production)
-  //   sameSite: 'strict', // Hoặc 'Lax'. 'Strict' là an toàn nhất (chống CSRF)
-  //   expires: new Date(Date.now() + parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string)),
-  //   // path: '/account/auth/refresh-token' // Tùy chọn: Giới hạn cookie chỉ được gửi đến endpoint cụ thể này
-  //   path: '/' // Hoặc đặt path rộng hơn nếu cần thiết cho các kịch bản khác nhau
-  // })
+  res.cookie('refreshToken', result.refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Quan trọng: Chỉ gửi cookie qua HTTPS (true cho production)
+    sameSite: 'strict', // Hoặc 'Lax'. 'Strict' là an toàn nhất (chống CSRF)
+    expires: new Date(Date.now() + parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string)),
+    // path: '/account/auth/refresh-token' // Tùy chọn: Giới hạn cookie chỉ được gửi đến endpoint cụ thể này
+    path: '/' // Hoặc đặt path rộng hơn nếu cần thiết cho các kịch bản khác nhau
+  })
 
+  await notificationService.createNotification(
+    {
+      type: TypeNoti.PASSWORD_CHANGED_SUCCESS,
+      title: 'Password changed successfully',
+      message: 'Your password has been changed successfully'
+    },
+    account.account_id
+  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.PASSWORD_CHANGED_SUCCESS,
     result
@@ -311,6 +328,14 @@ export const resetPasswordController = async (req: Request, res: Response, next:
   const { account, newPassword } = req.body
   console.log('newPassword:', newPassword)
   const result = await accountService.resetPassword(account.account_id, newPassword)
+  await notificationService.createNotification(
+    {
+      type: TypeNoti.PASSWORD_RESET_SUCCESS,
+      title: 'Password reset successfully',
+      message: 'Your password has been reset successfully'
+    },
+    account.account_id
+  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS,
     result
@@ -367,6 +392,14 @@ export const resetPasswordController = async (req: Request, res: Response, next:
 export const verifyEmailController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id, secretPasscode } = req.body
   await accountService.verifyEmail(account_id, secretPasscode)
+  await notificationService.createNotification(
+    {
+      type: TypeNoti.EMAIL_VERIFIED,
+      title: 'Email verified successfully',
+      message: 'Your email has been verified successfully'
+    },
+    account_id
+  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
   })
@@ -462,6 +495,14 @@ export const sendEmailVerifiedController = async (req: Request, res: Response, n
 export const updateAccountController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id, full_name, phone, dob, gender } = req.body
   const result = await accountService.updateProfile(account_id, full_name, phone, dob, gender)
+  await notificationService.createNotification(
+    {
+      type: TypeNoti.ACCOUNT_UPDATED_SUCCESS,
+      title: 'Account updated successfully',
+      message: 'Your account has been updated successfully'
+    },
+    account_id
+  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_UPDATED_SUCCESS,
     result
