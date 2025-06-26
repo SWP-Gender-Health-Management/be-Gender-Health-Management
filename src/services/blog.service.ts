@@ -134,7 +134,7 @@ export class BlogService {
     const skip = (page - 1) * limit
 
     const blogs = await blogRepository.find({
-      where: { account },
+      where: { account: {account_id: account.account_id} },
       skip,
       take: limit,
       relations: ['account']
