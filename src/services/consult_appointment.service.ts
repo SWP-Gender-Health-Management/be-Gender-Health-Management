@@ -195,7 +195,7 @@ export class ConsultAppointmentService {
     }
 
     const consultAppointment = await consultAppointmentRepository.findOne({
-      where: { consultant_pattern: consultantPattern },
+      where: { consultant_pattern: {pattern_id: consultantPattern.pattern_id}  },
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
@@ -305,6 +305,7 @@ export class ConsultAppointmentService {
     })
     if (consultantPattern) {
       consultantPattern.is_booked = false
+      consultantPattern.consult_appointment = null;
       await consultantPatternRepository.save(consultantPattern)
     }
 
