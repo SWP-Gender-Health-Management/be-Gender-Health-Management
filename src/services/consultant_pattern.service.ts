@@ -51,8 +51,8 @@ export class ConsultantPatternService {
     // Check for duplicate pattern (same slot, consultant, and date)
     const existingPattern = await consultantPatternRepository.findOne({
       where: {
-        working_slot: workingSlot,
-        consultant: consultant,
+        working_slot: {slot_id: workingSlot.slot_id} ,
+        consultant: {account_id: consultant.account_id},
         date: new Date(date)
       }
     })
@@ -142,7 +142,7 @@ export class ConsultantPatternService {
     const skip = (page - 1) * limit
 
     const consultantPattern = await consultantPatternRepository.find({
-      where: { consultant: consultant },
+      where: { consultant: {account_id: consultant.account_id} },
       skip,
       take: limit,
       relations: ['working_slot', 'consultant']
@@ -183,7 +183,7 @@ export class ConsultantPatternService {
     const skip = (page - 1) * limit
 
     const consultantPattern = await consultantPatternRepository.find({
-      where: { working_slot: workingSlot },
+      where: { working_slot: {slot_id: workingSlot.slot_id} },
       skip,
       take: limit,
       relations: ['working_slot', 'consultant']
@@ -245,8 +245,8 @@ export class ConsultantPatternService {
     if (slot_id || consultant_id || date) {
       const existingPattern = await consultantPatternRepository.findOne({
         where: {
-          working_slot: workingSlot || consultantPattern.working_slot,
-          consultant: consultant || consultantPattern.consultant,
+          working_slot: {slot_id: workingSlot?.slot_id || consultantPattern.working_slot.slot_id},
+          consultant: {account_id: consultant?.account_id || consultantPattern.consultant.account_id},
           date: new Date(date) || consultantPattern.date
         }
       })

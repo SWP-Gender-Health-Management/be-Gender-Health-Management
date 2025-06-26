@@ -141,7 +141,7 @@ export class ReplyService {
     const skip = (page - 1) * limit
 
     const replies = await replyRepository.find({
-      where: { consultant: consultant},
+      where: { consultant: {account_id: consultant.account_id}},
       skip,
       take: limit,
       relations: ['consultant', 'question']
@@ -173,7 +173,7 @@ export class ReplyService {
     }
 
     const reply = await replyRepository.findOne({
-      where: { question: question },
+      where: { question: {ques_id: question.ques_id} },
       relations: ['consultant', 'question']
     })
 
@@ -237,7 +237,7 @@ export class ReplyService {
 
     // Find the associated question and remove the reply reference
     const question = await questionRepository.findOne({
-      where: { reply: { reply_id: reply_id } },
+      where: { reply: { reply_id } },
       relations: ['reply']
     })
 

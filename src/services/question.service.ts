@@ -110,7 +110,7 @@ export class QuestionService {
     const skip = (page - 1) * limit
 
     const questions = await questionRepository.find({
-      where: { customer: customer},
+      where: { customer: {account_id: customer.account_id}},
       skip,
       take: limit,
       relations: ['customer', 'reply']

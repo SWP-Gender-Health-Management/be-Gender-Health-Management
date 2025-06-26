@@ -48,5 +48,5 @@ export default class ConsultantPattern implements ConsultantPatternType {
 
   @OneToOne(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.consultant_pattern)
   @JoinColumn({ name: 'app_id' })
-  consult_appointment: ConsultAppointment
+  consult_appointment: ConsultAppointment | null
 }

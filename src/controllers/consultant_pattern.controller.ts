@@ -5,7 +5,7 @@ import consultantPatternService from '~/services/consultant_pattern.service.js'
 
 /**
  * @swagger
- * /consultant_pattern/create-consultant-pattern:
+ * /consultant-pattern/create-consultant-pattern:
  *   post:
  *     summary: Create a new consultant pattern
  *     description: Creates a new consultant pattern associated with a working slot and consultant. Requires admin role.
@@ -85,7 +85,7 @@ export const createConsultantPattern = async (req: Request, res: Response, next:
 
 /**
  * @swagger
- * /consultant_pattern/get-all-consultant-patterns:
+ * /consultant-pattern/get-all-consultant-patterns:
  *   get:
  *     summary: Get all consultant patterns
  *     description: Retrieves a list of all consultant patterns with their relations (working_slot, consultant). Currently accessible without authentication.
@@ -121,7 +121,7 @@ export const getAllConsultantPatterns = async (req: Request, res: Response, next
 
 /**
  * @swagger
- * /consultant_pattern/get-consultant-pattern-by-id/{pattern_id}:
+ * /consultant-pattern/get-consultant-pattern-by-id/{pattern_id}:
  *   get:
  *     summary: Get a consultant pattern by ID
  *     description: Retrieves a consultant pattern by its ID with its relations (working_slot, consultant). Requires admin or customer role.
@@ -176,7 +176,7 @@ export const getConsultantPatternById = async (req: Request, res: Response, next
 
 /**
  * @swagger
- * /consultant_pattern/get-consultant-pattern-by-id/consultant/{consultant_id}:
+ * /consultant-pattern/get-consultant-pattern-by-id/consultant/{consultant_id}:
  *   get:
  *     summary: Get consultant patterns by consultant ID
  *     description: Retrieves all consultant patterns associated with a consultant ID with their relations (working_slot, consultant). Requires admin or customer role.
@@ -233,7 +233,7 @@ export const getConsultantPatternByConsultantId = async (req: Request, res: Resp
 
 /**
  * @swagger
- * /consultant_pattern/get-consultant-pattern-by-id/slot/{slot_id}:
+ * /consultant-pattern/get-consultant-pattern-by-id/slot/{slot_id}:
  *   get:
  *     summary: Get consultant patterns by slot ID
  *     description: Retrieves all consultant patterns associated with a working slot ID with their relations (working_slot, consultant). Requires admin or customer role.
@@ -290,7 +290,7 @@ export const getConsultantPatternBySlotId = async (req: Request, res: Response, 
 
 /**
  * @swagger
- * /consultant_pattern/update-consultant-pattern/{pattern_id}:
+ * /consultant-pattern/update-consultant-pattern/{pattern_id}:
  *   put:
  *     summary: Update a consultant pattern
  *     description: Updates an existing consultant pattern. Currently accessible without authentication.
@@ -379,7 +379,7 @@ export const updateConsultantPattern = async (req: Request, res: Response, next:
 
 /**
  * @swagger
- * /consultant_pattern/delete-consultant-pattern/{pattern_id}:
+ * /consultant-pattern/delete-consultant-pattern/{pattern_id}:
  *   delete:
  *     summary: Delete a consultant pattern
  *     description: Deletes a consultant pattern by its ID. Requires admin role.
