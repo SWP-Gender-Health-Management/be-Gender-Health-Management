@@ -11,7 +11,8 @@ import {
   getManagersController,
   getConsultantsController,
   getOverallController,
-  getSummaryController
+  getSummaryController,
+  getPerformanceController
 } from '../controllers/admin.controller.js'
 import { validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
@@ -40,6 +41,15 @@ adminRoute.get('/get-overall', restrictTo(Role.ADMIN), wrapRequestHandler(getOve
   }
 */
 adminRoute.get('/get-summary', restrictTo(Role.ADMIN), wrapRequestHandler(getSummaryController))
+
+/*
+  description: get-performance
+  method: get
+  path: /admin/get-performance
+  body:{
+  }
+*/
+adminRoute.get('/get-performance', restrictTo(Role.ADMIN), wrapRequestHandler(getPerformanceController))
 
 /*
   description: create new admin

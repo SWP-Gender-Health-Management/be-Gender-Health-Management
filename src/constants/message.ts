@@ -129,7 +129,8 @@ export const ADMIN_MESSAGES = {
   ACCOUNT_BANNED_SUCCESS: 'Account banned successfully',
   ACCOUNT_NOT_FOUND: 'Account not found',
   OVERALL_SUCCESS: 'Overall success',
-  SUMMARY_SUCCESS: 'Summary success'
+  SUMMARY_SUCCESS: 'Summary success',
+  PERFORMANCE_SUCCESS: 'Performance success'
 }
 
 export const LABORARITY_MESSAGES = {

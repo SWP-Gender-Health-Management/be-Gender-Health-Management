@@ -9,11 +9,15 @@ import ConsultAppointment from '~/models/Entity/consult_appointment.entity.js'
 import Transaction from '~/models/Entity/transaction.entity.js'
 import { TransactionStatus } from '~/enum/transaction.enum.js'
 import { subDays } from 'date-fns'
+import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
+import Feedback from '~/models/Entity/feedback.entity.js'
+import { LessThan, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
 
 const accountRepo = AppDataSource.getRepository(Account)
 const labAppRepo = AppDataSource.getRepository(LaboratoryAppointment)
 const conAppRepo = AppDataSource.getRepository(ConsultAppointment)
 const transactionRepo = AppDataSource.getRepository(Transaction)
+const feedbackRepo = AppDataSource.getRepository(Feedback)
 
 class AdminService {
   /**
@@ -132,6 +136,78 @@ class AdminService {
             ((totalLab + totalCon - (totalLabYes + totalConYes)) / (totalLabYes + totalConYes)) * 100
         }
       }
+    }
+  }
+
+  async getPerformance() {
+    const [totalLab, totalLabDelayed, totalLabCancelled, totalLabCompleted] = await Promise.all([
+      labAppRepo.count(),
+      labAppRepo.count({
+        where: {
+          status: StatusAppointment.DELAYED
+        }
+      }),
+      labAppRepo.count({
+        where: {
+          status: StatusAppointment.CANCELLED
+        }
+      }),
+      labAppRepo.count({
+        where: {
+          status: StatusAppointment.COMPLETED
+        }
+      })
+    ])
+    const [totalCon, totalConDelayed, totalConCancelled, totalConCompleted] = await Promise.all([
+      conAppRepo.count(),
+      conAppRepo.count({
+        where: {
+          status: StatusAppointment.DELAYED
+        }
+      }),
+      conAppRepo.count({
+        where: {
+          status: StatusAppointment.CANCELLED
+        }
+      }),
+      conAppRepo.count({
+        where: {
+          status: StatusAppointment.COMPLETED
+        }
+      })
+    ])
+    const totalApp = totalLab + totalCon
+    const totalAppDelayed = totalLabDelayed + totalConDelayed
+    const totalAppCancelled = totalLabCancelled + totalConCancelled
+    const totalAppCompleted = totalLabCompleted + totalConCompleted
+    const [totalFeed, sumRating, goodFeed, badFeed] = await Promise.all([
+      feedbackRepo.count(),
+      feedbackRepo.createQueryBuilder('feedback').select('SUM(feedback.rating)', 'sum_rating').getRawOne(),
+      feedbackRepo.count({
+        where: {
+          rating: MoreThanOrEqual(4)
+        }
+      }),
+      feedbackRepo.count({
+        where: {
+          rating: LessThanOrEqual(3)
+        }
+      })
+    ])
+    const goodFeedPercent = (goodFeed / totalFeed) * 100
+    const badFeedPercent = (badFeed / totalFeed) * 100
+    const avgRating = sumRating / totalFeed
+    return {
+      totalApp: totalApp,
+      totalAppDelayed: totalAppDelayed,
+      totalAppCancelled: totalAppCancelled,
+      totalAppCompleted: totalAppCompleted,
+      totalFeed: totalFeed,
+      goodFeed: goodFeed,
+      badFeed: badFeed,
+      goodFeedPercent: goodFeedPercent,
+      badFeedPercent: badFeedPercent,
+      avgRating: avgRating
     }
   }
 

@@ -26,6 +26,14 @@ export const getSummaryController = async (req: Request, res: Response, next: Ne
   })
 }
 
+export const getPerformanceController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await adminService.getPerformance()
+  res.status(HTTP_STATUS.OK).json({
+    message: ADMIN_MESSAGES.PERFORMANCE_SUCCESS,
+    data: result
+  })
+}
+
 export const createAdminController = async (req: Request, res: Response, next: NextFunction) => {
   const { full_name, email, password } = req.body
   const admin = await adminService.createAdmin(full_name, email, password)
