@@ -130,7 +130,8 @@ export const ADMIN_MESSAGES = {
   ACCOUNT_NOT_FOUND: 'Account not found',
   OVERALL_SUCCESS: 'Overall success',
   SUMMARY_SUCCESS: 'Summary success',
-  PERFORMANCE_SUCCESS: 'Performance success'
+  PERFORMANCE_SUCCESS: 'Performance success',
+  ACCOUNT_UNBANNED_SUCCESS: 'Account unbanned successfully'
 }
 
 export const LABORARITY_MESSAGES = {

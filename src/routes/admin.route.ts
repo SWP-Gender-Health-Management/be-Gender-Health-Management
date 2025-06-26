@@ -12,7 +12,8 @@ import {
   getConsultantsController,
   getOverallController,
   getSummaryController,
-  getPerformanceController
+  getPerformanceController,
+  unbanAccountController
 } from '../controllers/admin.controller.js'
 import { validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
@@ -171,6 +172,7 @@ adminRoute.get('/get-consultants', restrictTo(Role.ADMIN), wrapRequestHandler(ge
   }
 */
 adminRoute.get('/get-staffs', restrictTo(Role.ADMIN), wrapRequestHandler(getStaffsController))
+
 /*
   description: get account
   method: get
@@ -189,5 +191,20 @@ adminRoute.get('/get-customers', restrictTo(Role.ADMIN), wrapRequestHandler(getC
   }
 */
 adminRoute.post('/ban-account', restrictTo(Role.ADMIN), validateBanAccount, wrapRequestHandler(banAccountController))
+
+/*
+  description: unban account
+  method: POST
+  path: /admin/unban-account
+  body: {
+    account_id: string
+  }
+*/
+adminRoute.post(
+  '/unban-account',
+  restrictTo(Role.ADMIN),
+  validateBanAccount,
+  wrapRequestHandler(unbanAccountController)
+)
 
 export default adminRoute

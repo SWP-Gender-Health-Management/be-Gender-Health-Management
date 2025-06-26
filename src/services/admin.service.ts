@@ -211,6 +211,8 @@ class AdminService {
     }
   }
 
+  // Manage account
+
   /**
    * @description: Tạo tài khoản admin
    * @param full_name: string
@@ -443,6 +445,22 @@ class AdminService {
     await accountRepo.update(account_id, { is_banned: true })
     return {
       message: ADMIN_MESSAGES.ACCOUNT_BANNED_SUCCESS
+    }
+  }
+
+  async unbanAccount(account_id: string) {
+    const account = await accountRepo.findOne({
+      where: { account_id }
+    })
+    if (!account) {
+      throw new ErrorWithStatus({
+        message: ADMIN_MESSAGES.ACCOUNT_NOT_FOUND,
+        status: 404
+      })
+    }
+    await accountRepo.update(account_id, { is_banned: false })
+    return {
+      message: ADMIN_MESSAGES.ACCOUNT_UNBANNED_SUCCESS
     }
   }
 }

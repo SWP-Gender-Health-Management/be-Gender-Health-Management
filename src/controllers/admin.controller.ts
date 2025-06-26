@@ -162,3 +162,11 @@ export const banAccountController = async (req: Request, res: Response, next: Ne
     message: ADMIN_MESSAGES.ACCOUNT_BANNED_SUCCESS
   })
 }
+
+export const unbanAccountController = async (req: Request, res: Response, next: NextFunction) => {
+  const { account_id } = req.body
+  await adminService.unbanAccount(account_id)
+  res.status(200).json({
+    message: ADMIN_MESSAGES.ACCOUNT_UNBANNED_SUCCESS
+  })
+}
