@@ -47,11 +47,27 @@ class AdminService {
 
   /**
    * @description: Lấy tổng số lượng khách hàng, lịch thí nghiệm, lịch tư vấn, doanh thu
+   * @param date: string
    * @returns: {
-   * totalCustomers: number,
-   * totalLab: number,
-   * totalCon: number,
-   * totalRevenue: number
+   *  reportDate: string,
+   *  kpiToday: {
+   *    totalBooking: number,
+   *    labBooking: number,
+   *    conBooking: number,
+   *    revenue: number
+   *  },
+   *  kpiYesterday: {
+   *    totalBooking: number,
+   *    labBooking: number,
+   *    conBooking: number,
+   *    revenue: number
+   *  },
+   *  performance: {
+   *    vsYes: {
+   *      revenueChangePercent: number,
+   *      bookingChangePercent: number
+   *    }
+   *  }
    * }
    */
   async getSummary(date: string) {
@@ -128,7 +144,7 @@ class AdminService {
    */
   async createAdmin(full_name: string, email: string, password: string) {
     const hashedPassword = await hashPassword(password)
-    const newAdmin = await accountRepo.create({
+    const newAdmin = accountRepo.create({
       full_name,
       email,
       password: hashedPassword,
