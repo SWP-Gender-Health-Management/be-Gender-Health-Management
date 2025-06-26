@@ -73,11 +73,7 @@ export class ConsultAppointmentService {
         consult_appointment: savedConsultAppointment
       });
     }
-    const updatedAccount = await accountRepository.findOne({
-      where: { account_id: customer_id },
-      relations: ['consult_appointment'],
-    });
-    console.log('Updated consult_appointment array:', updatedAccount);
+    
     return savedConsultAppointment
   }
 

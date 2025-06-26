@@ -66,8 +66,7 @@ export class ConsultReportService {
     const savedReport = await consultReportRepository.save(consultReport)
 
     // Assign the report to the consult appointment and save
-    consultAppointment.report = savedReport
-    await consultAppointmentRepository.save(consultAppointment)
+    await consultAppointmentRepository.update(consultAppointment.app_id, {report: savedReport});
 
     return savedReport
   }
