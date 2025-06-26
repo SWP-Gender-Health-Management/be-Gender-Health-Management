@@ -7,7 +7,7 @@ import { TypeNoti } from '~/enum/type_noti.enum.js'
 
 /**
  * @swagger
- * /consult_appointment/create-consult-appointment:
+ * /consult-appointment/create-consult-appointment:
  *   post:
  *     summary: Create a new consult appointment
  *     description: Creates a new consult appointment for a customer, associating it with a consultant pattern. Requires customer role.
@@ -100,7 +100,7 @@ export const createConsultAppointment = async (req: Request, res: Response, next
 
 /**
  * @swagger
- * /consult_appointment/get-all-consult-appointments:
+ * /consult-appointment/get-all-consult-appointments:
  *   get:
  *     summary: Get all consult appointments
  *     description: Retrieves a list of all consult appointments with their relations (consultant_pattern, customer, report, feedback, consultant_pattern.working_slot, consultant_pattern.consultant). Currently accessible without authentication.
@@ -136,7 +136,7 @@ export const getAllConsultAppointments = async (req: Request, res: Response, nex
 
 /**
  * @swagger
- * /consult_appointment/get-consult-appointment-by-id/{app_id}:
+ * /consult-appointment/get-consult-appointment-by-id/{app_id}:
  *   get:
  *     summary: Get a consult appointment by ID
  *     description: Retrieves a consult appointment by its ID with its relations (consultant_pattern, customer, report, feedback, consultant_pattern.working_slot, consultant_pattern.consultant). Requires admin, consultant, or customer role.
@@ -191,7 +191,7 @@ export const getConsultAppointmentById = async (req: Request, res: Response, nex
 
 /**
  * @swagger
- * /consult_appointment/get-consult-appointment-by-id/customer/{customer_id}:
+ * /consult-appointment/get-consult-appointment-by-id/customer/{customer_id}:
  *   get:
  *     summary: Get consult appointments by customer ID
  *     description: Retrieves all consult appointments for a specific customer with their relations (consultant_pattern, customer, report, feedback, consultant_pattern.working_slot, consultant_pattern.consultant). Requires admin or customer role.
@@ -248,7 +248,7 @@ export const getConsultAppointmentsByCustomerId = async (req: Request, res: Resp
 
 /**
  * @swagger
- * /consult_appointment/get-consult-appointment-by-id/pattern/{pattern_id}:
+ * /consult-appointment/get-consult-appointment-by-id/pattern/{pattern_id}:
  *   get:
  *     summary: Get consult appointment by consultant pattern ID
  *     description: Retrieves a consult appointment associated with a consultant pattern ID with its relations (consultant_pattern, customer, report, feedback, consultant_pattern.working_slot, consultant_pattern.consultant). Requires admin or consultant role.
@@ -303,7 +303,7 @@ export const getConsultAppointmentsByPatternId = async (req: Request, res: Respo
 
 /**
  * @swagger
- * /consult_appointment/update-consult-appointment/{app_id}:
+ * /consult-appointment/update-consult-appointment/{app_id}:
  *   put:
  *     summary: Update a consult appointment
  *     description: Updates an existing consult appointment. Requires admin or customer role.
@@ -389,7 +389,7 @@ export const updateConsultAppointment = async (req: Request, res: Response, next
 
 /**
  * @swagger
- * /consult_appointment/delete-consult-appointment/{app_id}:
+ * /consult-appointment/delete-consult-appointment/{app_id}:
  *   delete:
  *     summary: Delete a consult appointment
  *     description: Deletes a consult appointment by its ID. Requires admin role.

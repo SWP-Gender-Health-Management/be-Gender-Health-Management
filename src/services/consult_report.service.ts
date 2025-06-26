@@ -131,7 +131,7 @@ export class ConsultReportService {
     }
 
     const consultReport = await consultReportRepository.findOne({
-      where: { consult_appointment: consultAppointment },
+      where: { consult_appointment: {app_id: consultAppointment.app_id} },
       relations: ['consult_appointment']
     })
 
