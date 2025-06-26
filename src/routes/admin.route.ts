@@ -9,7 +9,9 @@ import {
   getAdminsController,
   getStaffsController,
   getManagersController,
-  getConsultantsController
+  getConsultantsController,
+  getOverallController,
+  getSummaryController
 } from '../controllers/admin.controller.js'
 import { validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
@@ -18,6 +20,26 @@ import { Role } from '~/enum/role.enum.js'
 import { getCustomersController } from '~/controllers/customer.controller.js'
 
 const adminRoute = Router()
+
+// dashboard and analysics
+
+/*
+  description: get dashboard and analysics
+  method: get
+  path: /admin/get-dashboard-and-analysics
+  body:{
+  }
+*/
+adminRoute.get('/get-overall', restrictTo(Role.ADMIN), wrapRequestHandler(getOverallController))
+
+/*
+  description: get summary
+  method: get
+  path: /admin/get-summary
+  body:{
+  }
+*/
+adminRoute.get('/get-summary', restrictTo(Role.ADMIN), wrapRequestHandler(getSummaryController))
 
 /*
   description: create new admin

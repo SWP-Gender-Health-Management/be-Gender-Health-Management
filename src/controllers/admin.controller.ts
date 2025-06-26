@@ -3,6 +3,28 @@ import adminService from '../services/admin.service.js'
 import { ADMIN_MESSAGES } from '../constants/message.js'
 import notificationService from '~/services/notification.service.js'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { format } from 'date-fns'
+
+export const getOverallController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await adminService.getOverall()
+  res.status(HTTP_STATUS.OK).json({
+    message: ADMIN_MESSAGES.OVERALL_SUCCESS,
+    data: result
+  })
+}
+
+export const getSummaryController = async (req: Request, res: Response, next: NextFunction) => {
+  let { date } = req.query
+  if (!date) {
+    date = format(new Date(), 'yyyy-MM-dd')
+  }
+  const result = await adminService.getSummary(date as string)
+  res.status(HTTP_STATUS.OK).json({
+    message: ADMIN_MESSAGES.SUMMARY_SUCCESS,
+    data: result
+  })
+}
 
 export const createAdminController = async (req: Request, res: Response, next: NextFunction) => {
   const { full_name, email, password } = req.body
