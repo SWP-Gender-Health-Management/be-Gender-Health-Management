@@ -21,6 +21,15 @@ export const createAdminController = async (req: Request, res: Response, next: N
   })
 }
 
+export const getAdminsController = async (req: Request, res: Response, next: NextFunction) => {
+  const { limit, page } = req.query
+  const result = await adminService.getAdmins(limit as string, page as string)
+  res.status(200).json({
+    message: ADMIN_MESSAGES.ADMIN_CREATED_SUCCESS,
+    data: result
+  })
+}
+
 export const createManagerController = async (req: Request, res: Response, next: NextFunction) => {
   const { full_name, email, password } = req.body
   const manager = await adminService.createManager(full_name, email, password)
@@ -35,6 +44,15 @@ export const createManagerController = async (req: Request, res: Response, next:
   res.status(201).json({
     message: ADMIN_MESSAGES.MANAGER_CREATED_SUCCESS,
     data: manager
+  })
+}
+
+export const getManagersController = async (req: Request, res: Response, next: NextFunction) => {
+  const { limit, page } = req.query
+  const result = await adminService.getManagers(limit as string, page as string)
+  res.status(200).json({
+    message: ADMIN_MESSAGES.MANAGER_CREATED_SUCCESS,
+    data: result
   })
 }
 
@@ -55,11 +73,12 @@ export const createStaffController = async (req: Request, res: Response, next: N
   })
 }
 
-export const getAllStaffController = async (req: Request, res: Response, next: NextFunction) => {
-  const staff = await adminService.getAllStaff()
+export const getStaffsController = async (req: Request, res: Response, next: NextFunction) => {
+  const { limit, page } = req.query
+  const result = await adminService.getStaffs(limit as string, page as string)
   res.status(200).json({
     message: ADMIN_MESSAGES.STAFF_CREATED_SUCCESS,
-    data: staff
+    data: result
   })
 }
 
@@ -77,6 +96,15 @@ export const createConsultantController = async (req: Request, res: Response, ne
   res.status(201).json({
     message: ADMIN_MESSAGES.CONSULTANT_CREATED_SUCCESS,
     data: consultant
+  })
+}
+
+export const getConsultantsController = async (req: Request, res: Response, next: NextFunction) => {
+  const { limit, page } = req.query
+  const result = await adminService.getConsultants(limit as string, page as string)
+  res.status(200).json({
+    message: ADMIN_MESSAGES.CONSULTANT_CREATED_SUCCESS,
+    data: result
   })
 }
 

@@ -2,16 +2,20 @@ import { Router } from 'express'
 import {
   createAdminController,
   createManagerController,
+  createCustomerController,
+  banAccountController,
   createStaffController,
   createConsultantController,
-  createCustomerController,
-  getAllStaffController,
-  banAccountController
+  getAdminsController,
+  getStaffsController,
+  getManagersController,
+  getConsultantsController
 } from '../controllers/admin.controller.js'
 import { validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
 import { restrictTo } from '~/middlewares/account.middleware.js'
 import { Role } from '~/enum/role.enum.js'
+import { getCustomersController } from '~/controllers/customer.controller.js'
 
 const adminRoute = Router()
 
@@ -67,13 +71,6 @@ adminRoute.post(
 )
 
 /*
-  description: get all staff
-  method: GET
-  path: /admin/get-all-staff
-*/
-adminRoute.get('/get-all-staff', wrapRequestHandler(getAllStaffController))
-
-/*
   description: create new consultant
   method: POST
   path: /admin/create-consultant
@@ -106,6 +103,50 @@ adminRoute.post(
   validateCreateAccount,
   wrapRequestHandler(createCustomerController)
 )
+
+/*
+  description: get all admins
+  method: get
+  path: /admin/get-admins
+  body:{
+  }
+*/
+adminRoute.get('/get-admins', restrictTo(Role.ADMIN), wrapRequestHandler(getAdminsController))
+
+/*
+  description: get all managers
+  method: get
+  path: /admin/get-managers
+  body:{
+  }
+*/
+adminRoute.get('/get-managers', restrictTo(Role.ADMIN), wrapRequestHandler(getManagersController))
+
+/*
+  description: get all consultants
+  method: get
+  path: /admin/get-consultants
+  body:{
+  }
+*/
+adminRoute.get('/get-consultants', restrictTo(Role.ADMIN), wrapRequestHandler(getConsultantsController))
+
+/*
+  description: get all staffs
+  method: get
+  path: /admin/get-staffs
+  body:{
+  }
+*/
+adminRoute.get('/get-staffs', restrictTo(Role.ADMIN), wrapRequestHandler(getStaffsController))
+/*
+  description: get account
+  method: get
+  path: /admin/get-customers
+  body:{
+  }
+*/
+adminRoute.get('/get-customers', restrictTo(Role.ADMIN), wrapRequestHandler(getCustomersController))
 
 /*
   description: ban account

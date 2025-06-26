@@ -71,13 +71,13 @@ export class ConsultAppointmentService {
       await consultantPatternRepository.update(consultantPattern.pattern_id, {
         is_booked: true,
         consult_appointment: savedConsultAppointment
-      });
+      })
     }
     const updatedAccount = await accountRepository.findOne({
       where: { account_id: customer_id },
-      relations: ['consult_appointment'],
-    });
-    console.log('Updated consult_appointment array:', updatedAccount);
+      relations: ['consult_appointment']
+    })
+    console.log('Updated consult_appointment array:', updatedAccount)
     return savedConsultAppointment
   }
 
@@ -88,16 +88,13 @@ export class ConsultAppointmentService {
    * @returns The consult appointments
    */
   // Get all consult appointments
-  async getAllConsultAppointments(pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
-    const skip = (page - 1) * limit
+  async getAllConApps(limit: string, page: string): Promise<ConsultAppointment[]> {
+    let limitNumber = parseInt(limit) || 10
+    let pageNumber = parseInt(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
     return await consultAppointmentRepository.find({
       skip,
-      take: limit,
+      take: limitNumber,
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
@@ -114,7 +111,7 @@ export class ConsultAppointmentService {
    * @returns The consult appointment
    */
   // Get a consult appointment by ID
-  async getConsultAppointmentById(app_id: string): Promise<ConsultAppointment> {
+  async getConAppById(app_id: string): Promise<ConsultAppointment> {
     const consultAppointment = await consultAppointmentRepository.findOne({
       where: { app_id },
       relations: [
@@ -144,13 +141,14 @@ export class ConsultAppointmentService {
    * @returns The consult appointments
    */
   // Get consult appointments by Customer ID
-  async getConsultAppointmentsByCustomerId(customer_id: string, pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
-    const skip = (page - 1) * limit
+  async getConsultAppointmentsByCustomerId(
+    customer_id: string,
+    limit: string,
+    page: string
+  ): Promise<ConsultAppointment[]> {
+    let limitNumber = parseInt(limit) || 10
+    let pageNumber = parseInt(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -161,7 +159,7 @@ export class ConsultAppointmentService {
     const consultAppointments = await consultAppointmentRepository.find({
       where: { customer: { account_id: customer_id } },
       skip,
-      take: limit,
+      take: limitNumber,
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
@@ -225,7 +223,7 @@ export class ConsultAppointmentService {
    */
   // Update a consult appointment
   async updateConsultAppointment(app_id: string, data: any): Promise<ConsultAppointment> {
-    const consultAppointment = await this.getConsultAppointmentById(app_id)
+    const consultAppointment = await this.getConAppById(app_id)
     // Validate consultant pattern if provided
     let consultantPattern
     if (data.pattern_id && data.pattern_id !== consultAppointment.consultant_pattern.pattern_id) {
@@ -289,7 +287,7 @@ export class ConsultAppointmentService {
    */
   // Delete a consult appointment
   async deleteConsultAppointment(app_id: string): Promise<void> {
-    const consultAppointment = await this.getConsultAppointmentById(app_id)
+    const consultAppointment = await this.getConAppById(app_id)
     // const feedback = await feedbackRepository.findOne({
     //   where: { app_id: consultAppointment.app_id, type: TypeAppointment.CONSULT }
     // })
