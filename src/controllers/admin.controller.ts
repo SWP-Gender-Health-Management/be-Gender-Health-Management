@@ -5,6 +5,7 @@ import notificationService from '~/services/notification.service.js'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
 import HTTP_STATUS from '~/constants/httpStatus.js'
 import { format } from 'date-fns'
+import { emailQueue } from '~/routes/admin.route.js'
 
 export const getOverallController = async (req: Request, res: Response, next: NextFunction) => {
   const result = await adminService.getOverall()
@@ -169,4 +170,25 @@ export const unbanAccountController = async (req: Request, res: Response, next: 
   res.status(200).json({
     message: ADMIN_MESSAGES.ACCOUNT_UNBANNED_SUCCESS
   })
+}
+
+export const sendBulkEmailController = async (req: Request, res: Response, next: NextFunction) => {
+  // Lấy thông tin từ request của admin
+  const { targetGroup, subject, body } = req.body
+
+  // TODO: Validate dữ liệu đầu vào
+
+  try {
+    // Thêm một job mới vào queue
+    // 'send-campaign' là tên của job
+    // { targetGroup, subject, body } là dữ liệu của job
+    await emailQueue.add('send-campaign', { targetGroup, subject, body })
+
+    // Phản hồi ngay lập tức cho admin
+    // HTTP 202 Accepted nghĩa là "Yêu cầu đã được chấp nhận để xử lý"
+    res.status(202).json({ message: 'Chiến dịch email đã được đưa vào hàng đợi và sẽ sớm bắt đầu.' })
+  } catch (error) {
+    console.error('Lỗi khi thêm job vào queue:', error)
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' })
+  }
 }

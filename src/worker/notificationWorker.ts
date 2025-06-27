@@ -8,6 +8,7 @@ const CRON_EXPRESSION = '0 0 * * * *' // Chạy mỗi 60 phút để kiểm tra 
 export interface NotificationPayload {
   notificationId: string
   account_id: string
+  fullName: string
   email: string
   message: string
   notificationType: string
@@ -37,20 +38,22 @@ async function processDueNotifications(): Promise<void> {
       try {
         notificationPayload = JSON.parse(notificationString) as NotificationPayload
 
-        // gửi thông báo đến account
-        await sendMail(
-          'ndmanh1005@gmail.com',
-          notificationPayload.notificationType,
-          notificationPayload.message,
-          'template/menstrual-cycle.html',
-          {
-            USER_NAME: 'Nguyen Duy Manh',
+        const options = {
+          to: notificationPayload.email,
+          subject: notificationPayload.notificationType,
+          text: notificationPayload.message,
+          htmlPath: 'template/menstrual-cycle.html',
+          placeholders: {
+            USER_NAME: notificationPayload.fullName,
             DAYS_UNTIL_PERIOD: notificationPayload.daysUntilPeriod.toString(),
             PREDICTED_PERIOD_DATE: notificationPayload.predictedPeriodDate
             // CURRENT_YEAR: new Date().getFullYear().toString(),
             // SUPPORT_EMAIL: 'anhdonguyennhi@gmail.com'
           }
-        )
+        }
+
+        // gửi thông báo đến account
+        await sendMail(options)
 
         const removedCount = await redisClient.zRem(SCHEDULED_NOTIFICATIONS_KEY, notificationString)
         if (removedCount < 0) {

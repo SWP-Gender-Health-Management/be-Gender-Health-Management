@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import {
   createAdminController,
   createManagerController,
@@ -13,13 +13,16 @@ import {
   getOverallController,
   getSummaryController,
   getPerformanceController,
-  unbanAccountController
+  unbanAccountController,
+  sendBulkEmailController
 } from '../controllers/admin.controller.js'
-import { validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
+import { upload, validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
 import { restrictTo } from '~/middlewares/account.middleware.js'
 import { Role } from '~/enum/role.enum.js'
 import { getCustomersController } from '~/controllers/customer.controller.js'
+import { Queue } from 'bullmq'
+import redisClient from '~/config/redis.config.js'
 
 const adminRoute = Router()
 
@@ -52,6 +55,7 @@ adminRoute.get('/get-summary', restrictTo(Role.ADMIN), wrapRequestHandler(getSum
 */
 adminRoute.get('/get-performance', restrictTo(Role.ADMIN), wrapRequestHandler(getPerformanceController))
 
+// account management
 /*
   description: create new admin
   method: POST
@@ -205,6 +209,18 @@ adminRoute.post(
   restrictTo(Role.ADMIN),
   validateBanAccount,
   wrapRequestHandler(unbanAccountController)
+)
+
+// Communication & Content
+
+// Tạo một queue mới có tên là 'email-campaigns'
+export const emailQueue = new Queue('email-campaigns', { connection: redisClient })
+
+adminRoute.post(
+  '/send-campaign-from-file',
+  restrictTo(Role.ADMIN),
+  upload.single('templateFile'),
+  wrapRequestHandler(sendBulkEmailController)
 )
 
 export default adminRoute
