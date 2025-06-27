@@ -221,7 +221,12 @@ class AccountService {
     const avatar = payload.picture
 
     // Tìm hoặc tạo người dùng trong database của bạn (logic tương tự Passport)
-    let account = await accountRepository.findOne({ where: { email: email } })
+    let account = await accountRepository.findOne({
+      where: {
+        email: email
+      }
+    })
+    console.log('account:', account)
 
     if (!account) {
       // Nếu người dùng không tồn tại, tạo mới
@@ -238,7 +243,8 @@ class AccountService {
       this.createAccessToken(account.account_id, email as string),
       this.createRefreshToken(account.account_id, email as string)
     ])
-
+    console.log('accessToken:', accessToken)
+    console.log('refreshToken:', refreshToken)
     // Trả về token và thông tin người dùng
     return { accessToken, refreshToken, account }
   }
