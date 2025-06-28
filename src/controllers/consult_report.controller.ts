@@ -109,7 +109,12 @@ export const createConsultReport = async (req: Request, res: Response, next: Nex
 // Get all consult reports
 export const getAllConsultReports = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultReportService.getAllConsultReports(req.query)
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await consultReportService.getAllConsultReports(pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULT_REPORT_MESSAGES.REPORTS_RETRIEVED_SUCCESS,
       result

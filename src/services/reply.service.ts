@@ -78,12 +78,9 @@ export class ReplyService {
    * @returns The replies
    */
   // Get all replies
-  async getAllReplies(pageVar: { limit: number, page: number }): Promise<Reply[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+  async getAllReplies(pageVar: { limit: string, page: string }): Promise<Reply[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     return await replyRepository.find({
@@ -123,7 +120,7 @@ export class ReplyService {
    * @returns The replies
    */
   // Get replies by Consultant ID
-  async getRepliesByConsultantId(consultant_id: string, pageVar: { limit: number, page: number }): Promise<Reply[]> {
+  async getRepliesByConsultantId(consultant_id: string, pageVar: { limit: string, page: string }): Promise<Reply[]> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
@@ -132,11 +129,8 @@ export class ReplyService {
       })
     }
 
-    let { limit, page } = pageVar
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     const replies = await replyRepository.find({

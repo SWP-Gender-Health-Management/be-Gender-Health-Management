@@ -66,7 +66,7 @@ export class ConsultReportService {
     const savedReport = await consultReportRepository.save(consultReport)
 
     // Assign the report to the consult appointment and save
-    await consultAppointmentRepository.update(consultAppointment.app_id, {report: savedReport});
+    await consultAppointmentRepository.update(consultAppointment.app_id, { report: savedReport });
 
     return savedReport
   }
@@ -78,12 +78,9 @@ export class ConsultReportService {
    * @returns The consult reports
    */
   // Get all consult reports
-  async getAllConsultReports(pageVar: { limit: number, page: number }): Promise<ConsultReport[]> {
-    let {limit, page} = pageVar;
-    if(!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+  async getAllConsultReports(pageVar: { limit: string, page: string }): Promise<ConsultReport[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
     return await consultReportRepository.find({
       skip,
@@ -130,7 +127,7 @@ export class ConsultReportService {
     }
 
     const consultReport = await consultReportRepository.findOne({
-      where: { consult_appointment: {app_id: consultAppointment.app_id} },
+      where: { consult_appointment: { app_id: consultAppointment.app_id } },
       relations: ['consult_appointment']
     })
 

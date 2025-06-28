@@ -88,12 +88,9 @@ export class FeedbackService {
    * @returns The feedbacks
    */
   // Get all feedbacks
-  async getAllFeedbacks(pageVar: { limit: number, page: number }): Promise<Feedback[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+  async getAllFeedbacks(pageVar: { limit: string, page: string }): Promise<Feedback[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     return await feedbackRepository.find({
@@ -179,12 +176,9 @@ export class FeedbackService {
   }
 
   // Get feedbacks by Customer ID
-  async getFeedbacksByCustomerId(customer_id: string, pageVar: { limit: number, page: number }): Promise<Feedback[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+  async getFeedbacksByCustomerId(customer_id: string, pageVar: { limit: string, page: string }): Promise<Feedback[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {

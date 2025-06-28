@@ -45,12 +45,9 @@ export class LaboratoryService {
    * @returns The laboratories
    */
   // Get all laboratories
-  async getAllLaboratories(pageVar: { limit: number, page: number }): Promise<Laboratory[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+  async getAllLaboratories(pageVar: { limit: string, page: string }): Promise<Laboratory[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     return await laboratoryRepository.find({

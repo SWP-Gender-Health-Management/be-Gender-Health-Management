@@ -109,7 +109,12 @@ export const createConsultantPattern = async (req: Request, res: Response, next:
 // Get all consultant patterns
 export const getAllConsultantPatterns = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultantPatternService.getAllConsultantPatterns(req.query)
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await consultantPatternService.getAllConsultantPatterns(pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERNS_RETRIEVED_SUCCESS,
       result
@@ -221,7 +226,12 @@ export const getConsultantPatternById = async (req: Request, res: Response, next
 // Get consultant patterns by Consultant ID
 export const getConsultantPatternByConsultantId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultantPatternService.getConsultantPatternByConsultantId(req.params.consultant_id,req.query)
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await consultantPatternService.getConsultantPatternByConsultantId(req.params.consultant_id,pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERNS_RETRIEVED_SUCCESS,
       result
@@ -278,7 +288,12 @@ export const getConsultantPatternByConsultantId = async (req: Request, res: Resp
 // Get consultant patterns by Slot ID
 export const getConsultantPatternBySlotId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultantPatternService.getConsultantPatternBySlotId(req.params.slot_id, req.query);
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await consultantPatternService.getConsultantPatternBySlotId(req.params.slot_id, pageVar);
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERNS_RETRIEVED_SUCCESS,
       result
