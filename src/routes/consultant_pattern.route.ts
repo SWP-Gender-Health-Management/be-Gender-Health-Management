@@ -24,8 +24,7 @@ const consultantPatternRoute = Router()
 */
 consultantPatternRoute.post(
   '/create-consultant-pattern',
-  // validateAccessToken,
-  // restrictTo(Role.ADMIN),
+  restrictTo(Role.ADMIN),
   wrapRequestHandler(createConsultantPattern)
 )
 
@@ -39,8 +38,7 @@ consultantPatternRoute.post(
 */
 consultantPatternRoute.get(
   '/get-all-consultant-patterns',
-  // validateAccessToken,
-  // restrictTo(Role.ADMIN, Role.CUSTOMER),
+  restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getAllConsultantPatterns)
 )
 
@@ -54,7 +52,6 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.get(
   '/get-consultant-pattern-by-id/:pattern_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getConsultantPatternById)
 )
@@ -69,7 +66,6 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.get(
   '/get-consultant-pattern-by-id/consultant/:consultant_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getConsultantPatternByConsultantId)
 )
@@ -84,7 +80,6 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.get(
   '/get-consultant-pattern-by-id/slot/:slot_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getConsultantPatternBySlotId)
 )
@@ -99,7 +94,6 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.put(
   '/update-consultant-pattern/:pattern_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN),
   wrapRequestHandler(updateConsultantPattern)
 )
@@ -114,8 +108,7 @@ consultantPatternRoute.put(
 */
 consultantPatternRoute.delete(
   '/delete-consultant-pattern/:pattern_id',
-  // validateAccessToken,
-  // restrictTo(Role.ADMIN),
+  restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteConsultantPattern)
 )
 

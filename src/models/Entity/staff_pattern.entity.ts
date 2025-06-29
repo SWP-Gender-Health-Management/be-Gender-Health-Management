@@ -23,6 +23,9 @@ export default class StaffPattern implements StaffPatternType {
   @PrimaryGeneratedColumn('uuid')
   pattern_id: string
 
+  @Column({ type: 'uuid', nullable: false })
+  account_id: string
+
   @Column({ type: 'date', nullable: false })
   date: Date
 
@@ -37,7 +40,4 @@ export default class StaffPattern implements StaffPatternType {
 
   @ManyToOne(() => WorkingSlot, (working_slot: WorkingSlot) => working_slot.staff_pattern)
   working_slot: WorkingSlot
-
-  @ManyToOne(() => Account, (account: Account) => account.consultant_pattern)
-  account: Account
 }

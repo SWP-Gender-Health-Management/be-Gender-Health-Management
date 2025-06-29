@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -15,7 +14,6 @@ import MenstrualCycle from './menstrual_cycle.entity.js'
 import Blog from './blog.entity.js'
 import Transaction from './transaction.entity.js'
 import ConsultAppointment from './consult_appointment.entity.js'
-import ConsultantPattern from './consultant_pattern.entity.js'
 import LaboratoryAppointment from './laborarity_appointment.entity.js'
 import Reply from './reply.entity.js'
 import Question from './question.entity.js'
@@ -96,9 +94,6 @@ export default class Account implements AccountType {
     cascade: true
   })
   consult_appointment: ConsultAppointment[]
-
-  @OneToMany(() => ConsultantPattern, (consultantPattern: ConsultantPattern) => consultantPattern.consultant)
-  consultant_pattern: ConsultantPattern[]
 
   @OneToMany(() => LaboratoryAppointment, (labAppointment: LaboratoryAppointment) => labAppointment.customer)
   labAppointment: LaboratoryAppointment[]

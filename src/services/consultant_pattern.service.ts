@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm'
+import { DeleteResult, Repository, UpdateResult } from 'typeorm'
 import { AppDataSource } from '../config/database.config.js'
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { CONSULTANT_PATTERNS_MESSAGES } from '../constants/message.js'
@@ -31,16 +31,18 @@ export class ConsultantPatternService {
   ): Promise<ConsultantPattern> {
     // Validate working slot
 
-    const workingSlot = await workingSlotRepository.findOne({ where: { slot_id } })
+    const [workingSlot, consultant] = await Promise.all([
+      workingSlotRepository.findOne({ where: { slot_id } }),
+      accountRepository.findOne({ where: { account_id: consultant_id } })
+    ])
+    // working slot ?
     if (!workingSlot) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.WORKING_SLOT_NOT_FOUND,
         status: HTTP_STATUS.NOT_FOUND
       })
     }
-
-    // Validate consultant (account)
-    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
+    // consultant ?
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_NOT_FOUND,
@@ -51,8 +53,8 @@ export class ConsultantPatternService {
     // Check for duplicate pattern (same slot, consultant, and date)
     const existingPattern = await consultantPatternRepository.findOne({
       where: {
-        working_slot: {slot_id: workingSlot.slot_id} ,
-        consultant: {account_id: consultant.account_id},
+        working_slot: { slot_id: workingSlot.slot_id },
+        account_id: consultant.account_id,
         date: new Date(date)
       }
     })
@@ -65,9 +67,8 @@ export class ConsultantPatternService {
 
     const consultantPattern = consultantPatternRepository.create({
       working_slot: workingSlot,
-      consultant: consultant,
-      date: date,
-      is_booked: is_booked ?? false
+      account_id: consultant.account_id,
+      date: date
     })
 
     return await consultantPatternRepository.save(consultantPattern)
@@ -80,17 +81,14 @@ export class ConsultantPatternService {
    * @returns The consultant patterns
    */
   // Get all consultant patterns
-  async getAllConsultantPatterns(pageVar: { limit: number, page: number }): Promise<ConsultantPattern[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
-    const skip = (page - 1) * limit
+  async getAllConsultantPatterns(limit: string, page: string): Promise<ConsultantPattern[]> {
+    const limitNumber = Number(limit) || LIMIT.default
+    const pageNumber = Number(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
     return await consultantPatternRepository.find({
       skip,
-      take: limit,
-      relations: ['working_slot', 'consultant']
+      take: limitNumber,
+      relations: ['working_slot']
     })
   }
 
@@ -103,7 +101,7 @@ export class ConsultantPatternService {
   async getConsultantPatternById(pattern_id: string): Promise<ConsultantPattern> {
     const consultantPattern = await consultantPatternRepository.findOne({
       where: { pattern_id },
-      relations: ['working_slot', 'consultant']
+      relations: ['working_slot']
     })
 
     if (!consultantPattern) {
@@ -124,9 +122,12 @@ export class ConsultantPatternService {
    * @returns The consultant patterns
    */
   // Get a consultant pattern by Consultant ID
-  async getConsultantPatternByConsultantId(consultant_id: string, pageVar: { limit: number, page: number }): Promise<ConsultantPattern[]> {
-
-    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } });
+  async getConsultantPatternByConsultantId(
+    consultant_id: string,
+    limit: string,
+    page: string
+  ): Promise<ConsultantPattern[]> {
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_NOT_FOUND,
@@ -134,18 +135,15 @@ export class ConsultantPatternService {
       })
     }
 
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
-    const skip = (page - 1) * limit
+    const limitNumber = Number(limit) || LIMIT.default
+    const pageNumber = Number(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
 
     const consultantPattern = await consultantPatternRepository.find({
-      where: { consultant: {account_id: consultant.account_id} },
+      where: { account_id: consultant.account_id },
       skip,
-      take: limit,
-      relations: ['working_slot', 'consultant']
+      take: limitNumber,
+      relations: ['working_slot']
     })
 
     if (!consultantPattern) {
@@ -166,8 +164,8 @@ export class ConsultantPatternService {
    * @returns The consultant patterns
    */
   // Get a consultant pattern by Slot ID
-  async getConsultantPatternBySlotId(slot_id: string, pageVar: any): Promise<ConsultantPattern[]> {
-    const workingSlot = await workingSlotRepository.findOne({ where: { slot_id } });
+  async getConsultantPatternBySlotId(slot_id: string, limit: string, page: string): Promise<ConsultantPattern[]> {
+    const workingSlot = await workingSlotRepository.findOne({ where: { slot_id } })
     if (!workingSlot) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.WORKING_SLOT_NOT_FOUND,
@@ -175,18 +173,15 @@ export class ConsultantPatternService {
       })
     }
 
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
-    const skip = (page - 1) * limit
+    const limitNumber = Number(limit) || LIMIT.default
+    const pageNumber = Number(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
 
     const consultantPattern = await consultantPatternRepository.find({
-      where: { working_slot: {slot_id: workingSlot.slot_id} },
+      where: { working_slot: { slot_id: workingSlot.slot_id } },
       skip,
-      take: limit,
-      relations: ['working_slot', 'consultant']
+      take: limitNumber,
+      relations: ['working_slot']
     })
 
     if (!consultantPattern) {
@@ -211,16 +206,16 @@ export class ConsultantPatternService {
   // Update a consultant pattern
   async updateConsultantPattern(
     pattern_id: string,
-    slot_id: string,
-    consultant_id: string,
-    date: string,
-    is_booked: boolean
-  ): Promise<ConsultantPattern> {
+    slot_id?: string,
+    consultant_id?: string,
+    date?: string,
+    is_booked?: boolean
+  ): Promise<UpdateResult> {
     const consultantPattern = await this.getConsultantPatternById(pattern_id)
     let workingSlot
     let consultant
     // Validate working slot if provided
-    if (slot_id && (!consultantPattern.working_slot || slot_id !== consultantPattern.working_slot.slot_id)) {
+    if (slot_id && slot_id !== consultantPattern.working_slot.slot_id) {
       workingSlot = await workingSlotRepository.findOne({ where: { slot_id } })
       if (!workingSlot) {
         throw new ErrorWithStatus({
@@ -231,7 +226,7 @@ export class ConsultantPatternService {
     }
 
     // Validate consultant if provided
-    if (consultant_id && (!consultantPattern.consultant || consultant_id !== consultantPattern.consultant.account_id)) {
+    if (consultant_id && consultant_id !== consultantPattern.account_id) {
       consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
       if (!consultant || consultant.role !== Role.CONSULTANT) {
         throw new ErrorWithStatus({
@@ -242,30 +237,19 @@ export class ConsultantPatternService {
     }
 
     // Check for duplicate pattern if key fields are updated
-    if (slot_id || consultant_id || date) {
-      const existingPattern = await consultantPatternRepository.findOne({
-        where: {
-          working_slot: {slot_id: workingSlot?.slot_id || consultantPattern.working_slot.slot_id},
-          consultant: {account_id: consultant?.account_id || consultantPattern.consultant.account_id},
-          date: new Date(date) || consultantPattern.date
-        }
-      })
-      if (existingPattern && existingPattern.pattern_id !== pattern_id) {
-        throw new ErrorWithStatus({
-          message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_ALREADY_EXISTS,
-          status: HTTP_STATUS.BAD_REQUEST
-        })
+    const updatedPattern = await consultantPatternRepository.update(
+      {
+        pattern_id: pattern_id
+      },
+      {
+        working_slot: workingSlot ? workingSlot : consultantPattern.working_slot,
+        account_id: consultant ? consultant.account_id : consultantPattern.account_id,
+        date: date ? new Date(date) : consultantPattern.date,
+        is_booked: is_booked !== undefined ? is_booked : consultantPattern.is_booked
       }
-    }
-    console.log(consultant)
-    await Object.assign(consultantPattern, {
-      working_slot: workingSlot || consultantPattern.working_slot,
-      consultant: consultant || consultantPattern.consultant,
-      date: new Date(date) || consultantPattern.date,
-      is_booked: is_booked !== undefined ? is_booked : consultantPattern.is_booked
-    })
+    )
 
-    return await consultantPatternRepository.save(consultantPattern)
+    return updatedPattern
   }
 
   /**
@@ -274,7 +258,7 @@ export class ConsultantPatternService {
    * @returns The deleted consultant pattern
    */
   // Delete a consultant pattern
-  async deleteConsultantPattern(pattern_id: string): Promise<void> {
+  async deleteConsultantPattern(pattern_id: string): Promise<ConsultantPattern> {
     const consultantPattern = await this.getConsultantPatternById(pattern_id)
 
     // Check if pattern is booked or has associated appointments
@@ -285,7 +269,8 @@ export class ConsultantPatternService {
       })
     }
 
-    await consultantPatternRepository.remove(consultantPattern)
+    const deletedPattern = await consultantPatternRepository.remove(consultantPattern)
+    return deletedPattern
   }
 }
 
