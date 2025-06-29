@@ -41,31 +41,33 @@ export async function sendMail(options: MailOptions) {
   // Địa chỉ email "from" phải LÀ ĐỊA CHỈ BẠN ĐÃ XÁC THỰC ở Bước 1.3
   const fromEmail = process.env.MAILER_EMAIL as string // Hoặc email bạn đã xác thực
 
-  const msg = {
-    to,
-    from: {
-      email: fromEmail,
-      name: 'Gender Health Management'
-    },
-    subject,
-    text,
-    html: htmlPath,
-    dynamicTemplateData: placeholders
-  }
-
   try {
     // Giả sử templates nằm ngoài thư mục services
     const absolutePath = path.join(__dirname, '..', htmlPath as string)
     // console.log('absolutePath', absolutePath)
     let htmlContent = fs.readFileSync(absolutePath, 'utf-8')
     // console.log('htmlContent', htmlContent)
-    if (placeholders) {
-      for (const key in placeholders) {
+
+    // Xử lý placeholders (ưu tiên placeholders trước)
+    const templateData = placeholders
+    if (templateData) {
+      for (const key in templateData) {
         // Tạo một RegExp để thay thế tất cả các lần xuất hiện của placeholder
         // Ví dụ: /{{USER_NAME}}/g
         const regex = new RegExp(`{{${key}}}`, 'g')
-        htmlContent = htmlContent.replace(regex, placeholders[key])
+        htmlContent = htmlContent.replace(regex, templateData[key])
       }
+    }
+
+    const msg = {
+      to,
+      from: {
+        email: fromEmail,
+        name: 'Gender Health Management'
+      },
+      subject,
+      text,
+      html: htmlContent // Sử dụng htmlContent thay vì htmlPath
     }
 
     await sgMail.send(msg)

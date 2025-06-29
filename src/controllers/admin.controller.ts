@@ -156,6 +156,15 @@ export const createCustomerController = async (req: Request, res: Response, next
   })
 }
 
+export const getCustomersController = async (req: Request, res: Response, next: NextFunction) => {
+  const { limit, page } = req.query
+  const result = await adminService.getCustomers(limit as string, page as string)
+  res.status(200).json({
+    message: ADMIN_MESSAGES.GET_CUSTOMERS_SUCCESS,
+    data: result
+  })
+}
+
 export const banAccountController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id } = req.body
   await adminService.banAccount(account_id)

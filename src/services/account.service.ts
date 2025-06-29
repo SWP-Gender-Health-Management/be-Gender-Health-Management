@@ -471,7 +471,7 @@ class AccountService {
     } as MailOptions
     await Promise.all([
       //lưu token vào redis
-      redisClient.set(`ResetPasswordToken:${account_id}`, JSON.stringify(resetPasswordToken), 'EX', 60 * 5),
+      redisClient.set(`ResetPasswordToken:${account_id}`, resetPasswordToken, 'EX', 60 * 5),
       //gửi email
       sendMail(options)
     ])
@@ -487,7 +487,7 @@ class AccountService {
    * @returns: void
    */
   async verifyPasscodeResetPassword(passcode: string, account_id: string): Promise<void> {
-    const userToken = await redisClient.get(`${process.env.JWT_FORFOT_PASSWORD_TOKEN}:${account_id}`)
+    const userToken = await redisClient.get(`ResetPasswordToken:${account_id}`)
     console.log('userToken:', userToken)
     const userTokenParse = await verifyToken({
       token: userToken as string,
