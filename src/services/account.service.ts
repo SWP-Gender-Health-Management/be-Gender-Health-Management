@@ -170,6 +170,7 @@ class AccountService {
   ): Promise<{
     accessToken: string
     refreshToken: string
+    role: string
   }> {
     const user = (await redisClient.get(`account:${account_id}`)) as string
     const user_data = JSON.parse(user)
@@ -180,7 +181,7 @@ class AccountService {
     ])
     // console.log('accessToken:', accessToken)
     // console.log('refreshToken:', refreshToken)
-    return { accessToken, refreshToken }
+    return { accessToken, refreshToken, role: user_data.role as string }
   }
 
   /**
