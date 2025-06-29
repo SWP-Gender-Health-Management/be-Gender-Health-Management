@@ -84,14 +84,10 @@ export class BlogService {
   }
 
   // Get all blogs
-  async getAllBlogs(pageVar: { limit: number; page: number }): Promise<Blog[]> {
-    let { limit, page } = pageVar
-    if (!limit || !page) {
-      limit = LIMIT.default
-      page = 1
-    }
-    const skip = (page - 1) * limit
-
+  async getAllBlogs( pageVar : {limit: string, page: string} ): Promise<Blog[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
+    const skip = (page - 1) * limit;
     return await blogRepository.find({
       skip,
       take: limit,
@@ -117,7 +113,7 @@ export class BlogService {
   }
 
   // Get blogs by Account ID
-  async getBlogsByAccountId(account_id: string, pageVar: { limit: number; page: number }): Promise<Blog[]> {
+  async getBlogsByAccountId(account_id: string, pageVar: { limit: string; page: string }): Promise<Blog[]> {
     const account = await accountRepository.findOne({ where: { account_id } })
     if (!account) {
       throw new ErrorWithStatus({
@@ -126,11 +122,8 @@ export class BlogService {
       })
     }
 
-    let { limit, page } = pageVar
-    if (!limit || !page) {
-      limit = LIMIT.default
-      page = 1
-    }
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     const blogs = await blogRepository.find({

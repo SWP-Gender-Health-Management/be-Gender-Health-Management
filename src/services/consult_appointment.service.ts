@@ -92,6 +92,7 @@ export class ConsultAppointmentService {
     let limitNumber = parseInt(limit) || 10
     let pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
+
     return await consultAppointmentRepository.find({
       skip,
       take: limitNumber,

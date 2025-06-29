@@ -109,7 +109,12 @@ export const createReply = async (req: Request, res: Response, next: NextFunctio
 // Get all replies
 export const getAllReplies = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await replyService.getAllReplies(req.query)
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await replyService.getAllReplies(pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: REPLY_MESSAGES.REPLIES_RETRIEVED_SUCCESS,
       result
@@ -222,7 +227,12 @@ export const getReplyById = async (req: Request, res: Response, next: NextFuncti
 // Get replies by Consultant ID
 export const getRepliesByConsultantId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await replyService.getRepliesByConsultantId(req.params.consultant_id, req.query)
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await replyService.getRepliesByConsultantId(req.params.consultant_id, pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: REPLY_MESSAGES.REPLIES_RETRIEVED_SUCCESS,
       result

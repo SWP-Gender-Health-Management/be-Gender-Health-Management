@@ -40,7 +40,8 @@ blogRoute.post(
   Path: /get-all-blogs
   Body: {}
 */
-blogRoute.get('/get-all-blogs', validateAccessToken, wrapRequestHandler(getAllBlogs))
+blogRoute.get('/get-all-blogs', wrapRequestHandler(getAllBlogs))
+
 
 /*
   Description: Get a blog by ID (admin, consultant, or customer)
@@ -51,7 +52,7 @@ blogRoute.get('/get-all-blogs', validateAccessToken, wrapRequestHandler(getAllBl
 blogRoute.get(
   '/get-blog-by-id/:blog_id',
   // validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  // restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
   wrapRequestHandler(getBlogById)
 )
 

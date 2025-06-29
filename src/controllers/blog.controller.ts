@@ -112,7 +112,12 @@ export const createBlog = async (req: Request, res: Response, next: NextFunction
  */
 export const getAllBlogs = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await blogService.getAllBlogs(req.query)
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await blogService.getAllBlogs(pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: BLOG_MESSAGES.BLOGS_RETRIEVED_SUCCESS,
       result
@@ -206,7 +211,12 @@ export const getBlogById = async (req: Request, res: Response, next: NextFunctio
  */
 export const getBlogsByAccountId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await blogService.getBlogsByAccountId(req.params.account_id, req.query)
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await blogService.getBlogsByAccountId(req.params.account_id, pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: BLOG_MESSAGES.BLOGS_RETRIEVED_SUCCESS,
       result
