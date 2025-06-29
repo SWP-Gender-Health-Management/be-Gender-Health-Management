@@ -39,11 +39,13 @@ app.use(
 
 // Add Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
-// create server Redis và socket server
+
+// create websocket server
 const server = http.createServer(app) //Tạo server HTTP từ app Express
 const socketServer = new SocketServer(server)
 const websocketService = new SocketIOService(socketServer.io)
 export { socketServer, websocketService }
+
 // Initialize app (database and passport)
 initializeApp()
   .then((success) => {

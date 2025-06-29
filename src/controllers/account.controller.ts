@@ -78,9 +78,7 @@ export const registerController = async (req: Request, res: Response, next: Next
   const account_data = JSON.parse(account)
   await Promise.all([
     refreshTokenService.createRefreshToken({ account: account_data, token: refreshToken }),
-    redisClient.set(`accessToken:${account_id}`, accessToken, {
-      EX: 60 * 60
-    })
+    redisClient.set(`accessToken:${account_id}`, JSON.stringify(accessToken), 'EX', 60 * 60)
   ])
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
@@ -162,9 +160,7 @@ export const loginController = async (req: Request, res: Response, next: NextFun
   const account_data = JSON.parse(account)
   await Promise.all([
     refreshTokenService.updateRefreshToken({ account: account_data, token: refreshToken }),
-    redisClient.set(`accessToken:${account_id}`, JSON.stringify(accessToken), {
-      EX: 60 * 60
-    })
+    redisClient.set(`accessToken:${account_id}`, JSON.stringify(accessToken), 'EX', 60 * 60)
   ])
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
@@ -188,9 +184,7 @@ export const googleVerifyController = async (req: Request, res: Response, next: 
     const { accessToken, refreshToken, account } = result
     await Promise.all([
       refreshTokenService.updateRefreshToken({ account: account, token: refreshToken }),
-      redisClient.set(`accessToken:${account.account_id}`, accessToken, {
-        EX: 60 * 60
-      })
+      redisClient.set(`accessToken:${account.account_id}`, JSON.stringify(accessToken), 'EX', 60 * 60)
     ])
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập

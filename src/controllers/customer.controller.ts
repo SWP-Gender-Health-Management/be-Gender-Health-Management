@@ -3,8 +3,9 @@ import HTTP_STATUS from '~/constants/httpStatus.js'
 import { CUSTOMER_MESSAGES } from '~/constants/message.js'
 import customerService from '~/services/customer.service.js'
 
-export const getCustomerController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await customerService.getCustomer()
+export const getCustomersController = async (req: Request, res: Response, next: NextFunction) => {
+  const { limit, page } = req.query
+  const result = await customerService.getCustomers(limit as string, page as string)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.GET_CUSTOMER_SUCCESS,
     data: result

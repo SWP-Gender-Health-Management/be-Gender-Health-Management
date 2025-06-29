@@ -122,14 +122,10 @@ export const createConsultAppointment = async (req: Request, res: Response, next
  *                     $ref: '#/components/schemas/ConsultAppointment'
  */
 // Get all consult appointments
-export const getAllConsultAppointments = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllConApps = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {limit, page} = req.query;
-    const pageVar = {
-      limit: limit as string, 
-      page: page as string
-    };
-    const result = await consultAppointmentService.getAllConsultAppointments(pageVar)
+    const { limit, page } = req.query
+    const result = await consultAppointmentService.getAllConApps(limit as string, page as string)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
       result
@@ -182,9 +178,10 @@ export const getAllConsultAppointments = async (req: Request, res: Response, nex
  *                   description: Error message
  */
 // Get a consult appointment by ID
-export const getConsultAppointmentById = async (req: Request, res: Response, next: NextFunction) => {
+export const getConAppById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultAppointmentService.getConsultAppointmentById(req.params.app_id)
+    const { app_id } = req.params
+    const result = await consultAppointmentService.getConAppById(app_id)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_RETRIEVED_SUCCESS,
       result
@@ -241,12 +238,13 @@ export const getConsultAppointmentById = async (req: Request, res: Response, nex
 // Get consult appointments by Customer ID
 export const getConsultAppointmentsByCustomerId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {limit, page} = req.query;
-    const pageVar = {
-      limit: limit as string, 
-      page: page as string
-    };
-    const result = await consultAppointmentService.getConsultAppointmentsByCustomerId(req.params.customer_id, pageVar)
+    const { customer_id } = req.params
+    const { limit, page } = req.query
+    const result = await consultAppointmentService.getConsultAppointmentsByCustomerId(
+      customer_id as string,
+      limit as string,
+      page as string
+    )
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
       result
@@ -301,7 +299,8 @@ export const getConsultAppointmentsByCustomerId = async (req: Request, res: Resp
 // Get consult appointment by Consultant Pattern ID
 export const getConsultAppointmentsByPatternId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultAppointmentService.getConsultAppointmentsByPatternId(req.params.pattern_id)
+    const { pattern_id } = req.params
+    const result = await consultAppointmentService.getConsultAppointmentsByPatternId(pattern_id)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_RETRIEVED_SUCCESS,
       result
@@ -387,7 +386,8 @@ export const getConsultAppointmentsByPatternId = async (req: Request, res: Respo
 // Update a consult appointment
 export const updateConsultAppointment = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultAppointmentService.updateConsultAppointment(req.params.app_id, req.body)
+    const { app_id } = req.params
+    const result = await consultAppointmentService.updateConsultAppointment(app_id, req.body)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_UPDATED_SUCCESS,
       result

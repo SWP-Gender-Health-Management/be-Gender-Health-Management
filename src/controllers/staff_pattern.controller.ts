@@ -57,12 +57,16 @@ import staffPatternService from '../services/staff_pattern.service.js'
  *         description: Unauthorized (invalid token or insufficient role)
  */
 export const addStaffPatternController = async (req: Request, res: Response, next: NextFunction) => {
-  const { date, account_id, slot_id } = req.body
-  const staffPattern = await staffPatternService.addStaffPattern(date, account_id, slot_id)
-  return res.status(HTTP_STATUS.CREATED).json({
-    message: STAFF_PATTERN_MESSAGES.ADD_STAFF_PATTERN_SUCCESS,
-    data: staffPattern
-  })
+  try {
+    const { date, account_id, slot_id } = req.body
+    const staffPattern = await staffPatternService.addStaffPattern(date, account_id, slot_id)
+    res.status(HTTP_STATUS.CREATED).json({
+      message: STAFF_PATTERN_MESSAGES.ADD_STAFF_PATTERN_SUCCESS,
+      data: staffPattern
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
 /**
@@ -111,12 +115,16 @@ export const addStaffPatternController = async (req: Request, res: Response, nex
  *                   description: Error message
  */
 export const getStaffPatternController = async (req: Request, res: Response, next: NextFunction) => {
-  const { date } = req.body
-  const staffPattern = await staffPatternService.getStaffPattern(date)
-  return res.status(HTTP_STATUS.OK).json({
-    message: STAFF_PATTERN_MESSAGES.GET_STAFF_PATTERN_SUCCESS,
-    data: staffPattern
-  })
+  try {
+    const { date } = req.body
+    const staffPattern = await staffPatternService.getStaffPattern(date)
+    res.status(HTTP_STATUS.OK).json({
+      message: STAFF_PATTERN_MESSAGES.GET_STAFF_PATTERN_SUCCESS,
+      data: staffPattern
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
 /**
@@ -143,11 +151,15 @@ export const getStaffPatternController = async (req: Request, res: Response, nex
  *                     $ref: '#/components/schemas/StaffPattern'
  */
 export const getAllStaffPatternController = async (req: Request, res: Response, next: NextFunction) => {
-  const staffPattern = await staffPatternService.getAllStaffPattern()
-  return res.status(HTTP_STATUS.OK).json({
-    message: STAFF_PATTERN_MESSAGES.GET_ALL_STAFF_PATTERN_SUCCESS,
-    data: staffPattern
-  })
+  try {
+    const staffPattern = await staffPatternService.getAllStaffPatternInWeek()
+    res.status(HTTP_STATUS.OK).json({
+      message: STAFF_PATTERN_MESSAGES.GET_ALL_STAFF_PATTERN_SUCCESS,
+      data: staffPattern
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
 /**
@@ -217,12 +229,16 @@ export const getAllStaffPatternController = async (req: Request, res: Response, 
  *                   description: Error message
  */
 export const updateStaffPatternController = async (req: Request, res: Response, next: NextFunction) => {
-  const { pattern_id, date, account_id, slot_id } = req.body
-  const staffPattern = await staffPatternService.updateStaffPattern(pattern_id, date, account_id, slot_id)
-  return res.status(HTTP_STATUS.OK).json({
-    message: STAFF_PATTERN_MESSAGES.UPDATE_STAFF_PATTERN_SUCCESS,
-    data: staffPattern
-  })
+  try {
+    const { pattern_id, date, account_id, slot_id } = req.body
+    const staffPattern = await staffPatternService.updateStaffPattern(pattern_id, date, account_id, slot_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: STAFF_PATTERN_MESSAGES.UPDATE_STAFF_PATTERN_SUCCESS,
+      data: staffPattern
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
 /**
@@ -286,10 +302,14 @@ export const updateStaffPatternController = async (req: Request, res: Response, 
  *                   description: Error message
  */
 export const deleteStaffPatternController = async (req: Request, res: Response, next: NextFunction) => {
-  const { pattern_id } = req.body
-  const staffPattern = await staffPatternService.deleteStaffPattern(pattern_id)
-  return res.status(HTTP_STATUS.OK).json({
-    message: STAFF_PATTERN_MESSAGES.STAFF_PATTERN_DELETED_SUCCESS,
-    data: staffPattern
-  })
+  try {
+    const { pattern_id } = req.body
+    const staffPattern = await staffPatternService.deleteStaffPattern(pattern_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: STAFF_PATTERN_MESSAGES.STAFF_PATTERN_DELETED_SUCCESS,
+      data: staffPattern
+    })
+  } catch (error) {
+    next(error)
+  }
 }

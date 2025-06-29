@@ -127,7 +127,16 @@ export const ADMIN_MESSAGES = {
   EMAIL_ALREADY_EXISTS: 'Email already exists',
   ACCOUNT_ID_REQUIRED: 'Account id is required',
   ACCOUNT_BANNED_SUCCESS: 'Account banned successfully',
-  ACCOUNT_NOT_FOUND: 'Account not found'
+  ACCOUNT_NOT_FOUND: 'Account not found',
+  OVERALL_SUCCESS: 'Overall success',
+  SUMMARY_SUCCESS: 'Summary success',
+  PERFORMANCE_SUCCESS: 'Performance success',
+  ACCOUNT_UNBANNED_SUCCESS: 'Account unbanned successfully'
+}
+
+export const MANAGER_MESSAGES = {
+  PERFORMANCE_REPORT_SUCCESS: 'Performance report successfully',
+  REPORT_SUCCESS: 'Report successfully'
 }
 
 export const LABORARITY_MESSAGES = {
