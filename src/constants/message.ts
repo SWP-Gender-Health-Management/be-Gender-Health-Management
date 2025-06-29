@@ -131,12 +131,18 @@ export const ADMIN_MESSAGES = {
   OVERALL_SUCCESS: 'Overall success',
   SUMMARY_SUCCESS: 'Summary success',
   PERFORMANCE_SUCCESS: 'Performance success',
-  ACCOUNT_UNBANNED_SUCCESS: 'Account unbanned successfully'
+  ACCOUNT_UNBANNED_SUCCESS: 'Account unbanned successfully',
+  GET_CUSTOMERS_SUCCESS: 'Get customers successfully'
 }
 
 export const MANAGER_MESSAGES = {
   PERFORMANCE_REPORT_SUCCESS: 'Performance report successfully',
-  REPORT_SUCCESS: 'Report successfully'
+  REPORT_SUCCESS: 'Report successfully',
+  CREATE_STAFF_PATTERN_SUCCESS: 'Create staff pattern successfully',
+  CREATE_CONSULTANT_PATTERN_SUCCESS: 'Create consultant pattern successfully',
+  GET_STAFF_PATTERN_SUCCESS: 'Get staff pattern successfully',
+  GET_CONSULTANT_PATTERN_SUCCESS: 'Get consultant pattern successfully',
+  GET_CUSTOMER_SUCCESS: 'Get customer successfully'
 }
 
 export const LABORARITY_MESSAGES = {

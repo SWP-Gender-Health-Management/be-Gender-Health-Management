@@ -448,6 +448,11 @@ class AdminService {
     }
   }
 
+  /**
+   * @description: Bỏ chặn tài khoản
+   * @param account_id: string
+   * @returns: Account
+   */
   async unbanAccount(account_id: string) {
     const account = await accountRepo.findOne({
       where: { account_id }
@@ -461,6 +466,32 @@ class AdminService {
     await accountRepo.update(account_id, { is_banned: false })
     return {
       message: ADMIN_MESSAGES.ACCOUNT_UNBANNED_SUCCESS
+    }
+  }
+
+  /**
+   * @description: Lấy tất cả tài khoản customer
+   * @param limit - The limit of the customers
+   * @param page - The page of the customers
+   * @returns: Account[]
+   */
+  async getCustomers(limit: string, page: string) {
+    const limitNumber = parseInt(limit) || 10
+    const pageNumber = parseInt(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
+    const [customers, totalItems] = await accountRepo.findAndCount({
+      where: { role: Role.CUSTOMER },
+      order: {
+        created_at: 'DESC'
+      },
+      skip: skip,
+      take: limitNumber
+    })
+    const totalPages = Math.ceil(totalItems / limitNumber)
+    return {
+      customers,
+      totalItems,
+      totalPages
     }
   }
 }
