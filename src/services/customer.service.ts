@@ -13,21 +13,45 @@ import staffService from './staff.service.js'
 import { Role } from '../enum/role.enum.js'
 
 const menstrualCycleRepository = AppDataSource.getRepository(MenstrualCycle)
-const userRepository = AppDataSource.getRepository(Account)
+const accountRepository = AppDataSource.getRepository(Account)
 const appointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
 const labRepository = AppDataSource.getRepository(Laboratory)
-
 class CustomerService {
   /**
    * Get all customers
+   * @param limit - The limit of the customers
+   * @param page - The page of the customers
    * @returns The customers
    */
-  async getCustomer() {
-    return await userRepository.find({
+  async getCustomers(limit: string, page: string) {
+    // 1. Lấy tham số `page` và `limit` từ query string
+    const limitNumber = parseInt(limit) || 10
+    const pageNumber = parseInt(page) || 1
+
+    // 2. Tính toán giá trị `skip` (bỏ qua bao nhiêu mục)
+    // Ví dụ: trang 1 -> skip 0, trang 2 -> skip 10
+    const skip = (pageNumber - 1) * limitNumber
+
+    // 3. Sử dụng `findAndCount` của TypeORM
+    // Sắp xếp theo ngày tạo mới nhất
+    const [customers, totalItems] = await accountRepository.findAndCount({
       where: {
         role: Role.CUSTOMER
-      }
+      },
+      order: {
+        created_at: 'DESC'
+      },
+      skip: skip, // Bỏ qua `skip` mục đầu tiên
+      take: limitNumber // Lấy `limit` mục tiếp theo
     })
+
+    // 4. Tính toán tổng số trang
+    const totalPages = Math.ceil(totalItems / limitNumber)
+    return {
+      customers,
+      totalItems,
+      totalPages
+    }
   }
 
   /**
@@ -72,9 +96,12 @@ class CustomerService {
    * @returns The next period
    */
   async predictPeriod(account_id: string) {
+    console.log('account_id', account_id)
     const menstrualCycle: MenstrualCycle | null = await menstrualCycleRepository.findOne({
-      where: { account: { account_id } }
+      where: { account: { account_id } },
+      relations: ['account']
     })
+    console.log('menstrualCycle', menstrualCycle)
     if (!menstrualCycle) {
       throw new ErrorWithStatus({
         message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_NOT_FOUND,

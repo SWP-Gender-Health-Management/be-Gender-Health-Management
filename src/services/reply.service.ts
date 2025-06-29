@@ -66,8 +66,7 @@ export class ReplyService {
     const savedReply = await replyRepository.save(reply)
 
     // Assign the reply to the question and save the question
-    question.reply = savedReply
-    await questionRepository.save(question)
+    await questionRepository.update(ques_id, {reply: savedReply})
 
     return savedReply
   }
@@ -79,12 +78,9 @@ export class ReplyService {
    * @returns The replies
    */
   // Get all replies
-  async getAllReplies(pageVar: { limit: number, page: number }): Promise<Reply[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+  async getAllReplies(pageVar: { limit: string, page: string }): Promise<Reply[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     return await replyRepository.find({
@@ -124,7 +120,7 @@ export class ReplyService {
    * @returns The replies
    */
   // Get replies by Consultant ID
-  async getRepliesByConsultantId(consultant_id: string, pageVar: { limit: number, page: number }): Promise<Reply[]> {
+  async getRepliesByConsultantId(consultant_id: string, pageVar: { limit: string, page: string }): Promise<Reply[]> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
@@ -133,15 +129,12 @@ export class ReplyService {
       })
     }
 
-    let { limit, page } = pageVar
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     const replies = await replyRepository.find({
-      where: { consultant: consultant},
+      where: { consultant: {account_id: consultant.account_id}},
       skip,
       take: limit,
       relations: ['consultant', 'question']
@@ -173,7 +166,7 @@ export class ReplyService {
     }
 
     const reply = await replyRepository.findOne({
-      where: { question: question },
+      where: { question: {ques_id: question.ques_id} },
       relations: ['consultant', 'question']
     })
 
@@ -237,7 +230,7 @@ export class ReplyService {
 
     // Find the associated question and remove the reply reference
     const question = await questionRepository.findOne({
-      where: { reply: { reply_id: reply_id } },
+      where: { reply: { reply_id } },
       relations: ['reply']
     })
 

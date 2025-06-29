@@ -27,6 +27,9 @@ export default class ConsultantPattern implements ConsultantPatternType {
   @PrimaryGeneratedColumn('uuid')
   pattern_id: string
 
+  @Column({ type: 'uuid', nullable: false })
+  account_id: string
+
   @Column({ type: 'date', nullable: false })
   date: Date
 
@@ -43,10 +46,7 @@ export default class ConsultantPattern implements ConsultantPatternType {
   @ManyToOne(() => WorkingSlot, (working_slot) => working_slot.consultant_pattern)
   working_slot: WorkingSlot
 
-  @ManyToOne(() => Account, (consultant) => consultant.consultant_pattern)
-  consultant: Account
-
   @OneToOne(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.consultant_pattern)
   @JoinColumn({ name: 'app_id' })
-  consult_appointment: ConsultAppointment
+  consult_appointment: ConsultAppointment | null
 }

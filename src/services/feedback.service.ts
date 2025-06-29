@@ -8,10 +8,13 @@ import ConsultAppointment from '../models/Entity/consult_appointment.entity.js'
 import LaboratoryAppointment from '../models/Entity/laborarity_appointment.entity.js'
 import { TypeAppointment } from '~/enum/type_appointment.enum.js'
 import LIMIT from '~/constants/limit.js'
+import Account from '~/models/Entity/account.entity.js'
+import { Role } from '~/enum/role.enum.js'
 
 const feedbackRepository = AppDataSource.getRepository(Feedback)
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
 const laboratoryAppointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
+const accountRepository = AppDataSource.getRepository(Account)
 
 export class FeedbackService {
   /**
@@ -24,12 +27,27 @@ export class FeedbackService {
    * @returns The created feedback
    */
   // Create a new feedback
-  async createFeedback(app_id: string, content: string, rating: number, type: TypeAppointment): Promise<Feedback> {
+  async createFeedback(app_id: string, content: string, rating: number, type: TypeAppointment, customer_id: string): Promise<Feedback> {
     // Validate that at least one appointment is provided, but not both
     if (!app_id) {
       throw new ErrorWithStatus({
         message: FEEDBACK_MESSAGES.APPOINTMENT_NOT_PROVIDED,
         status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+
+    if (!customer_id) {
+      throw new ErrorWithStatus({
+        message: FEEDBACK_MESSAGES.CUSTOMER_NOT_PROVIDED,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+
+    const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
+    if (!customer || customer.role !== Role.CUSTOMER) {
+      throw new ErrorWithStatus({
+        message: FEEDBACK_MESSAGES.CUSTOMER_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
       })
     }
 
@@ -53,11 +71,13 @@ export class FeedbackService {
       app_id: app_id,
       content: content,
       rating: rating,
-      type: type
+      type: type,
+      account: customer
     })
 
     // Save the feedback
     const savedFeedback = await feedbackRepository.save(feedback)
+
     return savedFeedback
   }
 
@@ -68,12 +88,9 @@ export class FeedbackService {
    * @returns The feedbacks
    */
   // Get all feedbacks
-  async getAllFeedbacks(pageVar: { limit: number, page: number }): Promise<Feedback[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+  async getAllFeedbacks(pageVar: { limit: string, page: string }): Promise<Feedback[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     return await feedbackRepository.find({
@@ -156,6 +173,34 @@ export class FeedbackService {
     }
 
     return feedback
+  }
+
+  // Get feedbacks by Customer ID
+  async getFeedbacksByCustomerId(customer_id: string, pageVar: { limit: string, page: string }): Promise<Feedback[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
+    const skip = (page - 1) * limit
+    const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
+    if (!customer || customer.role !== Role.CUSTOMER) {
+      throw new ErrorWithStatus({
+        message: FEEDBACK_MESSAGES.CUSTOMER_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    const feedbacks = await feedbackRepository.find({
+      where: { account: { account_id: customer_id } },
+      skip,
+      take: limit
+    })
+
+    if (!feedbacks.length) {
+      throw new ErrorWithStatus({
+        message: FEEDBACK_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    return feedbacks;
   }
 
   // Update a feedback

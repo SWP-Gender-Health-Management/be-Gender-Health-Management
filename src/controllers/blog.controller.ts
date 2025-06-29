@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { BLOG_MESSAGES } from '../constants/message.js'
 import blogService from '../services/blog.service.js'
+import notificationService from '~/services/notification.service.js'
+import { TypeNoti } from '~/enum/type_noti.enum.js'
 
 /**
  * @swagger
@@ -64,6 +66,14 @@ import blogService from '../services/blog.service.js'
 export const createBlog = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await blogService.createBlog(req.body, req.files as Express.Multer.File[])
+    await notificationService.createNotification(
+      {
+        type: TypeNoti.BLOG_CREATED_SUCCESS,
+        title: 'Blog created successfully',
+        message: 'Your blog has been created successfully'
+      },
+      result.account.account_id
+    )
     res.status(HTTP_STATUS.CREATED).json({
       message: BLOG_MESSAGES.BLOG_CREATED_SUCCESS,
       result
@@ -102,7 +112,12 @@ export const createBlog = async (req: Request, res: Response, next: NextFunction
  */
 export const getAllBlogs = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await blogService.getAllBlogs(req.query)
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await blogService.getAllBlogs(pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: BLOG_MESSAGES.BLOGS_RETRIEVED_SUCCESS,
       result
@@ -196,7 +211,12 @@ export const getBlogById = async (req: Request, res: Response, next: NextFunctio
  */
 export const getBlogsByAccountId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await blogService.getBlogsByAccountId(req.params.account_id, req.query)
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await blogService.getBlogsByAccountId(req.params.account_id, pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: BLOG_MESSAGES.BLOGS_RETRIEVED_SUCCESS,
       result

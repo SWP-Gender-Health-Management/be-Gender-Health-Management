@@ -2,7 +2,7 @@ import { Router } from 'express'
 import {
   createLaborarityAppointmentController,
   createNotificationController,
-  getCustomerController,
+  getCustomersController,
   predictPeriodController,
   trackPeriodController,
   updateMenstrualCycleController
@@ -18,7 +18,7 @@ import { Role } from '~/enum/role.enum.js'
 
 const customerRoute = Router()
 //customer
-customerRoute.get('/get-customer', wrapRequestHandler(getCustomerController))
+customerRoute.get('/get-customers', wrapRequestHandler(getCustomersController))
 // theo dõi chu kì kinh nguyệt
 /*
   Description: nhập thông tin chu kì kinh nguyệt

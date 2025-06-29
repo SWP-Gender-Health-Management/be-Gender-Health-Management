@@ -29,8 +29,7 @@ const blogRoute = Router()
 */
 blogRoute.post(
   '/create-blog',
-  // validateAccessToken,
-  // restrictTo(Role.CONSULTANT),
+  restrictTo(Role.CONSULTANT, Role.ADMIN),
   uploadBlogImagesMiddleware.array('images', 10),
   wrapRequestHandler(createBlog)
 )
@@ -41,12 +40,8 @@ blogRoute.post(
   Path: /get-all-blogs
   Body: {}
 */
-blogRoute.get(
-  '/get-all-blogs',
-//   validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
-  wrapRequestHandler(getAllBlogs)
-)
+blogRoute.get('/get-all-blogs', wrapRequestHandler(getAllBlogs))
+
 
 /*
   Description: Get a blog by ID (admin, consultant, or customer)
@@ -57,7 +52,7 @@ blogRoute.get(
 blogRoute.get(
   '/get-blog-by-id/:blog_id',
   // validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  // restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
   wrapRequestHandler(getBlogById)
 )
 

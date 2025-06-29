@@ -37,6 +37,9 @@ export default class Feedback implements FeedbackType {
   @Column({ type: 'enum', enum: TypeAppointment, nullable: false })
   type: TypeAppointment
 
+  @Column({ type: 'date', nullable: true })
+  date: Date
+
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 

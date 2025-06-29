@@ -3,7 +3,7 @@ import type { StringValue } from 'ms'
 import { hashPassword, verifyPassword } from '../utils/crypto.js'
 import { signToken, verifyToken } from '../utils/jwt.js'
 import { config } from 'dotenv'
-import { sendMail } from './email.service.js'
+import { MailOptions, sendMail } from './email.service.js'
 import { AppDataSource } from '../config/database.config.js'
 import Account from '../models/Entity/account.entity.js'
 import { ErrorWithStatus } from '../models/Error.js'
@@ -142,7 +142,7 @@ class AccountService {
     //lưu token và user vào redis
     await Promise.all([
       redisClient.set(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${user.account_id}`, emailVerifiedToken, 'EX', 60 * 60),
-      redisClient.set(`account:${user.account_id}`, JSON.stringify(user), 'EX', 60 * 60)
+      redisClient.set(user.account_id, JSON.stringify(user), 'EX', 60 * 60)
     ])
 
     return {
@@ -173,12 +173,13 @@ class AccountService {
   }> {
     const user = (await redisClient.get(`account:${account_id}`)) as string
     const user_data = JSON.parse(user)
+    console.log(user_data)
     const [accessToken, refreshToken] = await Promise.all([
       this.createAccessToken(user_data.account_id, email),
       this.createRefreshToken(user_data.account_id, email)
     ])
-    console.log('accessToken:', accessToken)
-    console.log('refreshToken:', refreshToken)
+    // console.log('accessToken:', accessToken)
+    // console.log('refreshToken:', refreshToken)
     return { accessToken, refreshToken }
   }
 
@@ -216,7 +217,12 @@ class AccountService {
     const avatar = payload.picture
 
     // Tìm hoặc tạo người dùng trong database của bạn (logic tương tự Passport)
-    let account = await accountRepository.findOne({ where: { email: email } })
+    let account = await accountRepository.findOne({
+      where: {
+        email: email
+      }
+    })
+    console.log('account:', account)
 
     if (!account) {
       // Nếu người dùng không tồn tại, tạo mới
@@ -233,7 +239,8 @@ class AccountService {
       this.createAccessToken(account.account_id, email as string),
       this.createRefreshToken(account.account_id, email as string)
     ])
-
+    console.log('accessToken:', accessToken)
+    console.log('refreshToken:', refreshToken)
     // Trả về token và thông tin người dùng
     return { accessToken, refreshToken, account }
   }
@@ -264,7 +271,7 @@ class AccountService {
     const [accessToken, refreshToken] = await Promise.all([
       this.createAccessToken(account_id, user.email as string),
       this.createRefreshToken(account_id, user.email as string),
-      redisClient.set(`account:${account_id}`, JSON.stringify(user), 'EX', 60 * 60)
+      redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
     ])
     return { accessToken, refreshToken }
   }
@@ -328,7 +335,7 @@ class AccountService {
       redisClient.del(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${account_id}`)
     ])
     const user: Account | null = await accountRepository.findOne({ where: { account_id } })
-    await redisClient.set(`account:${account_id}`, JSON.stringify(user), 'EX', 60 * 60)
+    await redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
     return {
       message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
     }
@@ -359,9 +366,7 @@ class AccountService {
         gender: gender || undefined
       })
     ])
-    await redisClient.set(`account:${account_id}`, JSON.stringify(user), {
-      EX: 60 * 60
-    })
+    await redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
     return user as Account
   }
 
@@ -378,23 +383,24 @@ class AccountService {
     console.log(emailVerifyToken)
     const user = await redisClient.get(`account:${account_id}`)
     const userParse = JSON.parse(user as string)
+    const options = {
+      to: userParse.email,
+      subject: 'Verify your email',
+      text: `Your passcode is ${secretPasscode}`,
+      htmlPath: 'template/email-verify.html',
+      placeholders: {
+        USER_NAME: userParse.full_name,
+        OTP_CODE: secretPasscode,
+        OTP_EXPIRATION_MINUTES: '10',
+        CURRENT_YEAR: new Date().getFullYear().toString(),
+        SUPPORT_EMAIL: 'anhdonguyennhi@gmail.com'
+      }
+    } as MailOptions
     await Promise.all([
       //lưu token vào redis
       redisClient.set(`${process.env.JWT_EMAIL_VERIFIED_TOKEN}:${account_id}`, emailVerifyToken, 'EX', 60 * 60),
       //gửi email
-      sendMail(
-        userParse.email,
-        'Verify your email',
-        `Your passcode is ${secretPasscode}`,
-        'template/email-verify.html',
-        {
-          USER_NAME: userParse.full_name,
-          OTP_CODE: secretPasscode,
-          OTP_EXPIRATION_MINUTES: '10',
-          CURRENT_YEAR: new Date().getFullYear().toString(),
-          SUPPORT_EMAIL: 'anhdonguyennhi@gmail.com'
-        }
-      )
+      sendMail(options)
     ])
   }
 
@@ -413,6 +419,7 @@ class AccountService {
    * @param account_id: string
    * @returns: Account
    */
+
   async viewAccount(account_id: string): Promise<Account> {
     const user = (await redisClient.get(`account:${account_id}`)) as string
     return JSON.parse(user)
@@ -449,18 +456,24 @@ class AccountService {
     const secretPasscode = crypto.randomInt(100000, 999999).toString()
     const resetPasswordToken = await this.createEmailResetPasswordToken(account_id, secretPasscode)
     console.log('resetPasswordToken:', resetPasswordToken)
-
-    await Promise.all([
-      //lưu token vào redis
-      redisClient.set(`${process.env.JWT_FORFOT_PASSWORD_TOKEN}:${account_id}`, resetPasswordToken, 'EX', 60 * 5),
-      //gửi email
-      sendMail(email, 'Verify your email', `Your passcode is ${secretPasscode}`, 'template/reset-password.html', {
+    const options = {
+      to: email,
+      subject: 'Reset your password',
+      text: `Your passcode is ${secretPasscode}`,
+      htmlPath: 'template/reset-password.html',
+      placeholders: {
         EMAIL: email,
         OTP_CODE: secretPasscode,
         OTP_EXPIRATION_MINUTES: '5',
         CURRENT_YEAR: new Date().getFullYear().toString(),
         SUPPORT_EMAIL: 'anhdonguyennhi@gmail.com'
-      })
+      }
+    } as MailOptions
+    await Promise.all([
+      //lưu token vào redis
+      redisClient.set(`ResetPasswordToken:${account_id}`, resetPasswordToken, 'EX', 60 * 5),
+      //gửi email
+      sendMail(options)
     ])
     return {
       message: USERS_MESSAGES.SEND_RESET_PASSWORD_SUCCESS
@@ -474,7 +487,7 @@ class AccountService {
    * @returns: void
    */
   async verifyPasscodeResetPassword(passcode: string, account_id: string): Promise<void> {
-    const userToken = await redisClient.get(`${process.env.JWT_FORFOT_PASSWORD_TOKEN}:${account_id}`)
+    const userToken = await redisClient.get(`ResetPasswordToken:${account_id}`)
     console.log('userToken:', userToken)
     const userTokenParse = await verifyToken({
       token: userToken as string,

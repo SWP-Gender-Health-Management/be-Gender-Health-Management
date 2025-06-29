@@ -2,6 +2,7 @@ import { checkSchema } from 'express-validator'
 import { ADMIN_MESSAGES } from '../constants/message.js'
 import accountService from '../services/account.service.js'
 import { validate } from '../utils/validations.js'
+import multer from 'multer'
 
 export const validateCreateAccount = validate(
   checkSchema({
@@ -51,3 +52,29 @@ export const validateCreateAccount = validate(
     }
   })
 )
+
+export const validateBanAccount = validate(
+  checkSchema({
+    account_id: {
+      isUUID: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: ADMIN_MESSAGES.ACCOUNT_ID_REQUIRED
+    }
+  })
+)
+
+// Sử dụng memoryStorage để không lưu file tạm ra đĩa
+const storage = multer.memoryStorage()
+
+export const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'text/html') {
+      cb(null, true)
+    } else {
+      cb(new Error('Chỉ chấp nhận file .html!') as any, false)
+    }
+  },
+  limits: { fileSize: 1024 * 1024 * 2 } // 2MB
+})

@@ -124,7 +124,25 @@ export const ADMIN_MESSAGES = {
   FULL_NAME_REQUIRED: 'Full name is required',
   EMAIL_REQUIRED: 'Email is required',
   PASSWORD_REQUIRED: 'Password is required',
-  EMAIL_ALREADY_EXISTS: 'Email already exists'
+  EMAIL_ALREADY_EXISTS: 'Email already exists',
+  ACCOUNT_ID_REQUIRED: 'Account id is required',
+  ACCOUNT_BANNED_SUCCESS: 'Account banned successfully',
+  ACCOUNT_NOT_FOUND: 'Account not found',
+  OVERALL_SUCCESS: 'Overall success',
+  SUMMARY_SUCCESS: 'Summary success',
+  PERFORMANCE_SUCCESS: 'Performance success',
+  ACCOUNT_UNBANNED_SUCCESS: 'Account unbanned successfully',
+  GET_CUSTOMERS_SUCCESS: 'Get customers successfully'
+}
+
+export const MANAGER_MESSAGES = {
+  PERFORMANCE_REPORT_SUCCESS: 'Performance report successfully',
+  REPORT_SUCCESS: 'Report successfully',
+  CREATE_STAFF_PATTERN_SUCCESS: 'Create staff pattern successfully',
+  CREATE_CONSULTANT_PATTERN_SUCCESS: 'Create consultant pattern successfully',
+  GET_STAFF_PATTERN_SUCCESS: 'Get staff pattern successfully',
+  GET_CONSULTANT_PATTERN_SUCCESS: 'Get consultant pattern successfully',
+  GET_CUSTOMER_SUCCESS: 'Get customer successfully'
 }
 
 export const LABORARITY_MESSAGES = {
@@ -255,6 +273,8 @@ export const CONSULT_REPORT_MESSAGES = {
 }
 
 export const FEEDBACK_MESSAGES = {
+  CUSTOMER_NOT_FOUND: 'Customer not found',
+  CUSTOMER_NOT_PROVIDED: 'Customer must be provided',
   FEEDBACK_CREATED_SUCCESS: 'Feedback created successfully',
   FEEDBACKS_RETRIEVED_SUCCESS: 'Feedbacks retrieved successfully',
   FEEDBACK_RETRIEVED_SUCCESS: 'Feedback retrieved successfully',

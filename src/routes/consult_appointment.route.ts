@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import {
   createConsultAppointment,
-  getAllConsultAppointments,
-  getConsultAppointmentById,
+  getAllConApps,
+  getConAppById,
   getConsultAppointmentsByCustomerId,
   getConsultAppointmentsByPatternId,
   updateConsultAppointment,
@@ -24,8 +24,8 @@ const consultAppointmentRoute = Router()
 */
 consultAppointmentRoute.post(
   '/create-consult-appointment',
-  validateAccessToken,
-  restrictTo(Role.CUSTOMER),
+  // validateAccessToken,
+  // restrictTo(Role.CUSTOMER),
   wrapRequestHandler(createConsultAppointment)
 )
 
@@ -39,9 +39,9 @@ consultAppointmentRoute.post(
 */
 consultAppointmentRoute.get(
   '/get-all-consult-appointments',
-  validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT),
-  wrapRequestHandler(getAllConsultAppointments)
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN, Role.CONSULTANT),
+  wrapRequestHandler(getAllConApps)
 )
 
 /*
@@ -56,7 +56,7 @@ consultAppointmentRoute.get(
   '/get-consult-appointment-by-id/:app_id',
   validateAccessToken,
   restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
-  wrapRequestHandler(getConsultAppointmentById)
+  wrapRequestHandler(getConAppById)
 )
 
 /*
@@ -114,8 +114,8 @@ consultAppointmentRoute.put(
 */
 consultAppointmentRoute.delete(
   '/delete-consult-appointment/:app_id',
-  validateAccessToken,
-  restrictTo(Role.ADMIN),
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteConsultAppointment)
 )
 

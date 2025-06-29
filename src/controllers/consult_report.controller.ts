@@ -5,7 +5,7 @@ import consultReportService from '~/services/consult_report.service.js'
 
 /**
  * @swagger
- * /consult_report/create-consult-report:
+ * /consult-report/create-consult-report:
  *   post:
  *     summary: Create a new consult report
  *     description: Creates a new consult report for a consult appointment. Requires consultant role.
@@ -81,7 +81,7 @@ export const createConsultReport = async (req: Request, res: Response, next: Nex
 
 /**
  * @swagger
- * /consult_report/get-all-consult-reports:
+ * /consult-report/get-all-consult-reports:
  *   get:
  *     summary: Get all consult reports
  *     description: Retrieves a list of all consult reports with their relation to consult_appointment. Requires admin, consultant, or customer role.
@@ -109,7 +109,12 @@ export const createConsultReport = async (req: Request, res: Response, next: Nex
 // Get all consult reports
 export const getAllConsultReports = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultReportService.getAllConsultReports(req.query)
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await consultReportService.getAllConsultReports(pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULT_REPORT_MESSAGES.REPORTS_RETRIEVED_SUCCESS,
       result
@@ -121,7 +126,7 @@ export const getAllConsultReports = async (req: Request, res: Response, next: Ne
 
 /**
  * @swagger
- * /consult_report/get-consult-report-by-id/{report_id}:
+ * /consult-report/get-consult-report-by-id/{report_id}:
  *   get:
  *     summary: Get a consult report by ID
  *     description: Retrieves a consult report by its ID with its relation to consult_appointment. Requires admin, consultant, or customer role.
@@ -176,7 +181,7 @@ export const getConsultReportById = async (req: Request, res: Response, next: Ne
 
 /**
  * @swagger
- * /consult_report/get-consult-report-by-id/appointment/{app_id}:
+ * /consult-report/get-consult-report-by-id/appointment/{app_id}:
  *   get:
  *     summary: Get consult report by consult appointment ID
  *     description: Retrieves a consult report associated with a consult appointment ID with its relation to consult_appointment. Requires admin, consultant, or customer role.
@@ -231,7 +236,7 @@ export const getConsultReportByAppointmentId = async (req: Request, res: Respons
 
 /**
  * @swagger
- * /consult_report/update-consult-report/{report_id}:
+ * /consult-report/update-consult-report/{report_id}:
  *   put:
  *     summary: Update a consult report
  *     description: Updates an existing consult report. Requires consultant role.
@@ -313,7 +318,7 @@ export const updateConsultReport = async (req: Request, res: Response, next: Nex
 
 /**
  * @swagger
- * /consult_report/delete-consult-report/{report_id}:
+ * /consult-report/delete-consult-report/{report_id}:
  *   delete:
  *     summary: Delete a consult report
  *     description: Deletes a consult report by its ID. Requires admin or consultant role.

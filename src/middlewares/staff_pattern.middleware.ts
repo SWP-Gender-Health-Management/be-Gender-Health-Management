@@ -1,16 +1,30 @@
 import { checkSchema } from 'express-validator'
 import { STAFF_PATTERN_MESSAGES } from '../constants/message.js'
 import { validate } from '../utils/validations.js'
+import { validate as uuidValidate } from 'uuid'
 
 export const validateAddStaffPattern = validate(
   checkSchema({
     account_id: {
-      isString: true,
+      isUUID: {
+        errorMessage: STAFF_PATTERN_MESSAGES.ACCOUNT_ID_INVALID
+      },
       errorMessage: STAFF_PATTERN_MESSAGES.ACCOUNT_ID_INVALID
     },
     slot_id: {
-      isString: true,
-      errorMessage: STAFF_PATTERN_MESSAGES.WORKING_SLOT_ID_INVALID
+      isArray: true,
+      notEmpty: true,
+      errorMessage: STAFF_PATTERN_MESSAGES.WORKING_SLOT_ID_INVALID,
+      custom: {
+        options: async (value) => {
+          for (const slotId of value) {
+            if (typeof slotId !== 'string' || !uuidValidate(slotId)) {
+              throw new Error(STAFF_PATTERN_MESSAGES.WORKING_SLOT_ID_INVALID)
+            }
+          }
+          return true
+        }
+      }
     },
     date: {
       isString: true,

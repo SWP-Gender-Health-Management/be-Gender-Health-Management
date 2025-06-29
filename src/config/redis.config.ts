@@ -1,42 +1,26 @@
-import Redis, { RedisOptions } from 'ioredis'
-import dotenv from 'dotenv'
+import { config } from 'dotenv'
+import IORedis from 'ioredis'
 
-dotenv.config()
+config()
+// Lấy URL từ biến môi trường để linh hoạt hơn
+const host = process.env.HOST as string
+const port = process.env.REDIS_PORT as string
+const url = `redis://${host}:${port}`
 
-// Lấy thông tin cấu hình từ biến môi trường (khuyến nghị)
-const redisHost = process.env.HOST
-const redisPort = parseInt(process.env.REDIS_PORT as string, 10)
-const redisPassword = process.env.REDIS_PASSWORD || undefined // Để undefined nếu không có mật khẩu
+console.log('Đang kết nối đến Redis...')
+const redisClient = new IORedis(url, {
+  maxRetriesPerRequest: 3,
+  enableReadyCheck: true
+})
 
-const redisOptions: RedisOptions = {
-  host: redisHost,
-  port: redisPort,
-  password: redisPassword,
-  // Các tùy chọn khác nếu cần:
-  // lazyConnect: true, // Chỉ kết nối khi có lệnh đầu tiên được thực thi
-  // db: 0, // Chọn database Redis (mặc định là 0)
-  // connectTimeout: 10000, // Thời gian chờ kết nối (ms)
-  retryStrategy(times) {
-    const delay = Math.min(times * 50, 2000) // Thử lại sau mỗi 50ms, tối đa 2s
-    return delay
-  }
-}
-
-const redisClient = new Redis(redisOptions)
-
+// Lắng nghe các sự kiện để theo dõi trạng thái kết nối
 redisClient.on('connect', () => {
-  console.log(`Connected to Redis at ${redisHost}:${redisPort}`)
+  console.log('✅ Đã kết nối thành công đến Redis server bằng IORedis!')
 })
 
 redisClient.on('error', (err: any) => {
-  console.error('Redis connection error:', err)
-  // Bạn có thể thêm logic xử lý lỗi ở đây, ví dụ: thoát ứng dụng nếu không thể kết nối
-  // process.exit(1);
+  console.error('Lỗi kết nối IORedis:', err)
 })
 
-// Sẵn sàng để sử dụng (optional, chỉ để kiểm tra)
-redisClient.on('ready', () => {
-  console.log('Redis client is ready to use.')
-})
-
+// Export instance duy nhất để toàn bộ ứng dụng có thể tái sử dụng
 export default redisClient
