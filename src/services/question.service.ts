@@ -48,12 +48,9 @@ export class QuestionService {
    * @returns The questions
    */
   // Get all questions
-  async getAllQuestions(pageVar: { limit: number, page: number }): Promise<Question[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+  async getAllQuestions(pageVar: { limit: string, page: string }): Promise<Question[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     return await questionRepository.find({
@@ -93,7 +90,7 @@ export class QuestionService {
    * @returns The questions
    */
   // Get questions by Customer ID
-  async getQuestionsByCustomerId(customer_id: string, pageVar: { limit: number, page: number }): Promise<Question[]> {
+  async getQuestionsByCustomerId(customer_id: string, pageVar: { limit: string, page: string }): Promise<Question[]> {
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -102,11 +99,8 @@ export class QuestionService {
       })
     }
 
-    let { limit, page } = pageVar
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     const questions = await questionRepository.find({

@@ -73,11 +73,7 @@ export class ConsultAppointmentService {
         consult_appointment: savedConsultAppointment
       });
     }
-    const updatedAccount = await accountRepository.findOne({
-      where: { account_id: customer_id },
-      relations: ['consult_appointment'],
-    });
-    console.log('Updated consult_appointment array:', updatedAccount);
+    
     return savedConsultAppointment
   }
 
@@ -88,12 +84,9 @@ export class ConsultAppointmentService {
    * @returns The consult appointments
    */
   // Get all consult appointments
-  async getAllConsultAppointments(pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+  async getAllConsultAppointments(pageVar: { limit: string, page: string }): Promise<ConsultAppointment[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
     return await consultAppointmentRepository.find({
       skip,
@@ -144,12 +137,9 @@ export class ConsultAppointmentService {
    * @returns The consult appointments
    */
   // Get consult appointments by Customer ID
-  async getConsultAppointmentsByCustomerId(customer_id: string, pageVar: { limit: number, page: number }): Promise<ConsultAppointment[]> {
-    let { limit, page } = pageVar;
-    if (!limit || !page) {
-      limit = LIMIT.default;
-      page = 1;
-    }
+  async getConsultAppointmentsByCustomerId(customer_id: string, pageVar: { limit: string, page: string }): Promise<ConsultAppointment[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
