@@ -92,6 +92,15 @@ export class ConsultantPatternService {
     })
   }
 
+  async getAllConsultantPatternsInWeek(): Promise<ConsultantPattern[]> {
+    const consultantPatterns = await consultantPatternRepository
+      .createQueryBuilder('consultant_pattern')
+      .where('date_trunc(\'week\', "consultant_pattern"."date") = date_trunc(\'week\', NOW())')
+      .orderBy('"consultant_pattern"."date"', 'DESC')
+      .getMany()
+    return consultantPatterns
+  }
+
   /**
    * @description Get a consultant pattern by ID
    * @param pattern_id - The ID of the consultant pattern

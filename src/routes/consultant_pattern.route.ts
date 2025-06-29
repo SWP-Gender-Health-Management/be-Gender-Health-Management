@@ -6,7 +6,8 @@ import {
   getConsultantPatternById,
   getConsultantPatternByConsultantId, // Thêm import
   getConsultantPatternBySlotId, // Thêm import
-  updateConsultantPattern
+  updateConsultantPattern,
+  getAllConsultantPatternsInWeek
 } from '../controllers/consultant_pattern.controller.js'
 import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
 import { Role } from '../enum/role.enum.js'
@@ -40,6 +41,19 @@ consultantPatternRoute.get(
   '/get-all-consultant-patterns',
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getAllConsultantPatterns)
+)
+
+/*
+  Description: Get all consultant patterns in week (admin only)
+  Method: GET
+  Path: /get-all-consultant-patterns-in-week
+  Body: {
+  }
+*/
+consultantPatternRoute.get(
+  '/get-all-consultant-patterns-in-week',
+  restrictTo(Role.ADMIN),
+  wrapRequestHandler(getAllConsultantPatternsInWeek)
 )
 
 /*
