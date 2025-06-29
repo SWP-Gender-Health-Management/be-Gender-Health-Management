@@ -134,6 +134,11 @@ export const ADMIN_MESSAGES = {
   ACCOUNT_UNBANNED_SUCCESS: 'Account unbanned successfully'
 }
 
+export const MANAGER_MESSAGES = {
+  PERFORMANCE_REPORT_SUCCESS: 'Performance report successfully',
+  REPORT_SUCCESS: 'Report successfully'
+}
+
 export const LABORARITY_MESSAGES = {
   APPOINTMENT_ID_INVALID: 'Appointment id is invalid',
   STATUS_INVALID: 'Status is invalid',
