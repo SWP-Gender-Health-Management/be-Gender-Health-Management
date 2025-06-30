@@ -40,7 +40,7 @@ const app = express()
 // app.use(passport.initialize())
 app.use(
   cors({
-    origin: 'http://localhost:5500',
+    origin: process.env.FE_ADDRESS,
     credentials: true //for using cookie/token
   })
 )
