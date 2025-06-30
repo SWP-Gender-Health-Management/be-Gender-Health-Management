@@ -132,7 +132,8 @@ export const ADMIN_MESSAGES = {
   SUMMARY_SUCCESS: 'Summary success',
   PERFORMANCE_SUCCESS: 'Performance success',
   ACCOUNT_UNBANNED_SUCCESS: 'Account unbanned successfully',
-  GET_CUSTOMERS_SUCCESS: 'Get customers successfully'
+  GET_CUSTOMERS_SUCCESS: 'Get customers successfully',
+  RECENT_NEWS_SUCCESS: 'Get recent news successfully'
 }
 
 export const MANAGER_MESSAGES = {

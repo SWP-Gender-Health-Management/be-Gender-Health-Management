@@ -8,47 +8,75 @@ import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity
 import ConsultAppointment from '~/models/Entity/consult_appointment.entity.js'
 import Transaction from '~/models/Entity/transaction.entity.js'
 import { TransactionStatus } from '~/enum/transaction.enum.js'
-import { subDays } from 'date-fns'
+import { addDays, subDays } from 'date-fns'
 import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
 import Feedback from '~/models/Entity/feedback.entity.js'
-import { LessThan, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
+import { Between, LessThan, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
+import { TypeNoti } from '~/enum/type_noti.enum.js'
+import Notification from '~/models/Entity/notification.entity.js'
 
 const accountRepo = AppDataSource.getRepository(Account)
 const labAppRepo = AppDataSource.getRepository(LaboratoryAppointment)
 const conAppRepo = AppDataSource.getRepository(ConsultAppointment)
 const transactionRepo = AppDataSource.getRepository(Transaction)
 const feedbackRepo = AppDataSource.getRepository(Feedback)
+const notificationRepo = AppDataSource.getRepository(Notification)
 
 class AdminService {
   /**
    * @description: Lấy tổng số lượng khách hàng, lịch thí nghiệm, lịch tư vấn, doanh thu
    * @returns: {
    * totalCustomers: number,
-   * totalLab: number,
-   * totalCon: number,
+   * totalNewCustomers: number,
    * totalRevenue: number
+   * importantNews: number
    * }
    */
   async getOverall() {
-    const totalCustomers = await accountRepo.count({
-      where: { role: Role.CUSTOMER }
-    })
-    const totalLab = await labAppRepo.count()
-    const totalCon = await conAppRepo.count()
-    const totalRevenue = await transactionRepo
-      .createQueryBuilder('transaction')
-      .select('SUM(transaction.amount)', 'total_revenue')
-      .where('transaction.status = :status', { status: TransactionStatus.PAID })
-      .getRawOne()
-    console.log(totalRevenue)
+    const today = new Date()
+    const tomorrow = addDays(today, 1)
+    const previousDay = subDays(today, 30)
+    const [totalCustomers, totalNewCustomers, totalRevenue, importantNews] = await Promise.all([
+      accountRepo.count({
+        where: { role: Role.CUSTOMER }
+      }),
+      accountRepo
+        .createQueryBuilder('account')
+        // So sánh tháng và năm của cột 'createdAt' với tháng và năm của ngày hiện tại
+        .where("date_trunc('month', account.created_at) = date_trunc('month', NOW())")
+        .getCount(), // Dùng getCount() để lấy kết quả đếm trực tiếp
+      transactionRepo
+        .createQueryBuilder('transaction')
+        .select('SUM(transaction.amount)', 'total_revenue')
+        .where('transaction.status = :status', { status: TransactionStatus.PAID })
+        .andWhere('transaction.updated_at <= :date', { date: today })
+        .andWhere('transaction.updated_at >= :date', { date: previousDay })
+        .getRawOne(),
+      notificationRepo.count({
+        where: {
+          created_at: Between(today, tomorrow)
+        }
+      })
+    ])
     return {
       totalCustomers: totalCustomers,
-      labBooking: totalLab,
-      conBooking: totalCon,
-      revenue: totalRevenue
+      totalNewCustomers: totalNewCustomers,
+      totalRevenue: totalRevenue,
+      importantNews: importantNews
     }
   }
 
+  async getRecentNews(limit: string, page: string): Promise<Notification[]> {
+    const limitNumber = parseInt(limit) || 10
+    const pageNumber = parseInt(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
+    const news = await notificationRepo.find({
+      order: { created_at: 'DESC' },
+      skip: skip,
+      take: limitNumber
+    })
+    return news
+  }
   /**
    * @description: Lấy tổng số lượng khách hàng, lịch thí nghiệm, lịch tư vấn, doanh thu
    * @param date: string

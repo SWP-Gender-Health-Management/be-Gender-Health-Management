@@ -422,7 +422,8 @@ class AccountService {
 
   async viewAccount(account_id: string): Promise<Account> {
     const user = (await redisClient.get(`account:${account_id}`)) as string
-    return JSON.parse(user)
+    const userParse = JSON.parse(user)
+    return userParse
   }
 
   /**
