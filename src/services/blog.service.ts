@@ -21,8 +21,8 @@ export class BlogService {
   private toImageUrl(localPath: string): string {
     // Chỉ lấy phần từ 'uploads' trở đi
     const relativePath = path.relative(path.join(process.cwd(), 'uploads'), localPath)
-    // Chuyển dấu \ thành / và thêm BASE_URL
-    return `${BASE_URL}/${relativePath.replace(/\\/g, '/')}`
+    // Thêm '/uploads/' vào URL và chuyển dấu \ thành /
+    return `${BASE_URL}/uploads/${relativePath.replace(/\\/g, '/')}`
   }
 
   // Create a new blog
