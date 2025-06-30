@@ -15,6 +15,15 @@ export const getOverallController = async (req: Request, res: Response, next: Ne
   })
 }
 
+export const getRecentNewsController = async (req: Request, res: Response, next: NextFunction) => {
+  const { limit, page } = req.query
+  const result = await adminService.getRecentNews(limit as string, page as string)
+  res.status(HTTP_STATUS.OK).json({
+    message: ADMIN_MESSAGES.RECENT_NEWS_SUCCESS,
+    data: result
+  })
+}
+
 export const getSummaryController = async (req: Request, res: Response, next: NextFunction) => {
   let { date } = req.query
   if (!date) {

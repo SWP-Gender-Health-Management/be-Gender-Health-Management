@@ -181,8 +181,11 @@ export const googleVerifyController = async (req: Request, res: Response, next: 
     console.log('Token:', idToken)
 
     const result = await accountService.googleVerify(idToken)
+    console.log('result:', result.account)
+
     const { accessToken, refreshToken, account } = result
     await Promise.all([
+      redisClient.set(`account:${account.account_id}`, JSON.stringify(account), 'EX', 60 * 60),
       refreshTokenService.updateRefreshToken({ account: account, token: refreshToken }),
       redisClient.set(`accessToken:${account.account_id}`, JSON.stringify(accessToken), 'EX', 60 * 60)
     ])
@@ -603,6 +606,7 @@ export const checkEmailVerifiedController = async (req: Request, res: Response, 
 export const viewAccountController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id } = req.body
   const result = await accountService.viewAccount(account_id)
+  console.log('result:', result)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_VIEWED_SUCCESS,
     result

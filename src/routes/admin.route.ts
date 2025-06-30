@@ -14,7 +14,8 @@ import {
   getSummaryController,
   getPerformanceController,
   unbanAccountController,
-  sendBulkEmailController
+  sendBulkEmailController,
+  getRecentNewsController
 } from '../controllers/admin.controller.js'
 import { upload, validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
@@ -36,6 +37,17 @@ const adminRoute = Router()
   }
 */
 adminRoute.get('/get-overall', restrictTo(Role.ADMIN), wrapRequestHandler(getOverallController))
+
+/*
+  description: get recent news
+  method: get
+  path: /admin/get-recent-news
+  query: {
+    limit: string
+    page: string
+  }
+*/
+adminRoute.get('/get-recent-news', restrictTo(Role.ADMIN), wrapRequestHandler(getRecentNewsController))
 
 /*
   description: get summary
