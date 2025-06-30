@@ -13,7 +13,18 @@ import LIMIT from '~/constants/limit.js'
 const blogRepository = AppDataSource.getRepository(Blog)
 const accountRepository = AppDataSource.getRepository(Account)
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
+
 export class BlogService {
+
+  // Hàm hỗ trợ chuyển đường dẫn cục bộ thành URL
+  private toImageUrl(localPath: string): string {
+    // Chỉ lấy phần từ 'uploads' trở đi
+    const relativePath = path.relative(path.join(process.cwd(), 'uploads'), localPath)
+    // Chuyển dấu \ thành / và thêm BASE_URL
+    return `${BASE_URL}/${relativePath.replace(/\\/g, '/')}`
+  }
+
   // Create a new blog
   async createBlog(data: any, files: Express.Multer.File[]): Promise<Blog> {
     // Validate account
@@ -80,7 +91,10 @@ export class BlogService {
       images
     })
 
-    return await blogRepository.save(blog)
+    const savedBlog = await blogRepository.save(blog)
+    // Chuyển đổi images thành URL trong response
+    savedBlog.images = savedBlog.images?.map((img) => this.toImageUrl(img)) || []
+    return savedBlog
   }
 
   // Get all blogs
@@ -88,11 +102,17 @@ export class BlogService {
     let limit = parseInt(pageVar.limit) || LIMIT.default;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit;
-    return await blogRepository.find({
+    const blogs = await blogRepository.find({
       skip,
       take: limit,
       relations: ['account']
     })
+
+    // Chuyển đổi images thành URL
+    return blogs.map((blog) => ({
+      ...blog,
+      images: blog.images?.map((img) => this.toImageUrl(img)) || []
+    }))
   }
 
   // Get a blog by ID
@@ -109,6 +129,8 @@ export class BlogService {
       })
     }
 
+    // Chuyển đổi images thành URL
+    blog.images = blog.images?.map((img) => this.toImageUrl(img)) || []
     return blog
   }
 
@@ -140,7 +162,11 @@ export class BlogService {
       })
     }
 
-    return blogs
+    // Chuyển đổi images thành URL
+    return blogs.map((blog) => ({
+      ...blog,
+      images: blog.images?.map((img) => this.toImageUrl(img)) || []
+    }))
   }
 
   // Update a blog
@@ -220,7 +246,10 @@ export class BlogService {
       images
     })
 
-    return await blogRepository.save(blog)
+    const updatedBlog = await blogRepository.save(blog)
+    // Chuyển đổi images thành URL trong response
+    updatedBlog.images = updatedBlog.images?.map((img) => this.toImageUrl(img)) || []
+    return updatedBlog
   }
 
   // Delete a blog
