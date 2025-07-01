@@ -19,10 +19,8 @@ export class BlogService {
 
   // Hàm hỗ trợ chuyển đường dẫn cục bộ thành URL
   private toImageUrl(localPath: string): string {
-    // Chỉ lấy phần từ 'uploads' trở đi
-    const relativePath = path.relative(path.join(process.cwd(), 'uploads'), localPath)
-    // Thêm '/uploads/' vào URL và chuyển dấu \ thành /
-    return `${BASE_URL}/uploads/${relativePath.replace(/\\/g, '/')}`
+    // localPath đã là dạng uploads/blog_images/..., chỉ cần thêm BASE_URL
+    return `${BASE_URL}/${localPath.replace(/\\/g, '/')}`
   }
 
   // Create a new blog
@@ -68,10 +66,14 @@ export class BlogService {
           const ext = path.extname(oldPath)
           const newFileName = `blog_${blogId}_${uuidv4()}${ext}`
           const newPath = path.join(path.dirname(oldPath), newFileName)
+          // Lưu đường dẫn tương đối vào database
+          const relativePath = `uploads/blog_images/${newFileName}`
+          console.log('Renaming file from:', oldPath, 'to:', newPath) // Log để debug
           try {
             await fs.rename(oldPath, newPath)
-            return newPath
-          } catch (error: any) {
+            return relativePath
+          } catch (err) {
+            const error = err as NodeJS.ErrnoException
             throw new ErrorWithStatus({
               message: `Failed to rename image: ${error.message}`,
               status: HTTP_STATUS.INTERNAL_SERVER_ERROR
@@ -98,7 +100,7 @@ export class BlogService {
   }
 
   // Get all blogs
-  async getAllBlogs( pageVar : {limit: string, page: string} ): Promise<Blog[]> {
+  async getAllBlogs(pageVar: { limit: string, page: string }): Promise<Blog[]> {
     let limit = parseInt(pageVar.limit) || LIMIT.default;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit;
@@ -149,7 +151,7 @@ export class BlogService {
     const skip = (page - 1) * limit
 
     const blogs = await blogRepository.find({
-      where: { account: {account_id: account.account_id} },
+      where: { account: { account_id: account.account_id } },
       skip,
       take: limit,
       relations: ['account']
@@ -208,10 +210,14 @@ export class BlogService {
           const ext = path.extname(oldPath)
           const newFileName = `blog_${blog_id}_${uuidv4()}${ext}`
           const newPath = path.join(path.dirname(oldPath), newFileName)
+          // Lưu đường dẫn tương đối vào database
+          const relativePath = `uploads/blog_images/${newFileName}`
+          console.log('Renaming file from:', oldPath, 'to:', newPath) // Log để debug
           try {
             await fs.rename(oldPath, newPath)
-            return newPath
-          } catch (error: any) {
+            return relativePath
+          } catch (err) {
+            const error = err as NodeJS.ErrnoException
             throw new ErrorWithStatus({
               message: `Failed to rename image: ${error.message}`,
               status: HTTP_STATUS.INTERNAL_SERVER_ERROR
@@ -223,9 +229,13 @@ export class BlogService {
       // Delete old images if replacing
       if (data.replaceImages === 'true' && blog.images && blog.images.length > 0) {
         for (const imagePath of blog.images) {
+          // Chuyển relative path thành absolute path để xóa
+          const absolutePath = path.join(process.cwd(), imagePath)
+          console.log('Deleting old image:', absolutePath) // Log để debug
           try {
-            await fs.unlink(imagePath)
-          } catch (error: any) {
+            await fs.unlink(absolutePath)
+          } catch (err) {
+            const error = err as NodeJS.ErrnoException
             if (error.code !== 'ENOENT') {
               throw new ErrorWithStatus({
                 message: `Failed to delete image: ${error.message}`,

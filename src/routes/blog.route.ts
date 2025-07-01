@@ -65,7 +65,7 @@ blogRoute.get(
 blogRoute.get(
   '/get-blog-by-account/:account_id',
   // validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.STAFF),
   wrapRequestHandler(getBlogsByAccountId)
 )
 
