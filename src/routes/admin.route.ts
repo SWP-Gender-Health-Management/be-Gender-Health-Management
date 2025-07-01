@@ -183,10 +183,6 @@ adminRoute.get('/get-percent-revenue-service', wrapRequestHandler(getPercentReve
 */
 adminRoute.get('/get-percent-feedback', wrapRequestHandler(getPercentFeedbackController))
 
-/*
-
-*/
-
 // Communication & Content
 
 // Tạo một queue mới có tên là 'email-campaigns'

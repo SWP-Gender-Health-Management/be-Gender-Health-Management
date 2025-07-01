@@ -39,9 +39,9 @@ export const createAccountController = async (req: Request, res: Response, next:
   const account = await adminService.createAccount(full_name, email, password, role)
   await notificationService.createNotification(
     {
-      type: TypeNoti.ACCOUNT_CREATED_SUCCESS,
-      title: 'Account created successfully',
-      message: 'Your account has been created successfully'
+      type: TypeNoti.CREATE_ACCOUNT,
+      title: 'Tạo tài khoản thành công',
+      message: `Tài khoản ${full_name} đã được tạo thành công`
     },
     account.account_id
   )
