@@ -116,11 +116,7 @@ export const STAFF_PATTERN_MESSAGES = {
 }
 
 export const ADMIN_MESSAGES = {
-  ADMIN_CREATED_SUCCESS: 'Admin created successfully',
-  MANAGER_CREATED_SUCCESS: 'Manager created successfully',
-  STAFF_CREATED_SUCCESS: 'Staff created successfully',
-  CONSULTANT_CREATED_SUCCESS: 'Consultant created successfully',
-  CUSTOMER_CREATED_SUCCESS: 'Customer created successfully',
+  ACCOUNT_CREATED_SUCCESS: 'Account created successfully',
   FULL_NAME_REQUIRED: 'Full name is required',
   EMAIL_REQUIRED: 'Email is required',
   PASSWORD_REQUIRED: 'Password is required',
@@ -133,7 +129,10 @@ export const ADMIN_MESSAGES = {
   PERFORMANCE_SUCCESS: 'Performance success',
   ACCOUNT_UNBANNED_SUCCESS: 'Account unbanned successfully',
   GET_CUSTOMERS_SUCCESS: 'Get customers successfully',
-  RECENT_NEWS_SUCCESS: 'Get recent news successfully'
+  RECENT_NEWS_SUCCESS: 'Get recent news successfully',
+  PERCENT_CUSTOMER_SUCCESS: 'Get percent customer successfully',
+  ROLE_REQUIRED: 'Role is required',
+  ACCOUNT_DELETED_SUCCESS: 'Account deleted successfully'
 }
 
 export const MANAGER_MESSAGES = {

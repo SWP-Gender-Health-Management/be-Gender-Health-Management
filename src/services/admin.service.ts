@@ -1,6 +1,6 @@
 import { AppDataSource } from '../config/database.config.js'
 import Account from '../models/Entity/account.entity.js'
-import { Role } from '../enum/role.enum.js'
+import { parseNumericEnum, Role } from '../enum/role.enum.js'
 import { hashPassword } from '../utils/crypto.js'
 import { ADMIN_MESSAGES, USERS_MESSAGES } from '~/constants/message.js'
 import { ErrorWithStatus } from '~/models/Error.js'
@@ -8,12 +8,13 @@ import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity
 import ConsultAppointment from '~/models/Entity/consult_appointment.entity.js'
 import Transaction from '~/models/Entity/transaction.entity.js'
 import { TransactionStatus } from '~/enum/transaction.enum.js'
-import { addDays, subDays } from 'date-fns'
+import { addDays, format, subDays, subMonths } from 'date-fns'
 import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
 import Feedback from '~/models/Entity/feedback.entity.js'
 import { Between, LessThan, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
 import Notification from '~/models/Entity/notification.entity.js'
+import { MailOptions, sendMail } from './email.service.js'
 
 const accountRepo = AppDataSource.getRepository(Account)
 const labAppRepo = AppDataSource.getRepository(LaboratoryAppointment)
@@ -23,6 +24,7 @@ const feedbackRepo = AppDataSource.getRepository(Feedback)
 const notificationRepo = AppDataSource.getRepository(Notification)
 
 class AdminService {
+  // Overall
   /**
    * @description: Lấy tổng số lượng khách hàng, lịch thí nghiệm, lịch tư vấn, doanh thu
    * @returns: {
@@ -49,8 +51,8 @@ class AdminService {
         .createQueryBuilder('transaction')
         .select('SUM(transaction.amount)', 'total_revenue')
         .where('transaction.status = :status', { status: TransactionStatus.PAID })
-        .andWhere('transaction.updated_at <= :date', { date: today })
-        .andWhere('transaction.updated_at >= :date', { date: previousDay })
+        .andWhere('transaction.updated_at <= :startDate', { startDate: today })
+        .andWhere('transaction.updated_at >= :endDate', { endDate: previousDay })
         .getRawOne(),
       notificationRepo.count({
         where: {
@@ -58,6 +60,8 @@ class AdminService {
         }
       })
     ])
+    console.log(totalRevenue)
+
     return {
       totalCustomers: totalCustomers,
       totalNewCustomers: totalNewCustomers,
@@ -66,17 +70,173 @@ class AdminService {
     }
   }
 
-  async getRecentNews(limit: string, page: string): Promise<Notification[]> {
+  /**
+   * @description: Lấy số lượng khách hàng đăng ký trong 30 ngày
+   * @returns: {
+   * listDate[]: string,
+   * listCount[]: number
+   * }
+   */
+  async getPercentCustomer() {
+    // 1. Tính toán ngày bắt đầu
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - (30 - 1)) // Trừ đi (N-1) ngày để có đủ N ngày
+    startDate.setHours(0, 0, 0, 0)
+
+    const endDate = new Date()
+
+    // 2. Sử dụng raw query để tránh conflict với query builder
+    const rawResult = await AppDataSource.query(
+      `
+      SELECT 
+        TO_CHAR(date_series.day, 'YYYY-MM-DD') as date,
+        COUNT(account.account_id)::int as count
+      FROM generate_series($1::timestamp, $2::timestamp, '1 day') as date_series(day)
+      LEFT JOIN account ON DATE_TRUNC('day', account.created_at) = date_series.day 
+        AND account.role = '${Role.CUSTOMER}'
+      GROUP BY date_series.day
+      ORDER BY date_series.day ASC
+    `,
+      [startDate, endDate]
+    )
+
+    // 3. Tạo 2 array riêng biệt
+    const listDate: string[] = rawResult.map((item: { date: string; count: number }) =>
+      format(new Date(item.date), 'dd/MM')
+    ) // Định dạng ngày: '26/06'
+    const listCount: number[] = rawResult.map((item: { date: string; count: number }) => item.count) // Số lượng người tham gia theo index
+
+    return {
+      listDate,
+      listCount
+    }
+  }
+
+  /**
+   * @description: Lấy tin tức gần đây
+   * @param limit: string
+   * @param page: string
+   * @returns: Notification[]
+   */
+  async getRecentNews(limit: string, page: string): Promise<{ news: Notification[]; totalPages: number }> {
     const limitNumber = parseInt(limit) || 10
     const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
-    const news = await notificationRepo.find({
+    const [news, totalItems] = await notificationRepo.findAndCount({
       order: { created_at: 'DESC' },
       skip: skip,
       take: limitNumber
     })
-    return news
+    return {
+      news,
+      totalPages: Math.ceil(totalItems / limitNumber)
+    }
   }
+
+  // Manage account
+
+  /**
+   * @description: Tạo tài khoản
+   * @param full_name: string
+   * @param email: string
+   * @param password: string
+   * @returns: Account
+   */
+  async createAccount(full_name: string, email: string, password: string, role: number): Promise<Account> {
+    const roleEnum = parseNumericEnum(role)
+    const hashedPassword = await hashPassword(password)
+    const newAccount = accountRepo.create({
+      full_name,
+      email,
+      password: hashedPassword,
+      role: roleEnum
+    })
+
+    const options: MailOptions = {
+      to: email,
+      subject: 'Tạo tài khoản thành công',
+      htmlPath: './template/create-account.html',
+      placeholders: {
+        full_name: full_name,
+        login_email: email,
+        temporary_password: password,
+        CURRENT_YEAR: new Date().getFullYear().toString()
+      }
+    }
+
+    await Promise.all([accountRepo.save(newAccount), sendMail(options)])
+    return newAccount
+  }
+
+  /**
+   * @description: Lấy tất cả tài khoản
+   * @param limit - The limit of the accounts
+   * @param page - The page of the accounts
+   * @returns: Account[]
+   */
+  async getAccounts(limit: string, page: string, role: string, banned: string) {
+    const limitNumber = parseInt(limit) || 10
+    const pageNumber = parseInt(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
+    const [accounts, totalItems] = await accountRepo.findAndCount({
+      where: {
+        role: role === 'all' ? undefined : parseNumericEnum(parseInt(role)),
+        is_banned: banned === 'all' ? undefined : banned === 'true' ? true : false
+      },
+      order: { created_at: 'DESC' },
+      skip: skip,
+      take: limitNumber
+    })
+    const totalPages = Math.ceil(totalItems / limitNumber)
+    return {
+      accounts,
+      totalItems,
+      totalPages
+    }
+  }
+
+  /**
+   * @description: Ban tài khoản
+   * @param account_id: string
+   * @returns: Account
+   */
+  async banAccount(account_id: string) {
+    const account = await accountRepo.findOne({
+      where: { account_id }
+    })
+    if (!account) {
+      throw new ErrorWithStatus({
+        message: ADMIN_MESSAGES.ACCOUNT_NOT_FOUND,
+        status: 404
+      })
+    }
+    await accountRepo.update(account_id, { is_banned: true })
+    return {
+      message: ADMIN_MESSAGES.ACCOUNT_BANNED_SUCCESS
+    }
+  }
+
+  /**
+   * @description: Bỏ chặn tài khoản
+   * @param account_id: string
+   * @returns: Account
+   */
+  async unbanAccount(account_id: string) {
+    const account = await accountRepo.findOne({
+      where: { account_id }
+    })
+    if (!account) {
+      throw new ErrorWithStatus({
+        message: ADMIN_MESSAGES.ACCOUNT_NOT_FOUND,
+        status: 404
+      })
+    }
+    await accountRepo.update(account_id, { is_banned: false })
+    return {
+      message: ADMIN_MESSAGES.ACCOUNT_UNBANNED_SUCCESS
+    }
+  }
+
   /**
    * @description: Lấy tổng số lượng khách hàng, lịch thí nghiệm, lịch tư vấn, doanh thu
    * @param date: string
@@ -236,290 +396,6 @@ class AdminService {
       goodFeedPercent: goodFeedPercent,
       badFeedPercent: badFeedPercent,
       avgRating: avgRating
-    }
-  }
-
-  // Manage account
-
-  /**
-   * @description: Tạo tài khoản admin
-   * @param full_name: string
-   * @param email: string
-   * @param password: string
-   * @returns: Account
-   */
-  async createAdmin(full_name: string, email: string, password: string) {
-    const hashedPassword = await hashPassword(password)
-    const newAdmin = accountRepo.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      role: Role.ADMIN
-    })
-
-    await accountRepo.save(newAdmin)
-    return newAdmin
-  }
-
-  /**
-   * @description: Lấy tất cả tài khoản admin
-   * @param limit - The limit of the admins
-   * @param page - The page of the admins
-   * @returns: Account[]
-   */
-  async getAdmins(limit: string, page: string) {
-    const limitNumber = parseInt(limit) || 10
-    const pageNumber = parseInt(page) || 1
-    const skip = (pageNumber - 1) * limitNumber
-    const [admins, totalItems] = await accountRepo.findAndCount({
-      where: { role: Role.ADMIN },
-      order: { created_at: 'DESC' },
-      skip: skip,
-      take: limitNumber
-    })
-    const totalPages = Math.ceil(totalItems / limitNumber)
-    return {
-      admins,
-      totalItems,
-      totalPages
-    }
-  }
-
-  /**
-   * @description: Tạo tài khoản manager
-   * @param full_name: string
-   * @param email: string
-   * @param password: string
-   * @returns: Account
-   */
-  async createManager(full_name: string, email: string, password: string) {
-    const hashedPassword = await hashPassword(password)
-
-    const newManager = accountRepo.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      role: Role.MANAGER
-    })
-    await accountRepo.save(newManager)
-    return newManager
-  }
-
-  /**
-   * @description: Lấy tất cả tài khoản manager
-   * @param limit - The limit of the managers
-   * @param page - The page of the managers
-   * @returns: Account[]
-   */
-  async getManagers(limit: string, page: string) {
-    const limitNumber = parseInt(limit) || 10
-    const pageNumber = parseInt(page) || 1
-    const skip = (pageNumber - 1) * limitNumber
-    const [managers, totalItems] = await accountRepo.findAndCount({
-      where: {
-        role: Role.MANAGER
-      },
-      order: {
-        created_at: 'DESC'
-      },
-      skip: skip,
-      take: limitNumber
-    })
-    const totalPages = Math.ceil(totalItems / limitNumber)
-    return {
-      managers,
-      totalItems,
-      totalPages
-    }
-  }
-
-  /**
-   * @description: Tạo tài khoản staff
-   * @param full_name: string
-   * @param email: string
-   * @param password: string
-   * @returns: Account
-   */
-  async createStaff(full_name: string, email: string, password: string) {
-    const hashedPassword = await hashPassword(password)
-    const newStaff = accountRepo.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      role: Role.STAFF
-    })
-    await accountRepo.save(newStaff)
-    return newStaff
-  }
-
-  /**
-   * @description: Lấy tất cả tài khoản staff
-   * @param limit - The limit of the staffs
-   * @param page - The page of the staffs
-   * @returns: Account[]
-   */
-  async getStaffs(limit: string, page: string) {
-    // 1. Lấy tham số `page` và `limit` từ query string
-    const limitNumber = parseInt(limit) || 10
-    const pageNumber = parseInt(page) || 1
-
-    // 2. Tính toán giá trị `skip` (bỏ qua bao nhiêu mục)
-    // Ví dụ: trang 1 -> skip 0, trang 2 -> skip 10
-    const skip = (pageNumber - 1) * limitNumber
-
-    // 3. Sử dụng `findAndCount` của TypeORM
-    // Sắp xếp theo ngày tạo mới nhất
-    const [staffs, totalItems] = await accountRepo.findAndCount({
-      where: {
-        role: Role.STAFF
-      },
-      order: {
-        created_at: 'DESC'
-      },
-      skip: skip, // Bỏ qua `skip` mục đầu tiên
-      take: limitNumber // Lấy `limit` mục tiếp theo
-    })
-
-    // 4. Tính toán tổng số trang
-    const totalPages = Math.ceil(totalItems / limitNumber)
-    return {
-      staffs,
-      totalItems,
-      totalPages
-    }
-  }
-
-  /**
-   * @description: Tạo tài khoản consultant
-   * @param full_name: string
-   * @param email: string
-   * @param password: string
-   * @returns: Account
-   */
-  async createConsultant(full_name: string, email: string, password: string) {
-    const hashedPassword = await hashPassword(password)
-    const newConsultant = accountRepo.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      role: Role.CONSULTANT
-    })
-    await accountRepo.save(newConsultant)
-    return newConsultant
-  }
-
-  /**
-   * @description: Lấy tất cả tài khoản consultant
-   * @param limit - The limit of the consultants
-   * @param page - The page of the consultants
-   * @returns: Account[]
-   */
-  async getConsultants(limit: string, page: string) {
-    const limitNumber = parseInt(limit) || 10
-    const pageNumber = parseInt(page) || 1
-    const skip = (pageNumber - 1) * limitNumber
-    const [consultants, totalItems] = await accountRepo.findAndCount({
-      where: {
-        role: Role.CONSULTANT
-      },
-      order: {
-        created_at: 'DESC'
-      },
-      skip: skip,
-      take: limitNumber
-    })
-    const totalPages = Math.ceil(totalItems / limitNumber)
-    return {
-      consultants,
-      totalItems,
-      totalPages
-    }
-  }
-
-  /**
-   * @description: Tạo tài khoản customer
-   * @param full_name: string
-   * @param email: string
-   * @param password: string
-   * @returns: Account
-   */
-  async createCustomer(full_name: string, email: string, password: string) {
-    const hashedPassword = await hashPassword(password)
-    const newCustomer = accountRepo.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      role: Role.CUSTOMER
-    })
-    await accountRepo.save(newCustomer)
-    return newCustomer
-  }
-
-  /**
-   * @description: Ban tài khoản
-   * @param account_id: string
-   * @returns: Account
-   */
-  async banAccount(account_id: string) {
-    const account = await accountRepo.findOne({
-      where: { account_id }
-    })
-    if (!account) {
-      throw new ErrorWithStatus({
-        message: ADMIN_MESSAGES.ACCOUNT_NOT_FOUND,
-        status: 404
-      })
-    }
-    await accountRepo.update(account_id, { is_banned: true })
-    return {
-      message: ADMIN_MESSAGES.ACCOUNT_BANNED_SUCCESS
-    }
-  }
-
-  /**
-   * @description: Bỏ chặn tài khoản
-   * @param account_id: string
-   * @returns: Account
-   */
-  async unbanAccount(account_id: string) {
-    const account = await accountRepo.findOne({
-      where: { account_id }
-    })
-    if (!account) {
-      throw new ErrorWithStatus({
-        message: ADMIN_MESSAGES.ACCOUNT_NOT_FOUND,
-        status: 404
-      })
-    }
-    await accountRepo.update(account_id, { is_banned: false })
-    return {
-      message: ADMIN_MESSAGES.ACCOUNT_UNBANNED_SUCCESS
-    }
-  }
-
-  /**
-   * @description: Lấy tất cả tài khoản customer
-   * @param limit - The limit of the customers
-   * @param page - The page of the customers
-   * @returns: Account[]
-   */
-  async getCustomers(limit: string, page: string) {
-    const limitNumber = parseInt(limit) || 10
-    const pageNumber = parseInt(page) || 1
-    const skip = (pageNumber - 1) * limitNumber
-    const [customers, totalItems] = await accountRepo.findAndCount({
-      where: { role: Role.CUSTOMER },
-      order: {
-        created_at: 'DESC'
-      },
-      skip: skip,
-      take: limitNumber
-    })
-    const totalPages = Math.ceil(totalItems / limitNumber)
-    return {
-      customers,
-      totalItems,
-      totalPages
     }
   }
 }

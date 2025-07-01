@@ -1,29 +1,23 @@
-import { Router, Request, Response } from 'express'
+import { Router } from 'express'
 import {
-  createAdminController,
-  createManagerController,
-  createCustomerController,
   banAccountController,
-  createStaffController,
-  createConsultantController,
-  getAdminsController,
-  getStaffsController,
-  getManagersController,
-  getConsultantsController,
   getOverallController,
   getSummaryController,
   getPerformanceController,
   unbanAccountController,
   sendBulkEmailController,
-  getRecentNewsController
+  getRecentNewsController,
+  getPercentCustomerController,
+  createAccountController,
+  getAccountsController
 } from '../controllers/admin.controller.js'
 import { upload, validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
-import { restrictTo } from '~/middlewares/account.middleware.js'
+import { restrictTo, validateUpdateAccount } from '~/middlewares/account.middleware.js'
 import { Role } from '~/enum/role.enum.js'
-import { getCustomersController } from '~/controllers/customer.controller.js'
 import { Queue } from 'bullmq'
 import redisClient from '~/config/redis.config.js'
+import { updateAccountController, viewAccountController } from '~/controllers/account.controller.js'
 
 const adminRoute = Router()
 
@@ -37,6 +31,13 @@ const adminRoute = Router()
   }
 */
 adminRoute.get('/get-overall', restrictTo(Role.ADMIN), wrapRequestHandler(getOverallController))
+
+/*
+  description: get percent of customer
+  method: get
+  path: /admin/get-percent-customer
+*/
+adminRoute.get('/get-percent-customer', wrapRequestHandler(getPercentCustomerController))
 
 /*
   description: get recent news
@@ -69,88 +70,21 @@ adminRoute.get('/get-performance', restrictTo(Role.ADMIN), wrapRequestHandler(ge
 
 // account management
 /*
-  description: create new admin
+  description: create new account
   method: POST
-  path: /admin/create-admin
+  path: /admin/create-account
   body: {
     name: string
     email: string
     password: string
+    role: number
   }
 */
 adminRoute.post(
-  '/create-admin',
+  '/create-account',
   restrictTo(Role.ADMIN),
   validateCreateAccount,
-  wrapRequestHandler(createAdminController)
-)
-
-/*
-  description: create new manager
-  method: POST
-  path: /admin/create-manager
-  body: {
-    name: string
-    email: string
-    password: string
-  }
-*/
-adminRoute.post(
-  '/create-manager',
-  restrictTo(Role.ADMIN),
-  validateCreateAccount,
-  wrapRequestHandler(createManagerController)
-)
-
-/*
-  description: create new staff
-  method: POST
-  path: /admin/create-staff
-  body: {
-    name: string
-    email: string
-    password: string
-  }
-*/
-adminRoute.post(
-  '/create-staff',
-  restrictTo(Role.ADMIN),
-  validateCreateAccount,
-  wrapRequestHandler(createStaffController)
-)
-
-/*
-  description: create new consultant
-  method: POST
-  path: /admin/create-consultant
-  body: {
-    name: string
-    email: string
-    password: string
-  }
-*/
-adminRoute.post(
-  '/create-consultant',
-  restrictTo(Role.ADMIN),
-  validateCreateAccount,
-  wrapRequestHandler(createConsultantController)
-)
-
-/*
-  description: create new customer
-  method: POST
-  path: /admin/create-customer
-  body: {
-    name: string
-    email: string
-    password: string
-  }
-*/
-adminRoute.post(
-  '/create-customer',
-  restrictTo(Role.ADMIN),
-  validateCreateAccount,
-  wrapRequestHandler(createCustomerController)
+  wrapRequestHandler(createAccountController)
 )
 
 /*
@@ -160,43 +94,35 @@ adminRoute.post(
   body:{
   }
 */
-adminRoute.get('/get-admins', restrictTo(Role.ADMIN), wrapRequestHandler(getAdminsController))
+adminRoute.get('/get-accounts', restrictTo(Role.ADMIN), wrapRequestHandler(getAccountsController))
 
 /*
-  description: get all managers
-  method: get
-  path: /admin/get-managers
-  body:{
+  view account
+  Path: /view-account
+  Method: POST
+  Body: {
+    account_id: string
   }
 */
-adminRoute.get('/get-managers', restrictTo(Role.ADMIN), wrapRequestHandler(getManagersController))
+adminRoute.post('/view-account', restrictTo(Role.ADMIN), wrapRequestHandler(viewAccountController))
 
 /*
-  description: get all consultants
-  method: get
-  path: /admin/get-consultants
-  body:{
+  Description: update-profile
+  Path: /update-profile
+  Method: POST
+  Body: {
+  full_name: string
+  phone: string
+  dob: Date
+  gender: string
   }
 */
-adminRoute.get('/get-consultants', restrictTo(Role.ADMIN), wrapRequestHandler(getConsultantsController))
-
-/*
-  description: get all staffs
-  method: get
-  path: /admin/get-staffs
-  body:{
-  }
-*/
-adminRoute.get('/get-staffs', restrictTo(Role.ADMIN), wrapRequestHandler(getStaffsController))
-
-/*
-  description: get account
-  method: get
-  path: /admin/get-customers
-  body:{
-  }
-*/
-adminRoute.get('/get-customers', restrictTo(Role.ADMIN), wrapRequestHandler(getCustomersController))
+adminRoute.post(
+  '/update-profile',
+  restrictTo(Role.ADMIN),
+  validateUpdateAccount,
+  wrapRequestHandler(updateAccountController)
+)
 
 /*
   description: ban account
