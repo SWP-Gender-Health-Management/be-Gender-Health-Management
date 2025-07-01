@@ -8,7 +8,7 @@ import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity
 import ConsultAppointment from '~/models/Entity/consult_appointment.entity.js'
 import Transaction from '~/models/Entity/transaction.entity.js'
 import { TransactionStatus } from '~/enum/transaction.enum.js'
-import { addDays, format, subDays, subMonths } from 'date-fns'
+import { addDays, format, subDays } from 'date-fns'
 import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
 import Feedback from '~/models/Entity/feedback.entity.js'
 import { Between, LessThan, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
@@ -34,10 +34,10 @@ class AdminService {
    * importantNews: number
    * }
    */
-  async getOverall() {
+  async getOverall(day: number) {
     const today = new Date()
     const tomorrow = addDays(today, 1)
-    const previousDay = subDays(today, 30)
+    const previousDay = subDays(today, day)
     const [totalCustomers, totalNewCustomers, totalRevenue, importantNews] = await Promise.all([
       accountRepo.count({
         where: { role: Role.CUSTOMER }
@@ -77,10 +77,10 @@ class AdminService {
    * listCount[]: number
    * }
    */
-  async getPercentCustomer() {
+  async getPercentCustomer(day: number) {
     // 1. Tính toán ngày bắt đầu
     const startDate = new Date()
-    startDate.setDate(startDate.getDate() - (30 - 1)) // Trừ đi (N-1) ngày để có đủ N ngày
+    startDate.setDate(startDate.getDate() - (day - 1)) // Trừ đi (N-1) ngày để có đủ N ngày
     startDate.setHours(0, 0, 0, 0)
 
     const endDate = new Date()
@@ -237,165 +237,99 @@ class AdminService {
     }
   }
 
+  // report
   /**
    * @description: Lấy tổng số lượng khách hàng, lịch thí nghiệm, lịch tư vấn, doanh thu
-   * @param date: string
+   * @param day: number
    * @returns: {
-   *  reportDate: string,
-   *  kpiToday: {
-   *    totalBooking: number,
-   *    labBooking: number,
-   *    conBooking: number,
-   *    revenue: number
-   *  },
-   *  kpiYesterday: {
-   *    totalBooking: number,
-   *    labBooking: number,
-   *    conBooking: number,
-   *    revenue: number
-   *  },
-   *  performance: {
-   *    vsYes: {
-   *      revenueChangePercent: number,
-   *      bookingChangePercent: number
-   *    }
-   *  }
+   *  totalCustomer: number,
+   *  totalNewCus: number,
+   *  totalLab: number,
+   *  totalCon: number,
+   *  totalRevenue: number,
+   *  totalFeed: number,
+   *  sumFeedRating: number
    * }
    */
-  async getSummary(date: string) {
-    const today = new Date(date + 'T00:00:00')
-    const [totalLab, totalCon, totalRevenue] = await Promise.all([
-      labAppRepo.count({
-        where: {
-          date: today
-        }
+  async getReportOverall(day: number) {
+    const today = new Date()
+    const yesterday = subDays(today, day)
+    const [totalCustomer, totalNewCus, totalLab, totalCon, totalRevenue, totalFeed, sumFeedRating] = await Promise.all([
+      accountRepo.count({
+        where: { role: Role.CUSTOMER }
       }),
-      conAppRepo.count({
-        where: {
-          consultant_pattern: { date: today }
-        }
-      }),
+      accountRepo
+        .createQueryBuilder('account')
+        .select('COUNT(account.account_id)', 'total_new_customer')
+        .where('account.role = :role', { role: Role.CUSTOMER })
+        .andWhere('account.created_at >= :startDate', { startDate: yesterday })
+        .andWhere('account.created_at < :endDate', { endDate: today })
+        .getCount(),
+      labAppRepo.count(),
+      conAppRepo.count(),
       transactionRepo
         .createQueryBuilder('transaction')
         .select('SUM(transaction.amount)', 'total_revenue')
         .where('transaction.status = :status', { status: TransactionStatus.PAID })
-        .andWhere('transaction.created_at >= :date', { date: today })
-        .getRawOne()
+        .andWhere('transaction.created_at >= :startDate', { startDate: yesterday })
+        .andWhere('transaction.created_at < :endDate', { endDate: today })
+        .getRawOne(),
+      feedbackRepo.count(),
+      feedbackRepo.createQueryBuilder('feedback').select('SUM(feedback.rating)', 'sum_rating').getRawOne()
     ])
-    const yesterday = subDays(today, 1)
-    const [totalLabYes, totalConYes, totalRevenueYes] = await Promise.all([
-      labAppRepo.count({
-        where: {
-          date: yesterday
-        }
-      }),
-      conAppRepo.count({
-        where: {
-          consultant_pattern: { date: yesterday }
-        }
-      }),
-      transactionRepo
-        .createQueryBuilder('transaction')
-        .select('SUM(transaction.amount)', 'total_revenue')
-        .where('transaction.status = :status', { status: TransactionStatus.PAID })
-        .andWhere('transaction.created_at >= :date', { date: yesterday })
-        .andWhere('transaction.created_at < :date', { date: today })
-        .getRawOne()
-    ])
-
     return {
-      reportDate: date,
-      kpiToday: {
-        totalBooking: totalLab + totalCon,
-        labBooking: totalLab,
-        conBooking: totalCon,
-        revenue: totalRevenue
-      },
-      kpiYesterday: {
-        totalBooking: totalLabYes + totalConYes,
-        labBooking: totalLabYes,
-        conBooking: totalConYes,
-        revenue: totalRevenueYes
-      },
-      performance: {
-        vsYes: {
-          revenueChangePercent: ((totalRevenue - totalRevenueYes) / totalRevenueYes) * 100,
-          bookingChangePercent:
-            ((totalLab + totalCon - (totalLabYes + totalConYes)) / (totalLabYes + totalConYes)) * 100
-        }
-      }
+      totalCustomer,
+      totalNewCus,
+      totalApp: totalLab + totalCon,
+      totalLab,
+      totalCon,
+      totalRevenue: totalRevenue.total_revenue,
+      totalFeed: totalFeed,
+      sumFeedRating: sumFeedRating.sum_rating / (totalFeed * 5)
     }
   }
 
-  async getPerformance() {
-    const [totalLab, totalLabDelayed, totalLabCancelled, totalLabCompleted] = await Promise.all([
-      labAppRepo.count(),
-      labAppRepo.count({
-        where: {
-          status: StatusAppointment.DELAYED
-        }
-      }),
-      labAppRepo.count({
-        where: {
-          status: StatusAppointment.CANCELLED
-        }
-      }),
-      labAppRepo.count({
-        where: {
-          status: StatusAppointment.COMPLETED
-        }
-      })
-    ])
-    const [totalCon, totalConDelayed, totalConCancelled, totalConCompleted] = await Promise.all([
-      conAppRepo.count(),
-      conAppRepo.count({
-        where: {
-          status: StatusAppointment.DELAYED
-        }
-      }),
-      conAppRepo.count({
-        where: {
-          status: StatusAppointment.CANCELLED
-        }
-      }),
-      conAppRepo.count({
-        where: {
-          status: StatusAppointment.COMPLETED
-        }
-      })
-    ])
-    const totalApp = totalLab + totalCon
-    const totalAppDelayed = totalLabDelayed + totalConDelayed
-    const totalAppCancelled = totalLabCancelled + totalConCancelled
-    const totalAppCompleted = totalLabCompleted + totalConCompleted
-    const [totalFeed, sumRating, goodFeed, badFeed] = await Promise.all([
-      feedbackRepo.count(),
-      feedbackRepo.createQueryBuilder('feedback').select('SUM(feedback.rating)', 'sum_rating').getRawOne(),
-      feedbackRepo.count({
-        where: {
-          rating: MoreThanOrEqual(4)
-        }
-      }),
-      feedbackRepo.count({
-        where: {
-          rating: LessThanOrEqual(3)
-        }
-      })
-    ])
-    const goodFeedPercent = (goodFeed / totalFeed) * 100
-    const badFeedPercent = (badFeed / totalFeed) * 100
-    const avgRating = sumRating / totalFeed
+  /**
+   * @description: Lấy phần trăm doanh thu
+   * @param day: number
+   * @returns: {
+   *  listDate: string[],
+   *  listSumRevenue: number[]
+   * }
+   */
+  async getPercentRevenue(day: string) {
+    // 1. Tính toán ngày bắt đầu
+    let startDate = new Date()
+    startDate = subDays(startDate, parseInt(day as string))
+    startDate.setHours(0, 0, 0, 0)
+
+    const endDate = new Date()
+    endDate.setHours(23, 59, 59, 999)
+
+    // 2. Sử dụng raw query để tránh conflict với query builder
+    const rawResult = await AppDataSource.query(
+      `
+      SELECT 
+        TO_CHAR(date_series.day, 'YYYY-MM-DD') as date,
+        SUM(transaction.amount)::int as sum_revenue
+      FROM generate_series($1::timestamp, $2::timestamp, '1 day') as date_series(day)
+      LEFT JOIN transaction ON DATE_TRUNC('day', transaction.created_at) = date_series.day 
+        AND transaction.status = $3
+      GROUP BY date_series.day
+      ORDER BY date_series.day ASC
+    `,
+      [startDate, endDate, TransactionStatus.PAID]
+    )
+
+    // 3. Tạo 2 array riêng biệt
+    const listDate: string[] = rawResult.map((item: { date: string; sum_revenue: number }) =>
+      format(new Date(item.date), 'dd/MM')
+    ) // Định dạng ngày: '26/06'
+    const listSumRevenue: number[] = rawResult.map((item: { date: string; sum_revenue: number }) => item.sum_revenue) // Số lượng người tham gia theo index
+
     return {
-      totalApp: totalApp,
-      totalAppDelayed: totalAppDelayed,
-      totalAppCancelled: totalAppCancelled,
-      totalAppCompleted: totalAppCompleted,
-      totalFeed: totalFeed,
-      goodFeed: goodFeed,
-      badFeed: badFeed,
-      goodFeedPercent: goodFeedPercent,
-      badFeedPercent: badFeedPercent,
-      avgRating: avgRating
+      listDate,
+      listSumRevenue
     }
   }
 }

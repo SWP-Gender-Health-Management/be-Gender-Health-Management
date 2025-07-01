@@ -132,7 +132,9 @@ export const ADMIN_MESSAGES = {
   RECENT_NEWS_SUCCESS: 'Get recent news successfully',
   PERCENT_CUSTOMER_SUCCESS: 'Get percent customer successfully',
   ROLE_REQUIRED: 'Role is required',
-  ACCOUNT_DELETED_SUCCESS: 'Account deleted successfully'
+  ACCOUNT_DELETED_SUCCESS: 'Account deleted successfully',
+  REPORT_OVERALL_SUCCESS: 'Report overall success',
+  PERCENT_REVENUE_SUCCESS: 'Percent revenue success'
 }
 
 export const MANAGER_MESSAGES = {

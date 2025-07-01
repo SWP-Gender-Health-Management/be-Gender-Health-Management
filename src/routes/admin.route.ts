@@ -2,14 +2,14 @@ import { Router } from 'express'
 import {
   banAccountController,
   getOverallController,
-  getSummaryController,
-  getPerformanceController,
   unbanAccountController,
   sendBulkEmailController,
   getRecentNewsController,
   getPercentCustomerController,
   createAccountController,
-  getAccountsController
+  getAccountsController,
+  getReportOverallController,
+  getPercentRevenueController
 } from '../controllers/admin.controller.js'
 import { upload, validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
@@ -36,8 +36,11 @@ adminRoute.get('/get-overall', restrictTo(Role.ADMIN), wrapRequestHandler(getOve
   description: get percent of customer
   method: get
   path: /admin/get-percent-customer
+  query:{
+    day: number
+  }
 */
-adminRoute.get('/get-percent-customer', wrapRequestHandler(getPercentCustomerController))
+adminRoute.get('/get-percent-customer', restrictTo(Role.ADMIN), wrapRequestHandler(getPercentCustomerController))
 
 /*
   description: get recent news
@@ -49,24 +52,6 @@ adminRoute.get('/get-percent-customer', wrapRequestHandler(getPercentCustomerCon
   }
 */
 adminRoute.get('/get-recent-news', restrictTo(Role.ADMIN), wrapRequestHandler(getRecentNewsController))
-
-/*
-  description: get summary
-  method: get
-  path: /admin/get-summary
-  body:{
-  }
-*/
-adminRoute.get('/get-summary', restrictTo(Role.ADMIN), wrapRequestHandler(getSummaryController))
-
-/*
-  description: get-performance
-  method: get
-  path: /admin/get-performance
-  body:{
-  }
-*/
-adminRoute.get('/get-performance', restrictTo(Role.ADMIN), wrapRequestHandler(getPerformanceController))
 
 // account management
 /*
@@ -148,6 +133,28 @@ adminRoute.post(
   validateBanAccount,
   wrapRequestHandler(unbanAccountController)
 )
+
+// report
+
+/*
+  description: get report overall
+  method: get
+  path: /admin/get-report-overall
+  query:{
+    day: number
+  }
+*/
+adminRoute.get('/get-report-overall', restrictTo(Role.ADMIN), wrapRequestHandler(getReportOverallController))
+
+/*
+  description: get percent revenue
+  method: get
+  path: /admin/get-percent-revenue
+  body:{
+    day: number
+  }
+*/
+adminRoute.get('/get-percent-revenue', wrapRequestHandler(getPercentRevenueController))
 
 // Communication & Content
 

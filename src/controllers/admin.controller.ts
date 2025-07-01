@@ -8,7 +8,8 @@ import { format } from 'date-fns'
 import { emailQueue } from '~/routes/admin.route.js'
 
 export const getOverallController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await adminService.getOverall()
+  const { day } = req.body
+  const result = await adminService.getOverall(parseInt(day as string))
   res.status(HTTP_STATUS.OK).json({
     message: ADMIN_MESSAGES.OVERALL_SUCCESS,
     data: result
@@ -25,29 +26,10 @@ export const getRecentNewsController = async (req: Request, res: Response, next:
 }
 
 export const getPercentCustomerController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await adminService.getPercentCustomer()
+  const { day } = req.body
+  const result = await adminService.getPercentCustomer(parseInt(day as string))
   res.status(HTTP_STATUS.OK).json({
     message: ADMIN_MESSAGES.PERCENT_CUSTOMER_SUCCESS,
-    data: result
-  })
-}
-
-export const getSummaryController = async (req: Request, res: Response, next: NextFunction) => {
-  let { date } = req.query
-  if (!date) {
-    date = format(new Date(), 'yyyy-MM-dd')
-  }
-  const result = await adminService.getSummary(date as string)
-  res.status(HTTP_STATUS.OK).json({
-    message: ADMIN_MESSAGES.SUMMARY_SUCCESS,
-    data: result
-  })
-}
-
-export const getPerformanceController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await adminService.getPerformance()
-  res.status(HTTP_STATUS.OK).json({
-    message: ADMIN_MESSAGES.PERFORMANCE_SUCCESS,
     data: result
   })
 }
@@ -92,6 +74,26 @@ export const unbanAccountController = async (req: Request, res: Response, next: 
   await adminService.unbanAccount(account_id)
   res.status(200).json({
     message: ADMIN_MESSAGES.ACCOUNT_UNBANNED_SUCCESS
+  })
+}
+
+// report
+
+export const getReportOverallController = async (req: Request, res: Response, next: NextFunction) => {
+  const { day } = req.query
+  const result = await adminService.getReportOverall(parseInt(day as string))
+  res.status(HTTP_STATUS.OK).json({
+    message: ADMIN_MESSAGES.REPORT_OVERALL_SUCCESS,
+    data: result
+  })
+}
+
+export const getPercentRevenueController = async (req: Request, res: Response, next: NextFunction) => {
+  const { day } = req.body
+  const result = await adminService.getPercentRevenue(day)
+  res.status(HTTP_STATUS.OK).json({
+    message: ADMIN_MESSAGES.PERCENT_REVENUE_SUCCESS,
+    data: result
   })
 }
 
