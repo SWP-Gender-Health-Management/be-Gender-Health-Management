@@ -97,6 +97,30 @@ export const getPercentRevenueController = async (req: Request, res: Response, n
   })
 }
 
+export const getPercentAccountController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await adminService.getPercentAccount()
+  res.status(HTTP_STATUS.OK).json({
+    message: ADMIN_MESSAGES.PERCENT_ACCOUNT_SUCCESS,
+    data: result
+  })
+}
+
+export const getPercentRevenueByServiceController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await adminService.getPercentRevenueByService()
+  res.status(HTTP_STATUS.OK).json({
+    message: ADMIN_MESSAGES.PERCENT_REVENUE_SERVICE_SUCCESS,
+    data: result
+  })
+}
+
+export const getPercentFeedbackController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await adminService.getPercentFeedback()
+  res.status(HTTP_STATUS.OK).json({
+    message: ADMIN_MESSAGES.PERCENT_FEEDBACK_SUCCESS,
+    data: result
+  })
+}
+
 export const sendBulkEmailController = async (req: Request, res: Response, next: NextFunction) => {
   // Lấy thông tin từ request của admin
   const { targetGroup, subject, body } = req.body

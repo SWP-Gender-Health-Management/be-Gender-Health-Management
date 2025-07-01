@@ -134,7 +134,10 @@ export const ADMIN_MESSAGES = {
   ROLE_REQUIRED: 'Role is required',
   ACCOUNT_DELETED_SUCCESS: 'Account deleted successfully',
   REPORT_OVERALL_SUCCESS: 'Report overall success',
-  PERCENT_REVENUE_SUCCESS: 'Percent revenue success'
+  PERCENT_REVENUE_SUCCESS: 'Percent revenue success',
+  PERCENT_ACCOUNT_SUCCESS: 'Percent account success',
+  PERCENT_REVENUE_SERVICE_SUCCESS: 'Percent revenue service success',
+  PERCENT_FEEDBACK_SUCCESS: 'Percent feedback success'
 }
 
 export const MANAGER_MESSAGES = {

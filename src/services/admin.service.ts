@@ -11,7 +11,7 @@ import { TransactionStatus } from '~/enum/transaction.enum.js'
 import { addDays, format, subDays } from 'date-fns'
 import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
 import Feedback from '~/models/Entity/feedback.entity.js'
-import { Between, LessThan, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
+import { Between, LessThan, LessThanOrEqual, MoreThanOrEqual, Like, Equal } from 'typeorm'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
 import Notification from '~/models/Entity/notification.entity.js'
 import { MailOptions, sendMail } from './email.service.js'
@@ -330,6 +330,111 @@ class AdminService {
     return {
       listDate,
       listSumRevenue
+    }
+  }
+
+  /**
+   * @description: Lấy phần trăm tài khoản
+   * @param day: number
+   * @returns: {
+   *  listDate: string[],
+   *  listSumRevenue: number[]
+   * }
+   */
+  async getPercentAccount() {
+    const [customer, consultant, staff, admin, manager] = await Promise.all([
+      accountRepo.count({
+        where: { role: Role.CUSTOMER }
+      }),
+      accountRepo.count({
+        where: { role: Role.CONSULTANT }
+      }),
+      accountRepo.count({
+        where: { role: Role.STAFF }
+      }),
+      accountRepo.count({
+        where: { role: Role.ADMIN }
+      }),
+      accountRepo.count({
+        where: { role: Role.MANAGER }
+      })
+    ])
+    return {
+      customer,
+      consultant,
+      staff,
+      admin,
+      manager
+    }
+  }
+
+  /**
+   * @description: Lấy phần trăm doanh thu theo dịch vụ
+   * @returns: {
+   *  listDate: string[],
+   *  listSumRevenue: number[]
+   * }
+   */
+  async getPercentRevenueByService() {
+    const today = new Date()
+    const yesterday = subDays(today, 30)
+    const [lab, con] = await Promise.all([
+      transactionRepo.count({
+        where: {
+          app_id: Like('Lab%'),
+          status: TransactionStatus.PAID,
+          updated_at: Between(yesterday, today)
+        }
+      }),
+      transactionRepo.count({
+        where: {
+          app_id: Like('Con%'),
+          status: TransactionStatus.PAID,
+          updated_at: Between(yesterday, today)
+        }
+      })
+    ])
+    return {
+      lab,
+      con
+    }
+  }
+
+  /**
+   * @description: Lấy phần trăm feedback
+   * @returns: {
+   *  listDate: string[],
+   *  listSumRevenue: number[]
+   * }
+   */
+  async getPercentFeedback() {
+    const today = new Date()
+    const yesterday = subDays(today, 30)
+    const [goodFeed, normalFeed, badFeed] = await Promise.all([
+      feedbackRepo.count({
+        where: {
+          rating: MoreThanOrEqual(4),
+          created_at: Between(yesterday, today)
+        }
+      }),
+      feedbackRepo.count({
+        where: {
+          rating: Equal(3),
+          created_at: Between(yesterday, today)
+        }
+      }),
+      feedbackRepo.count({
+        where: {
+          rating: LessThan(3),
+          created_at: Between(yesterday, today)
+        }
+      })
+    ])
+    return {
+      totalFeed: goodFeed + normalFeed + badFeed,
+      goodFeed,
+      normalFeed,
+      badFeed
     }
   }
 }

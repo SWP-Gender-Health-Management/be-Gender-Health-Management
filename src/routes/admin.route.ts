@@ -9,7 +9,10 @@ import {
   createAccountController,
   getAccountsController,
   getReportOverallController,
-  getPercentRevenueController
+  getPercentRevenueController,
+  getPercentAccountController,
+  getPercentRevenueByServiceController,
+  getPercentFeedbackController
 } from '../controllers/admin.controller.js'
 import { upload, validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
@@ -155,6 +158,34 @@ adminRoute.get('/get-report-overall', restrictTo(Role.ADMIN), wrapRequestHandler
   }
 */
 adminRoute.get('/get-percent-revenue', wrapRequestHandler(getPercentRevenueController))
+
+/*
+  description: get percent account
+  method: get
+  path: /admin/get-percent-account
+  body:{
+    day: number
+  }
+*/
+adminRoute.get('/get-percent-account', wrapRequestHandler(getPercentAccountController))
+
+/*
+  description: get percent revenue by service
+  method: get
+  path: /admin/get-percent-revenue-service
+*/
+adminRoute.get('/get-percent-revenue-service', wrapRequestHandler(getPercentRevenueByServiceController))
+
+/*
+  description: get percent feedback
+  method: get
+  path: /admin/get-percent-feedback
+*/
+adminRoute.get('/get-percent-feedback', wrapRequestHandler(getPercentFeedbackController))
+
+/*
+
+*/
 
 // Communication & Content
 
