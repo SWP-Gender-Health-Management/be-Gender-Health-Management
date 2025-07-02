@@ -88,9 +88,9 @@ export const registerController = async (req: Request, res: Response, next: Next
   })
   await notificationService.createNotification(
     {
-      type: TypeNoti.ACCOUNT_REGISTER_SUCCESS,
-      title: 'Account registered successfully',
-      message: 'Your account has been registered successfully'
+      type: TypeNoti.CREATE_ACCOUNT,
+      title: 'Tạo tài khoản thành công',
+      message: `Tài khoản ${email} đã được tạo thành công`
     },
     account_id
   )
@@ -287,14 +287,6 @@ export const changePasswordController = async (req: Request, res: Response, next
     path: '/' // Hoặc đặt path rộng hơn nếu cần thiết cho các kịch bản khác nhau
   })
 
-  await notificationService.createNotification(
-    {
-      type: TypeNoti.PASSWORD_CHANGED_SUCCESS,
-      title: 'Password changed successfully',
-      message: 'Your password has been changed successfully'
-    },
-    account.account_id
-  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.PASSWORD_CHANGED_SUCCESS,
     result
@@ -325,14 +317,6 @@ export const resetPasswordController = async (req: Request, res: Response, next:
   const { account, newPassword } = req.body
   console.log('newPassword:', newPassword)
   const result = await accountService.resetPassword(account.account_id, newPassword)
-  await notificationService.createNotification(
-    {
-      type: TypeNoti.PASSWORD_RESET_SUCCESS,
-      title: 'Password reset successfully',
-      message: 'Your password has been reset successfully'
-    },
-    account.account_id
-  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS,
     result
@@ -389,14 +373,6 @@ export const resetPasswordController = async (req: Request, res: Response, next:
 export const verifyEmailController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id, secretPasscode } = req.body
   await accountService.verifyEmail(account_id, secretPasscode)
-  await notificationService.createNotification(
-    {
-      type: TypeNoti.EMAIL_VERIFIED,
-      title: 'Email verified successfully',
-      message: 'Your email has been verified successfully'
-    },
-    account_id
-  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
   })
@@ -492,14 +468,6 @@ export const sendEmailVerifiedController = async (req: Request, res: Response, n
 export const updateAccountController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id, full_name, phone, dob, gender } = req.body
   const result = await accountService.updateProfile(account_id, full_name, phone, dob, gender)
-  await notificationService.createNotification(
-    {
-      type: TypeNoti.ACCOUNT_UPDATED_SUCCESS,
-      title: 'Account updated successfully',
-      message: 'Your account has been updated successfully'
-    },
-    account_id
-  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_UPDATED_SUCCESS,
     result

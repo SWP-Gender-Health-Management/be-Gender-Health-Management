@@ -11,7 +11,7 @@ import { TransactionStatus } from '~/enum/transaction.enum.js'
 import { addDays, format, subDays } from 'date-fns'
 import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
 import Feedback from '~/models/Entity/feedback.entity.js'
-import { Between, LessThan, LessThanOrEqual, MoreThanOrEqual, Like, Equal } from 'typeorm'
+import { Between, LessThan, LessThanOrEqual, MoreThanOrEqual, Like, Equal, In } from 'typeorm'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
 import Notification from '~/models/Entity/notification.entity.js'
 import { MailOptions, sendMail } from './email.service.js'
@@ -118,18 +118,14 @@ class AdminService {
    * @param page: string
    * @returns: Notification[]
    */
-  async getRecentNews(limit: string, page: string): Promise<{ news: Notification[]; totalPages: number }> {
-    const limitNumber = parseInt(limit) || 10
-    const pageNumber = parseInt(page) || 1
-    const skip = (pageNumber - 1) * limitNumber
+  async getRecentNews(): Promise<{ news: Notification[]; totalPages: number }> {
     const [news, totalItems] = await notificationRepo.findAndCount({
       order: { created_at: 'DESC' },
-      skip: skip,
-      take: limitNumber
+      take: 4
     })
     return {
       news,
-      totalPages: Math.ceil(totalItems / limitNumber)
+      totalPages: 1
     }
   }
 
@@ -435,6 +431,22 @@ class AdminService {
       goodFeed,
       normalFeed,
       badFeed
+    }
+  }
+
+  async getNotification(limit: string, page: string) {
+    const limitNumber = parseInt(limit) || 10
+    const pageNumber = parseInt(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
+    const [notifications, totalItems] = await notificationRepo.findAndCount({
+      order: { created_at: 'DESC' },
+      skip: skip,
+      take: limitNumber
+    })
+    const totalPages = Math.ceil(totalItems / limitNumber)
+    return {
+      notifications,
+      totalPages
     }
   }
 }

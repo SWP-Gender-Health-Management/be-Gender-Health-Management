@@ -17,8 +17,7 @@ export const getOverallController = async (req: Request, res: Response, next: Ne
 }
 
 export const getRecentNewsController = async (req: Request, res: Response, next: NextFunction) => {
-  const { limit, page } = req.query
-  const result = await adminService.getRecentNews(limit as string, page as string)
+  const result = await adminService.getRecentNews()
   res.status(HTTP_STATUS.OK).json({
     message: ADMIN_MESSAGES.RECENT_NEWS_SUCCESS,
     data: result
@@ -117,6 +116,15 @@ export const getPercentFeedbackController = async (req: Request, res: Response, 
   const result = await adminService.getPercentFeedback()
   res.status(HTTP_STATUS.OK).json({
     message: ADMIN_MESSAGES.PERCENT_FEEDBACK_SUCCESS,
+    data: result
+  })
+}
+
+export const getNotificationController = async (req: Request, res: Response, next: NextFunction) => {
+  const { limit, page } = req.query
+  const result = await adminService.getNotification(limit as string, page as string)
+  res.status(HTTP_STATUS.OK).json({
+    message: ADMIN_MESSAGES.NOTIFICATION_SUCCESS,
     data: result
   })
 }

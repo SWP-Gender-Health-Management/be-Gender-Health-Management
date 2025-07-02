@@ -137,7 +137,8 @@ export const ADMIN_MESSAGES = {
   PERCENT_REVENUE_SUCCESS: 'Percent revenue success',
   PERCENT_ACCOUNT_SUCCESS: 'Percent account success',
   PERCENT_REVENUE_SERVICE_SUCCESS: 'Percent revenue service success',
-  PERCENT_FEEDBACK_SUCCESS: 'Percent feedback success'
+  PERCENT_FEEDBACK_SUCCESS: 'Percent feedback success',
+  NOTIFICATION_SUCCESS: 'Notification success'
 }
 
 export const MANAGER_MESSAGES = {
