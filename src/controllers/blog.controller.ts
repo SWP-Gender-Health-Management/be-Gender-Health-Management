@@ -338,3 +338,15 @@ export const deleteBlog = async (req: Request, res: Response, next: NextFunction
     next(error)
   }
 }
+
+export const getMajor = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await blogService.getMajor()
+    res.status(HTTP_STATUS.OK).json({
+      message: BLOG_MESSAGES.MAJOR_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}

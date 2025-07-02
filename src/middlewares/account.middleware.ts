@@ -337,6 +337,7 @@ export const restrictTo = (...allowedRoles: Role[]) => {
           options: async (value: string, { req }) => {
             // Extract token from Authorization header
             const token = value.split(' ')[1]
+            console.log('Token:', token)
             if (!token) {
               throw new ErrorWithStatus({
                 message: USERS_MESSAGES.ACCESS_TOKEN_REQUIRED,
