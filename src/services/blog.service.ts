@@ -9,6 +9,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import LIMIT from '~/constants/limit.js'
+import { Major } from '~/enum/major.enum.js'
 
 const blogRepository = AppDataSource.getRepository(Blog)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -212,7 +213,6 @@ export class BlogService {
           const newPath = path.join(path.dirname(oldPath), newFileName)
           // Lưu đường dẫn tương đối vào database
           const relativePath = `uploads/blog_images/${newFileName}`
-          console.log('Renaming file from:', oldPath, 'to:', newPath) // Log để debug
           try {
             await fs.rename(oldPath, newPath)
             return relativePath
@@ -284,6 +284,10 @@ export class BlogService {
 
     // Delete the blog
     await blogRepository.remove(blog)
+  }
+
+  async getMajor(): Promise<string[]> {
+    return Object.values(Major).map((major) => major.toString())
   }
 }
 

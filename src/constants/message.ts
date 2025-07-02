@@ -300,5 +300,6 @@ export const BLOG_MESSAGES = {
   BLOG_NOT_FOUND: 'Blog not found',
   TITLE_REQUIRED: 'Blog title is required',
   CONTENT_REQUIRED: 'Blog content is required',
-  MAJOR_REQUIRED: 'Blog major is required'
+  MAJOR_REQUIRED: 'Blog major is required',
+  MAJOR_RETRIEVED_SUCCESS: 'Blog majors retrieved successfully'
 }
