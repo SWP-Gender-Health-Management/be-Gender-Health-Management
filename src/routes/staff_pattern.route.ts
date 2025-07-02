@@ -8,6 +8,8 @@ import {
 } from '../controllers/staff_pattern.controller.js'
 import { validateAddStaffPattern, validateUpdateStaffPattern } from '../middlewares/staff_pattern.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
+import { Role } from '~/enum/role.enum.js'
+import { restrictTo } from '~/middlewares/account.middleware.js'
 
 const staffPatternRoute = Router()
 
@@ -20,7 +22,12 @@ const staffPatternRoute = Router()
     description: string
   }
 */
-staffPatternRoute.post('/add-staff-pattern', validateAddStaffPattern, wrapRequestHandler(addStaffPatternController))
+staffPatternRoute.post(
+  '/add-staff-pattern',
+  restrictTo(Role.ADMIN),
+  validateAddStaffPattern,
+  wrapRequestHandler(addStaffPatternController)
+)
 
 /*
   description: get staff pattern
@@ -30,7 +37,7 @@ staffPatternRoute.post('/add-staff-pattern', validateAddStaffPattern, wrapReques
     date: string
   }
 */
-staffPatternRoute.get('/get-staff-pattern', wrapRequestHandler(getStaffPatternController))
+staffPatternRoute.get('/get-staff-pattern', restrictTo(Role.ADMIN), wrapRequestHandler(getStaffPatternController))
 
 /*
   description: get all staff pattern
@@ -38,7 +45,11 @@ staffPatternRoute.get('/get-staff-pattern', wrapRequestHandler(getStaffPatternCo
   path: /staff-pattern/all
   body: {}
 */
-staffPatternRoute.get('/get-all-staff-pattern', wrapRequestHandler(getAllStaffPatternController))
+staffPatternRoute.get(
+  '/get-all-staff-pattern',
+  restrictTo(Role.ADMIN),
+  wrapRequestHandler(getAllStaffPatternController)
+)
 
 /*
   description: update staff pattern
@@ -52,6 +63,7 @@ staffPatternRoute.get('/get-all-staff-pattern', wrapRequestHandler(getAllStaffPa
 */
 staffPatternRoute.put(
   '/update-staff-pattern',
+  restrictTo(Role.ADMIN),
   validateUpdateStaffPattern,
   wrapRequestHandler(updateStaffPatternController)
 )
@@ -64,6 +76,10 @@ staffPatternRoute.put(
     date: string
   }
 */
-staffPatternRoute.delete('/delete-staff-pattern', wrapRequestHandler(deleteStaffPatternController))
+staffPatternRoute.delete(
+  '/delete-staff-pattern',
+  restrictTo(Role.ADMIN),
+  wrapRequestHandler(deleteStaffPatternController)
+)
 
 export default staffPatternRoute

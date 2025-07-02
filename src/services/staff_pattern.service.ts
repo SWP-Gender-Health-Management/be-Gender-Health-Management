@@ -22,7 +22,7 @@ class StaffPatternService {
     //   workingSlotRepository.findOneBy({ slot_id: working_slot_id })
     // ])
     const staffPattern = await staffPatternRepository.create({
-      account: { account_id: account_id },
+      account_id: account_id,
       working_slot: { slot_id: working_slot_id },
       date: new Date(date)
     })
@@ -49,11 +49,22 @@ class StaffPatternService {
    * @returns The staff patterns
    */
   // Get all staff patterns
-  async getAllStaffPattern(): Promise<StaffPattern[]> {
+  async getAllStaffPatternInWeek(): Promise<StaffPattern[]> {
     const staffPattern = await staffPatternRepository.find({
       where: { is_active: true }
     })
     return staffPattern
+  }
+
+  async getAllStaffPatternInMonth(): Promise<StaffPattern[]> {
+    const staffPatterns = await staffPatternRepository
+      .createQueryBuilder('staff_pattern')
+      // "pattern" là một alias cho entity Pattern
+      .where('date_trunc(\'week\', "staff_pattern"."date") = date_trunc(\'week\', NOW())')
+      // So sánh tuần của cột 'createdAt' với tuần của ngày hiện tại (NOW())
+      .orderBy('"staff_pattern"."date"', 'DESC')
+      .getMany() // Lấy tất cả các bản ghi khớp
+    return staffPatterns
   }
 
   /**
@@ -76,11 +87,11 @@ class StaffPatternService {
       throw new Error(STAFF_PATTERN_MESSAGES.STAFF_PATTERN_NOT_FOUND)
     }
     const [account, workingSlot] = await Promise.all([
-      accountRepository.findOneBy({ account_id: account_id || staffPattern.account.account_id }),
+      accountRepository.findOneBy({ account_id: account_id || staffPattern.account_id }),
       workingSlotRepository.findOneBy({ slot_id: working_slot_id || staffPattern.working_slot.slot_id })
     ])
     staffPattern.date = new Date(date || staffPattern.date)
-    staffPattern.account = account as Account
+    staffPattern.account_id = account_id || staffPattern.account_id
     staffPattern.working_slot = workingSlot as WorkingSlot
     await staffPatternRepository.save(staffPattern)
     return staffPattern

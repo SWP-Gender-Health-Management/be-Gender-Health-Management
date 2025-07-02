@@ -3,7 +3,7 @@ import { Server as HttpServer } from 'http'
 import { createAdapter } from '@socket.io/redis-adapter'
 import redisClient from './redis.config.js'
 import { config } from 'dotenv'
-import { NotificationType } from 'src/models/Entity/notification.entity.js'
+import { NotificationType } from '~/models/Entity/notification.entity.js'
 config()
 
 export class SocketServer {
@@ -21,9 +21,7 @@ export class SocketServer {
     const pubClient = redisClient.duplicate()
     const subClient = redisClient.duplicate()
 
-    Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
-      this.io.adapter(createAdapter(pubClient, subClient))
-    })
+    this.io.adapter(createAdapter(pubClient, subClient))
 
     // Lắng nghe các kết nối
     this.io.on('connection', this.handleConnection)

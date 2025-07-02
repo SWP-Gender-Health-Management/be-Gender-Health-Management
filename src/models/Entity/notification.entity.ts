@@ -21,10 +21,10 @@ export default class Notification implements NotificationType {
   @Column({ type: 'enum', nullable: false, enum: TypeNoti })
   type: TypeNoti
 
-  @Column({ type: 'varchar', length: 1000, nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
+  @Column({ type: 'varchar', length: 1000, nullable: false })
   title: string
 
-  @Column({ type: 'varchar', length: 1000, nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
+  @Column({ type: 'varchar', length: 1000, nullable: false })
   message: string
 
   @Column({ type: 'boolean', default: false })
