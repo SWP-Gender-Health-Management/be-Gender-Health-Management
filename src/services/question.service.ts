@@ -50,7 +50,7 @@ export class QuestionService {
    */
   // Get all questions
   async getAllQuestions(pageVar: { limit: string, page: string }): Promise<Question[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
@@ -85,7 +85,7 @@ export class QuestionService {
 
   // Get Unreplied questions
   async getUnrepliedQuestions(pageVar: { limit: string, page: string }): Promise<Question[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
@@ -99,7 +99,7 @@ export class QuestionService {
 
   // Get replied questions by Consultant ID
   async getRepliedQuestionsByConsultantId(consultant_id: string, pageVar: { limit: string, page: string }): Promise<Question[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
@@ -128,7 +128,7 @@ export class QuestionService {
       })
     }
 
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 

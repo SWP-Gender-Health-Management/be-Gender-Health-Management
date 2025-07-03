@@ -17,7 +17,7 @@ const replyRoute = Router()
 replyRoute.post(
   '/create-reply',
   validateAccessToken,
-  restrictTo(Role.CONSULTANT),
+  restrictTo(Role.CONSULTANT, Role.ADMIN),
   wrapRequestHandler(createReply)
 )
 

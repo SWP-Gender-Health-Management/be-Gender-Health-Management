@@ -79,7 +79,7 @@ export class ReplyService {
    */
   // Get all replies
   async getAllReplies(pageVar: { limit: string, page: string }): Promise<Reply[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
@@ -129,7 +129,7 @@ export class ReplyService {
       })
     }
 
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
