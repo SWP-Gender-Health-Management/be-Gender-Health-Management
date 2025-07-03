@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { BLOG_MESSAGES } from '../constants/message.js'
 import blogService from '../services/blog.service.js'
+import notificationService from '~/services/notification.service.js'
+import { TypeNoti } from '~/enum/type_noti.enum.js'
 
 /**
  * @swagger
@@ -64,6 +66,14 @@ import blogService from '../services/blog.service.js'
 export const createBlog = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await blogService.createBlog(req.body, req.files as Express.Multer.File[])
+    await notificationService.createNotification(
+      {
+        type: TypeNoti.BLOG_CREATED_SUCCESS,
+        title: 'Blog created successfully',
+        message: 'Your blog has been created successfully'
+      },
+      result.account.account_id
+    )
     res.status(HTTP_STATUS.CREATED).json({
       message: BLOG_MESSAGES.BLOG_CREATED_SUCCESS,
       result
@@ -350,3 +360,4 @@ export const getMajor = async (req: Request, res: Response, next: NextFunction) 
     next(error)
   }
 }
+

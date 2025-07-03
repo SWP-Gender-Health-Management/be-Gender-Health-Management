@@ -6,7 +6,8 @@ import {
   getConsultantPatternById,
   getConsultantPatternByConsultantId, // Thêm import
   getConsultantPatternBySlotId, // Thêm import
-  updateConsultantPattern
+  updateConsultantPattern,
+  getAllConsultantPatternsInWeek
 } from '../controllers/consultant_pattern.controller.js'
 import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
 import { Role } from '../enum/role.enum.js'
@@ -24,8 +25,7 @@ const consultantPatternRoute = Router()
 */
 consultantPatternRoute.post(
   '/create-consultant-pattern',
-  // validateAccessToken,
-  // restrictTo(Role.ADMIN),
+  restrictTo(Role.ADMIN),
   wrapRequestHandler(createConsultantPattern)
 )
 
@@ -39,9 +39,21 @@ consultantPatternRoute.post(
 */
 consultantPatternRoute.get(
   '/get-all-consultant-patterns',
-  // validateAccessToken,
-  // restrictTo(Role.ADMIN, Role.CUSTOMER),
+  restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getAllConsultantPatterns)
+)
+
+/*
+  Description: Get all consultant patterns in week (admin only)
+  Method: GET
+  Path: /get-all-consultant-patterns-in-week
+  Body: {
+  }
+*/
+consultantPatternRoute.get(
+  '/get-all-consultant-patterns-in-week',
+  restrictTo(Role.ADMIN),
+  wrapRequestHandler(getAllConsultantPatternsInWeek)
 )
 
 /*
@@ -54,7 +66,6 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.get(
   '/get-consultant-pattern-by-id/:pattern_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getConsultantPatternById)
 )
@@ -69,7 +80,6 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.get(
   '/get-consultant-pattern-by-id/consultant/:consultant_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getConsultantPatternByConsultantId)
 )
@@ -84,7 +94,6 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.get(
   '/get-consultant-pattern-by-id/slot/:slot_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getConsultantPatternBySlotId)
 )
@@ -99,7 +108,6 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.put(
   '/update-consultant-pattern/:pattern_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN),
   wrapRequestHandler(updateConsultantPattern)
 )
@@ -114,8 +122,7 @@ consultantPatternRoute.put(
 */
 consultantPatternRoute.delete(
   '/delete-consultant-pattern/:pattern_id',
-  // validateAccessToken,
-  // restrictTo(Role.ADMIN),
+  restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteConsultantPattern)
 )
 

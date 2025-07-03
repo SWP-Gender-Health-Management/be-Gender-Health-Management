@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -15,7 +14,6 @@ import MenstrualCycle from './menstrual_cycle.entity.js'
 import Blog from './blog.entity.js'
 import Transaction from './transaction.entity.js'
 import ConsultAppointment from './consult_appointment.entity.js'
-import ConsultantPattern from './consultant_pattern.entity.js'
 import LaboratoryAppointment from './laborarity_appointment.entity.js'
 import Reply from './reply.entity.js'
 import Question from './question.entity.js'
@@ -33,6 +31,7 @@ export interface AccountType {
   avatar?: string | null
   role: Role
   is_verified?: boolean
+  is_banned?: boolean
   // created_at: Timestamp
   // updated_at: Timestamp
 }
@@ -69,6 +68,9 @@ export default class Account implements AccountType {
   @Column({ type: 'boolean', default: false })
   is_verified: boolean
 
+  @Column({ type: 'boolean', default: false })
+  is_banned: boolean
+
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
@@ -88,11 +90,10 @@ export default class Account implements AccountType {
   @OneToMany(() => Blog, (blog: Blog) => blog.account)
   blog: Blog[]
 
-  @OneToMany(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.customer, { cascade: true })
+  @OneToMany(() => ConsultAppointment, (consultAppointment: ConsultAppointment) => consultAppointment.customer, {
+    cascade: true
+  })
   consult_appointment: ConsultAppointment[]
-
-  @OneToMany(() => ConsultantPattern, (consultantPattern: ConsultantPattern) => consultantPattern.consultant)
-  consultant_pattern: ConsultantPattern[]
 
   @OneToMany(() => LaboratoryAppointment, (labAppointment: LaboratoryAppointment) => labAppointment.customer)
   labAppointment: LaboratoryAppointment[]
@@ -105,7 +106,7 @@ export default class Account implements AccountType {
 
   @OneToMany(() => Notification, (notification: Notification) => notification.account)
   notification: Notification[]
-  
+
   @OneToMany(() => Feedback, (feedback: Feedback) => feedback.account)
   feedback: Feedback[]
 }

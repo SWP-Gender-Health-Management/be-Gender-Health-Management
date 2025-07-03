@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import {
   createConsultAppointment,
-  getAllConsultAppointments,
-  getConsultAppointmentById,
+  getAllConApps,
+  getConAppById,
   getConsultAppointmentsByCustomerId,
   getConsultAppointmentsByPatternId,
   updateConsultAppointment,
@@ -41,7 +41,7 @@ consultAppointmentRoute.get(
   '/get-all-consult-appointments',
   // validateAccessToken,
   // restrictTo(Role.ADMIN, Role.CONSULTANT),
-  wrapRequestHandler(getAllConsultAppointments)
+  wrapRequestHandler(getAllConApps)
 )
 
 /*
@@ -56,7 +56,7 @@ consultAppointmentRoute.get(
   '/get-consult-appointment-by-id/:app_id',
   validateAccessToken,
   restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
-  wrapRequestHandler(getConsultAppointmentById)
+  wrapRequestHandler(getConAppById)
 )
 
 /*
