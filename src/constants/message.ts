@@ -148,7 +148,9 @@ export const MANAGER_MESSAGES = {
   CREATE_CONSULTANT_PATTERN_SUCCESS: 'Create consultant pattern successfully',
   GET_STAFF_PATTERN_SUCCESS: 'Get staff pattern successfully',
   GET_CONSULTANT_PATTERN_SUCCESS: 'Get consultant pattern successfully',
-  GET_CUSTOMER_SUCCESS: 'Get customer successfully'
+  GET_CUSTOMER_SUCCESS: 'Get customer successfully',
+  GET_OVERALL_SUCCESS: 'Get overall successfully',
+  GET_OVERALL_WEEKLY_SUCCESS: 'Get overall weekly successfully'
 }
 
 export const LABORARITY_MESSAGES = {

@@ -29,7 +29,7 @@ export class ConsultAppointmentService {
     customer_id: string,
     description: string,
     status: StatusAppointment
-  ): Promise<ConsultAppointment> {
+  ): Promise<{ savedConsultAppointment: ConsultAppointment; amount: number }> {
     // Validate consultant pattern
     const consultantPattern = await consultantPatternRepository.findOne({
       where: { pattern_id },
@@ -78,7 +78,7 @@ export class ConsultAppointmentService {
       relations: ['consult_appointment']
     })
     console.log('Updated consult_appointment array:', updatedAccount)
-    return savedConsultAppointment
+    return { savedConsultAppointment, amount: 400000 }
   }
 
   /**
@@ -196,7 +196,7 @@ export class ConsultAppointmentService {
     }
 
     const consultAppointment = await consultAppointmentRepository.findOne({
-      where: { consultant_pattern: {pattern_id: consultantPattern.pattern_id}  },
+      where: { consultant_pattern: { pattern_id: consultantPattern.pattern_id } },
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
@@ -306,7 +306,7 @@ export class ConsultAppointmentService {
     })
     if (consultantPattern) {
       consultantPattern.is_booked = false
-      consultantPattern.consult_appointment = null;
+      consultantPattern.consult_appointment = null
       await consultantPatternRepository.save(consultantPattern)
     }
 

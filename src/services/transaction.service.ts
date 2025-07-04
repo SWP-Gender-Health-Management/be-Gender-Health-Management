@@ -21,7 +21,12 @@ export class createTransactionService {
    * @returns The transaction
    */
   // Create a consult transaction
-  async createConsultTransaction(app_id: string, amount: number, description: string): Promise<Transaction> {
+  async createConsultTransaction(
+    app_id: string,
+    amount: number,
+    description: string,
+    date: Date
+  ): Promise<Transaction> {
     const appointment = await labAppointmentRepository.findOne({
       where: {
         app_id: app_id
@@ -33,7 +38,8 @@ export class createTransactionService {
       customer: {
         account_id: appointment?.customer.account_id
       },
-      description
+      description,
+      date
     })
     await transactionRepository.save(transaction)
     return transaction
@@ -50,9 +56,9 @@ export class createTransactionService {
   // Create a laborarity transaction
   async createLaborarityTransaction(
     app_id: string,
-    orderCode: number,
     amount: number,
-    description: string
+    description: string,
+    date: Date
   ): Promise<Transaction> {
     const appointment: LaboratoryAppointment | null = await labAppointmentRepository.findOne({
       where: {
@@ -70,7 +76,7 @@ export class createTransactionService {
     const account_id = appointment.customer.account_id
     const transaction = transactionRepository.create({
       app_id: 'Lab_' + app_id,
-      order_code: orderCode,
+      date: date,
       amount: amount,
       description: description || 'Pay for lab appointment',
       customer: {

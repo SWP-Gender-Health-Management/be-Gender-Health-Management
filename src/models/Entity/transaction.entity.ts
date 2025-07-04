@@ -17,6 +17,7 @@ export interface TransactionType {
   amount: number
   status: TransactionStatus
   description: string
+  date: Date
   // created_at: Timestamp
   // updated_at: Timestamp
 }
@@ -41,6 +42,9 @@ export default class Transaction implements TransactionType {
 
   @Column({ type: 'text', nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
   description: string
+
+  @Column({ type: 'date', nullable: true })
+  date: Date
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp

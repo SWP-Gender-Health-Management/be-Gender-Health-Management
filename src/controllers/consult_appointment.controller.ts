@@ -83,7 +83,7 @@ export const createConsultAppointment = async (req: Request, res: Response, next
     )
     await notificationService.createNotification(
       {
-        type: TypeNoti.APPOINTMENT_BOOKED,
+        type: TypeNoti.CONSULT_APPOINTMENT,
         title: 'Appointment booked successfully',
         message: 'Your appointment has been booked successfully'
       },
