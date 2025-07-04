@@ -113,11 +113,11 @@ export const addSlotController = async (req: Request, res: Response, next: NextF
 // Get working slots by type
 export const getSlotByTypeController = async (req: Request, res: Response, next: NextFunction) => {
   const { type } = req.body
-  const {limit, page} = req.query;
-    const pageVar = {
-      limit: limit as string, 
-      page: page as string
-    };
+  const { limit, page } = req.query
+  const pageVar = {
+    limit: limit as string,
+    page: page as string
+  }
   const slot = await workingSlotService.getSlotByType(type, pageVar)
   return res.status(200).json({
     message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
@@ -150,11 +150,11 @@ export const getSlotByTypeController = async (req: Request, res: Response, next:
  */
 // Get all working slots
 export const getSlotController = async (req: Request, res: Response, next: NextFunction) => {
-  const {limit, page} = req.query;
-    const pageVar = {
-      limit: limit as string, 
-      page: page as string
-    };
+  const { limit, page } = req.query
+  const pageVar = {
+    limit: limit as string,
+    page: page as string
+  }
   const slot = await workingSlotService.getSlot(pageVar)
   return res.status(200).json({
     message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
