@@ -2,7 +2,12 @@ import { Router } from 'express'
 import { Role } from '~/enum/role.enum.js'
 import { restrictTo } from '~/middlewares/account.middleware.js'
 import wrapRequestHandler from '~/utils/handle.js'
-import { getOverallController, getOverallWeeklyController } from '~/controllers/manager.controller.js'
+import {
+  getAppPercentController,
+  getOverallController,
+  getOverallWeeklyController,
+  getRecentAppController
+} from '~/controllers/manager.controller.js'
 
 const managerRoute = Router()
 
@@ -21,5 +26,21 @@ managerRoute.get('/get-overall', restrictTo(Role.MANAGER), wrapRequestHandler(ge
   access: private
 */
 managerRoute.get('/get-overall-weekly', restrictTo(Role.MANAGER), wrapRequestHandler(getOverallWeeklyController))
+
+/*
+  description: get-app-percent
+  path: /manager/get-app-percent
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-app-percent', restrictTo(Role.MANAGER), wrapRequestHandler(getAppPercentController))
+
+/*
+  description: get-recent-app
+  path: /manager/get-recent-app
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-recent-app', restrictTo(Role.MANAGER), wrapRequestHandler(getRecentAppController))
 
 export default managerRoute

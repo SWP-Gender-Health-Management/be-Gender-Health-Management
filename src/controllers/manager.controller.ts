@@ -26,3 +26,27 @@ export const getOverallWeeklyController = async (req: Request, res: Response, ne
     next(error)
   }
 }
+
+export const getAppPercentController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await ManagerService.getAppPercent()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_APP_PERCENT_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getRecentAppController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await ManagerService.getRecentApp()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_RECENT_APP_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}

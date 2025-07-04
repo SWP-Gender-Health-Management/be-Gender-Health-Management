@@ -123,7 +123,56 @@ class ManagerService {
       goodFeedPercent: goodFeedback / totalFeedback
     }
   }
-}
 
+  async getAppPercent() {
+    const today = new Date()
+    const startOfWeekDate = subDays(today, 7)
+    const endOfWeekDate = addDays(today, 1)
+    const [totalLabApp, totalConApp] = await Promise.all([
+      labAppRepo.count({
+        where: {
+          date: Between(startOfWeekDate, endOfWeekDate)
+        }
+      }),
+      conAppRepo.count({
+        where: {
+          consultant_pattern: {
+            date: Between(startOfWeekDate, endOfWeekDate)
+          }
+        }
+      })
+    ])
+    return {
+      totalLabApp,
+      totalConApp
+    }
+  }
+
+  async getRecentApp() {
+    const [labApp, conApp] = await Promise.all([
+      labAppRepo.find({
+        order: {
+          date: 'DESC'
+        },
+        take: 5
+      }),
+      conAppRepo.find({
+        order: {
+          consultant_pattern: {
+            date: 'DESC'
+          }
+        },
+        take: 5,
+        relations: {
+          consultant_pattern: true
+        }
+      })
+    ])
+    return {
+      labApp,
+      conApp
+    }
+  }
+}
 const managerService = new ManagerService()
 export default new ManagerService()

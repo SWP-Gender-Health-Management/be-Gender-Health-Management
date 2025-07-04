@@ -150,7 +150,9 @@ export const MANAGER_MESSAGES = {
   GET_CONSULTANT_PATTERN_SUCCESS: 'Get consultant pattern successfully',
   GET_CUSTOMER_SUCCESS: 'Get customer successfully',
   GET_OVERALL_SUCCESS: 'Get overall successfully',
-  GET_OVERALL_WEEKLY_SUCCESS: 'Get overall weekly successfully'
+  GET_OVERALL_WEEKLY_SUCCESS: 'Get overall weekly successfully',
+  GET_APP_PERCENT_SUCCESS: 'Get app percent successfully',
+  GET_RECENT_APP_SUCCESS: 'Get recent app successfully'
 }
 
 export const LABORARITY_MESSAGES = {
