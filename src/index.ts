@@ -30,10 +30,10 @@ import { fileURLToPath } from 'url'
 dotenv.config()
 
 // Lấy __dirname trong ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 // Get the directory name of the current module
-const uploadsPath = path.join(__dirname, '../uploads');
+const uploadsPath = path.join(__dirname, '../uploads')
 
 const app = express()
 
@@ -95,7 +95,7 @@ initializeApp()
       // route blog
       app.use('/blog', blogRoute)
       // Serve static files from the uploads directory
-      app.use('/uploads', express.static(uploadsPath));
+      app.use('/uploads', express.static(uploadsPath))
       app.use(defaultErrorHandle)
 
       const port = process.env.PORT || 3000

@@ -196,7 +196,7 @@ export class ConsultAppointmentService {
     }
 
     const consultAppointment = await consultAppointmentRepository.findOne({
-      where: { consultant_pattern: {pattern_id: consultantPattern.pattern_id}  },
+      where: { consultant_pattern: { pattern_id: consultantPattern.pattern_id } },
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
@@ -306,11 +306,25 @@ export class ConsultAppointmentService {
     })
     if (consultantPattern) {
       consultantPattern.is_booked = false
-      consultantPattern.consult_appointment = null;
+      consultantPattern.consult_appointment = null
       await consultantPatternRepository.save(consultantPattern)
     }
 
     await consultAppointmentRepository.remove(consultAppointment)
+  }
+
+  async getConsultants(page: string, limit: string): Promise<Account[]> {
+    let limitNumber = parseInt(limit) || 9
+    let pageNumber = parseInt(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
+    const consultants = await accountRepository.find({
+      skip: skip,
+      take: limitNumber,
+      where: {
+        role: Role.CONSULTANT
+      }
+    })
+    return consultants
   }
 }
 
