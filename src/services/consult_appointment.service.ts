@@ -321,7 +321,8 @@ export class ConsultAppointmentService {
       skip: skip,
       take: limitNumber,
       where: {
-        role: Role.CONSULTANT
+        role: Role.CONSULTANT,
+        is_banned: false
       }
     })
     return consultants

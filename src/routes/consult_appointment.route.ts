@@ -24,7 +24,7 @@ const consultAppointmentRoute = Router()
     limit: number
   }
 */
-consultAppointmentRoute.get('/get-consultants', wrapRequestHandler(getConsultants))
+consultAppointmentRoute.get('/get-consultants', restrictTo(Role.CUSTOMER), wrapRequestHandler(getConsultants))
 
 /*
   Description: Create a new consult appointment (customer only)
@@ -37,7 +37,7 @@ consultAppointmentRoute.get('/get-consultants', wrapRequestHandler(getConsultant
 consultAppointmentRoute.post(
   '/create-consult-appointment',
   // validateAccessToken,
-  // restrictTo(Role.CUSTOMER),
+  restrictTo(Role.CUSTOMER),
   wrapRequestHandler(createConsultAppointment)
 )
 
