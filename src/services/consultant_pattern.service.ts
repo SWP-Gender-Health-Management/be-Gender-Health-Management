@@ -132,9 +132,9 @@ export class ConsultantPatternService {
    */
   // Get a consultant pattern by Consultant ID
   async getConsultantPatternByConsultantId(
-    consultant_id: string,
-    limit: string,
-    page: string
+    consultant_id: string
+    // limit: string,
+    // page: string
   ): Promise<ConsultantPattern[]> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant) {
@@ -144,14 +144,14 @@ export class ConsultantPatternService {
       })
     }
 
-    const limitNumber = Number(limit) || LIMIT.default
-    const pageNumber = Number(page) || 1
-    const skip = (pageNumber - 1) * limitNumber
+    // const limitNumber = Number(limit) || LIMIT.default
+    // const pageNumber = Number(page) || 1
+    // const skip = (pageNumber - 1) * limitNumber
 
     const consultantPattern = await consultantPatternRepository.find({
-      where: { account_id: consultant.account_id },
-      skip,
-      take: limitNumber,
+      where: { account_id: consultant_id },
+      // skip,
+      // take: limitNumber,
       relations: ['working_slot']
     })
 

@@ -454,8 +454,11 @@ class AccountService {
     email: string
   ): Promise<{
     message: string
+    secretPasscode: string
   }> {
     const secretPasscode = crypto.randomInt(100000, 999999).toString()
+    console.log('secretPasscode:', secretPasscode)
+
     const resetPasswordToken = await this.createEmailResetPasswordToken(account_id, secretPasscode)
     console.log('resetPasswordToken:', resetPasswordToken)
     const options = {
@@ -478,7 +481,8 @@ class AccountService {
       sendMail(options)
     ])
     return {
-      message: USERS_MESSAGES.SEND_RESET_PASSWORD_SUCCESS
+      message: USERS_MESSAGES.SEND_RESET_PASSWORD_SUCCESS,
+      secretPasscode: secretPasscode
     }
   }
 
@@ -495,8 +499,8 @@ class AccountService {
       token: userToken as string,
       secretKey: process.env.JWT_SECRET_RESET_PASSWORD_TOKEN as string
     })
-    console.log(userTokenParse)
-    console.log(passcode)
+    console.log('userTokenParse:', userTokenParse)
+    console.log('passcode:', passcode)
     if (passcode !== userTokenParse.secretPasscode || userTokenParse.account_id !== account_id) {
       throw new ErrorWithStatus({
         message: USERS_MESSAGES.SECRET_PASSCODE_MISMATCH,

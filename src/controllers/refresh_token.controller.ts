@@ -6,6 +6,7 @@ import { AppDataSource } from '~/config/database.config.js'
 import HTTP_STATUS from '~/constants/httpStatus.js'
 import AccountService from '~/services/account.service.js'
 import { REFRESH_TOKEN_MESSAGES, USERS_MESSAGES } from '~/constants/message.js'
+import { ErrorWithStatus } from '~/models/Error.js'
 
 config()
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken)
@@ -13,7 +14,10 @@ const refreshTokenRepository = AppDataSource.getRepository(RefreshToken)
 export const refreshTokenController = async (req: Request, res: Response, next: NextFunction) => {
   const { refreshToken } = req.cookies
   if (!refreshToken) {
-    return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: REFRESH_TOKEN_MESSAGES.REFRESH_TOKEN_NOT_FOUND })
+    throw new ErrorWithStatus({
+      message: REFRESH_TOKEN_MESSAGES.REFRESH_TOKEN_NOT_FOUND,
+      status: HTTP_STATUS.UNAUTHORIZED
+    })
   }
 
   // 2. Kiểm tra xem refresh token có trong DB và còn hợp lệ không
@@ -23,7 +27,10 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
   })
 
   if (!isValid) {
-    return res.status(HTTP_STATUS.FORBIDDEN).json({ message: REFRESH_TOKEN_MESSAGES.INVALID_REFRESH_TOKEN })
+    throw new ErrorWithStatus({
+      message: REFRESH_TOKEN_MESSAGES.INVALID_REFRESH_TOKEN,
+      status: HTTP_STATUS.FORBIDDEN
+    })
   }
 
   // 3. Xác thực JWT của refresh token
