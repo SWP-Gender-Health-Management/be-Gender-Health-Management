@@ -6,13 +6,25 @@ import {
   getConsultAppointmentsByCustomerId,
   getConsultAppointmentsByPatternId,
   updateConsultAppointment,
-  deleteConsultAppointment
+  deleteConsultAppointment,
+  getConsultants
 } from '../controllers/consult_appointment.controller.js'
 import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
 import { Role } from '../enum/role.enum.js'
 import wrapRequestHandler from '../utils/handle.js'
 
 const consultAppointmentRoute = Router()
+
+/*
+  description: get consultants
+  method: get
+  path: /consultants
+  query: {
+    page: number
+    limit: number
+  }
+*/
+consultAppointmentRoute.get('/get-consultants', wrapRequestHandler(getConsultants))
 
 /*
   Description: Create a new consult appointment (customer only)

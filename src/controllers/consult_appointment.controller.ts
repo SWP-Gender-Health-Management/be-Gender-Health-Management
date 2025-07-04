@@ -5,6 +5,19 @@ import consultAppointmentService from '~/services/consult_appointment.service.js
 import notificationService from '~/services/notification.service.js'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
 
+export const getConsultants = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    const result = await consultAppointmentService.getConsultants(page as string, limit as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANTS_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 /**
  * @swagger
  * /consult-appointment/create-consult-appointment:
