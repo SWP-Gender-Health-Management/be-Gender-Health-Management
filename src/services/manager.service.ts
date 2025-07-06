@@ -200,13 +200,14 @@ class ManagerService {
     }
   }
 
-  async getConsultants(page: string, limit: string) {
+  async getConsultants(page: string, limit: string, isBan: boolean) {
     const pageNumber = parseInt(page) || 1
     const limitNumber = parseInt(limit) || 10
     const skip = (pageNumber - 1) * limitNumber
     const [consultants, total] = await accountRepo.findAndCount({
       where: {
-        role: Role.CONSULTANT
+        role: Role.CONSULTANT,
+        is_banned: isBan
       },
       skip,
       take: limitNumber
@@ -217,13 +218,14 @@ class ManagerService {
     }
   }
 
-  async getStaffs(page: string, limit: string) {
+  async getStaffs(page: string, limit: string, isBan: boolean) {
     const pageNumber = parseInt(page) || 1
     const limitNumber = parseInt(limit) || 10
     const skip = (pageNumber - 1) * limitNumber
     const [staffs, total] = await accountRepo.findAndCount({
       where: {
-        role: Role.STAFF
+        role: Role.STAFF,
+        is_banned: isBan
       },
       skip,
       take: limitNumber
