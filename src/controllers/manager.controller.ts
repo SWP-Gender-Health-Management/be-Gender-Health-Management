@@ -172,9 +172,15 @@ export const getBlogsController = async (req: Request, res: Response, next: Next
       limit: parseInt(limit as string) || 10,
       page: parseInt(page as string) || 1
     }
-    const { status } = req.body
+    const { title, content, author, status } = req.body
     const statusBlog = status === 'undefined' ? undefined : status.boolean()
-    const result = await managerService.getBlogs(pageVar, statusBlog)
+    const filter = {
+      title: title as string,
+      content: content as string,
+      author: author as string,
+      status: statusBlog as boolean
+    }
+    const result = await managerService.getBlogs(pageVar, filter)
     res.status(HTTP_STATUS.OK).json({
       message: MANAGER_MESSAGES.GET_BLOGS_SUCCESS,
       result

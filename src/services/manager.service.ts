@@ -371,9 +371,13 @@ class ManagerService {
     return { ...result }
   }
 
-  async getBlogs(pageVar: { limit: number; page: number }, status: boolean) {
+  async getBlogs(
+    pageVar: { limit: number; page: number },
+    filter: { title: string; content: string; author: string; status: boolean }
+  ) {
     const { limit, page } = pageVar
     const skip = (page - 1) * limit
+    const { title, content, author, status } = filter
     const [result, total] = await blogRepo.findAndCount({
       order: {
         created_at: 'DESC'
@@ -381,6 +385,11 @@ class ManagerService {
       skip,
       take: limit,
       where: {
+        title: title ? Like(`%${title}%`) : undefined,
+        content: content ? Like(`%${content}%`) : undefined,
+        account: {
+          full_name: author ? Like(`%${author}%`) : undefined
+        },
         status: status
       }
     })
