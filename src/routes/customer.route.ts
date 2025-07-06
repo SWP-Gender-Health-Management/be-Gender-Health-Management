@@ -101,7 +101,6 @@ customerRoute.post('/create-notification', restrictTo(Role.CUSTOMER), wrapReques
     date: string
   }
 */
-
 customerRoute.post(
   '/create-laborarity-appointment',
   restrictTo(Role.CUSTOMER),

@@ -59,11 +59,12 @@ import transactionService from '../services/transaction.service.js'
  */
 // Create consult transaction
 export const createConsultTransactionController = async (req: Request, res: Response, next: NextFunction) => {
-  const { amount, description, app_id } = req.query
+  const { amount, description, app_id, date } = req.body
   const transaction = await transactionService.createConsultTransaction(
     app_id as string,
     Number(amount),
-    description as string
+    description as string,
+    date as Date
   )
   res.status(HTTP_STATUS.OK).json({
     message: TRANSACTION_MESSAGES.TRANSACTION_CREATED_SUCCESS,
@@ -138,12 +139,12 @@ export const createConsultTransactionController = async (req: Request, res: Resp
  */
 // Create laboratory transaction
 export const createLaborarityTransactionController = async (req: Request, res: Response, next: NextFunction) => {
-  const { amount, description, app_id, orderCode } = req.body
+  const { amount, description, app_id, date } = req.body
   const transaction = await transactionService.createLaborarityTransaction(
     app_id as string,
-    Number(orderCode),
     Number(amount),
-    description as string
+    description as string,
+    date as Date
   )
   res.status(HTTP_STATUS.OK).json({
     message: TRANSACTION_MESSAGES.TRANSACTION_CREATED_SUCCESS,

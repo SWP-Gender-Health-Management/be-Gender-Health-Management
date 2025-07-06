@@ -91,7 +91,7 @@ export const createConsultAppointment = async (req: Request, res: Response, next
     const result = await consultAppointmentService.createConsultAppointment(pattern_id, customer_id, description)
     await notificationService.createNotification(
       {
-        type: TypeNoti.APPOINTMENT_BOOKED,
+        type: TypeNoti.CONSULT_APPOINTMENT,
         title: 'Appointment booked successfully',
         message: 'Your appointment has been booked successfully'
       },

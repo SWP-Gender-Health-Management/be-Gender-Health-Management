@@ -1,6 +1,6 @@
 import { AppDataSource } from '../config/database.config.js'
 import Account from '../models/Entity/account.entity.js'
-import { Role } from '../enum/role.enum.js'
+import { parseNumericEnum, Role } from '../enum/role.enum.js'
 import { hashPassword } from '../utils/crypto.js'
 import { ADMIN_MESSAGES, USERS_MESSAGES } from '~/constants/message.js'
 import { ErrorWithStatus } from '~/models/Error.js'
@@ -8,12 +8,13 @@ import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity
 import ConsultAppointment from '~/models/Entity/consult_appointment.entity.js'
 import Transaction from '~/models/Entity/transaction.entity.js'
 import { TransactionStatus } from '~/enum/transaction.enum.js'
-import { addDays, subDays } from 'date-fns'
+import { addDays, format, subDays } from 'date-fns'
 import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
 import Feedback from '~/models/Entity/feedback.entity.js'
-import { Between, LessThan, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
+import { Between, LessThan, LessThanOrEqual, MoreThanOrEqual, Like, Equal, In } from 'typeorm'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
 import Notification from '~/models/Entity/notification.entity.js'
+import { MailOptions, sendMail } from './email.service.js'
 
 const accountRepo = AppDataSource.getRepository(Account)
 const labAppRepo = AppDataSource.getRepository(LaboratoryAppointment)
@@ -23,6 +24,7 @@ const feedbackRepo = AppDataSource.getRepository(Feedback)
 const notificationRepo = AppDataSource.getRepository(Notification)
 
 class AdminService {
+  // Overall
   /**
    * @description: Lấy tổng số lượng khách hàng, lịch thí nghiệm, lịch tư vấn, doanh thu
    * @returns: {
@@ -32,10 +34,10 @@ class AdminService {
    * importantNews: number
    * }
    */
-  async getOverall() {
+  async getOverall(day: number) {
     const today = new Date()
     const tomorrow = addDays(today, 1)
-    const previousDay = subDays(today, 30)
+    const previousDay = subDays(today, day)
     const [totalCustomers, totalNewCustomers, totalRevenue, importantNews] = await Promise.all([
       accountRepo.count({
         where: { role: Role.CUSTOMER }
@@ -49,8 +51,8 @@ class AdminService {
         .createQueryBuilder('transaction')
         .select('SUM(transaction.amount)', 'total_revenue')
         .where('transaction.status = :status', { status: TransactionStatus.PAID })
-        .andWhere('transaction.updated_at <= :date', { date: today })
-        .andWhere('transaction.updated_at >= :date', { date: previousDay })
+        .andWhere('transaction.updated_at <= :startDate', { startDate: today })
+        .andWhere('transaction.updated_at >= :endDate', { endDate: previousDay })
         .getRawOne(),
       notificationRepo.count({
         where: {
@@ -58,6 +60,8 @@ class AdminService {
         }
       })
     ])
+    console.log(totalRevenue)
+
     return {
       totalCustomers: totalCustomers,
       totalNewCustomers: totalNewCustomers,
@@ -66,393 +70,125 @@ class AdminService {
     }
   }
 
-  async getRecentNews(limit: string, page: string): Promise<Notification[]> {
-    const limitNumber = parseInt(limit) || 10
-    const pageNumber = parseInt(page) || 1
-    const skip = (pageNumber - 1) * limitNumber
-    const news = await notificationRepo.find({
-      order: { created_at: 'DESC' },
-      skip: skip,
-      take: limitNumber
-    })
-    return news
-  }
   /**
-   * @description: Lấy tổng số lượng khách hàng, lịch thí nghiệm, lịch tư vấn, doanh thu
-   * @param date: string
+   * @description: Lấy số lượng khách hàng đăng ký trong 30 ngày
    * @returns: {
-   *  reportDate: string,
-   *  kpiToday: {
-   *    totalBooking: number,
-   *    labBooking: number,
-   *    conBooking: number,
-   *    revenue: number
-   *  },
-   *  kpiYesterday: {
-   *    totalBooking: number,
-   *    labBooking: number,
-   *    conBooking: number,
-   *    revenue: number
-   *  },
-   *  performance: {
-   *    vsYes: {
-   *      revenueChangePercent: number,
-   *      bookingChangePercent: number
-   *    }
-   *  }
+   * listDate[]: string,
+   * listCount[]: number
    * }
    */
-  async getSummary(date: string) {
-    const today = new Date(date + 'T00:00:00')
-    const [totalLab, totalCon, totalRevenue] = await Promise.all([
-      labAppRepo.count({
-        where: {
-          date: today
-        }
-      }),
-      conAppRepo.count({
-        where: {
-          consultant_pattern: { date: today }
-        }
-      }),
-      transactionRepo
-        .createQueryBuilder('transaction')
-        .select('SUM(transaction.amount)', 'total_revenue')
-        .where('transaction.status = :status', { status: TransactionStatus.PAID })
-        .andWhere('transaction.created_at >= :date', { date: today })
-        .getRawOne()
-    ])
-    const yesterday = subDays(today, 1)
-    const [totalLabYes, totalConYes, totalRevenueYes] = await Promise.all([
-      labAppRepo.count({
-        where: {
-          date: yesterday
-        }
-      }),
-      conAppRepo.count({
-        where: {
-          consultant_pattern: { date: yesterday }
-        }
-      }),
-      transactionRepo
-        .createQueryBuilder('transaction')
-        .select('SUM(transaction.amount)', 'total_revenue')
-        .where('transaction.status = :status', { status: TransactionStatus.PAID })
-        .andWhere('transaction.created_at >= :date', { date: yesterday })
-        .andWhere('transaction.created_at < :date', { date: today })
-        .getRawOne()
-    ])
+  async getPercentCustomer(day: number) {
+    // 1. Tính toán ngày bắt đầu
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - (day - 1)) // Trừ đi (N-1) ngày để có đủ N ngày
+    startDate.setHours(0, 0, 0, 0)
+
+    const endDate = new Date()
+
+    // 2. Sử dụng raw query để tránh conflict với query builder
+    const rawResult = await AppDataSource.query(
+      `
+      SELECT 
+        TO_CHAR(date_series.day, 'YYYY-MM-DD') as date,
+        COUNT(account.account_id)::int as count
+      FROM generate_series($1::timestamp, $2::timestamp, '1 day') as date_series(day)
+      LEFT JOIN account ON DATE_TRUNC('day', account.created_at) = date_series.day 
+        AND account.role = '${Role.CUSTOMER}'
+      GROUP BY date_series.day
+      ORDER BY date_series.day ASC
+    `,
+      [startDate, endDate]
+    )
+
+    // 3. Tạo 2 array riêng biệt
+    const listDate: string[] = rawResult.map((item: { date: string; count: number }) =>
+      format(new Date(item.date), 'dd/MM')
+    ) // Định dạng ngày: '26/06'
+    const listCount: number[] = rawResult.map((item: { date: string; count: number }) => item.count) // Số lượng người tham gia theo index
 
     return {
-      reportDate: date,
-      kpiToday: {
-        totalBooking: totalLab + totalCon,
-        labBooking: totalLab,
-        conBooking: totalCon,
-        revenue: totalRevenue
-      },
-      kpiYesterday: {
-        totalBooking: totalLabYes + totalConYes,
-        labBooking: totalLabYes,
-        conBooking: totalConYes,
-        revenue: totalRevenueYes
-      },
-      performance: {
-        vsYes: {
-          revenueChangePercent: ((totalRevenue - totalRevenueYes) / totalRevenueYes) * 100,
-          bookingChangePercent:
-            ((totalLab + totalCon - (totalLabYes + totalConYes)) / (totalLabYes + totalConYes)) * 100
-        }
-      }
+      listDate,
+      listCount
     }
   }
 
-  async getPerformance() {
-    const [totalLab, totalLabDelayed, totalLabCancelled, totalLabCompleted] = await Promise.all([
-      labAppRepo.count(),
-      labAppRepo.count({
-        where: {
-          status: StatusAppointment.DELAYED
-        }
-      }),
-      labAppRepo.count({
-        where: {
-          status: StatusAppointment.CANCELLED
-        }
-      }),
-      labAppRepo.count({
-        where: {
-          status: StatusAppointment.COMPLETED
-        }
-      })
-    ])
-    const [totalCon, totalConDelayed, totalConCancelled, totalConCompleted] = await Promise.all([
-      conAppRepo.count(),
-      conAppRepo.count({
-        where: {
-          status: StatusAppointment.DELAYED
-        }
-      }),
-      conAppRepo.count({
-        where: {
-          status: StatusAppointment.CANCELLED
-        }
-      }),
-      conAppRepo.count({
-        where: {
-          status: StatusAppointment.COMPLETED
-        }
-      })
-    ])
-    const totalApp = totalLab + totalCon
-    const totalAppDelayed = totalLabDelayed + totalConDelayed
-    const totalAppCancelled = totalLabCancelled + totalConCancelled
-    const totalAppCompleted = totalLabCompleted + totalConCompleted
-    const [totalFeed, sumRating, goodFeed, badFeed] = await Promise.all([
-      feedbackRepo.count(),
-      feedbackRepo.createQueryBuilder('feedback').select('SUM(feedback.rating)', 'sum_rating').getRawOne(),
-      feedbackRepo.count({
-        where: {
-          rating: MoreThanOrEqual(4)
-        }
-      }),
-      feedbackRepo.count({
-        where: {
-          rating: LessThanOrEqual(3)
-        }
-      })
-    ])
-    const goodFeedPercent = (goodFeed / totalFeed) * 100
-    const badFeedPercent = (badFeed / totalFeed) * 100
-    const avgRating = sumRating / totalFeed
+  /**
+   * @description: Lấy tin tức gần đây
+   * @param limit: string
+   * @param page: string
+   * @returns: Notification[]
+   */
+  async getRecentNews(): Promise<{ news: Notification[]; totalPages: number }> {
+    const [news, totalItems] = await notificationRepo.findAndCount({
+      order: { created_at: 'DESC' },
+      take: 4
+    })
     return {
-      totalApp: totalApp,
-      totalAppDelayed: totalAppDelayed,
-      totalAppCancelled: totalAppCancelled,
-      totalAppCompleted: totalAppCompleted,
-      totalFeed: totalFeed,
-      goodFeed: goodFeed,
-      badFeed: badFeed,
-      goodFeedPercent: goodFeedPercent,
-      badFeedPercent: badFeedPercent,
-      avgRating: avgRating
+      news,
+      totalPages: 1
     }
   }
 
   // Manage account
 
   /**
-   * @description: Tạo tài khoản admin
+   * @description: Tạo tài khoản
    * @param full_name: string
    * @param email: string
    * @param password: string
    * @returns: Account
    */
-  async createAdmin(full_name: string, email: string, password: string) {
+  async createAccount(full_name: string, email: string, password: string, role: number): Promise<Account> {
+    const roleEnum = parseNumericEnum(role)
     const hashedPassword = await hashPassword(password)
-    const newAdmin = accountRepo.create({
+    const newAccount = accountRepo.create({
       full_name,
       email,
       password: hashedPassword,
-      role: Role.ADMIN
+      role: roleEnum
     })
 
-    await accountRepo.save(newAdmin)
-    return newAdmin
+    const options: MailOptions = {
+      to: email,
+      subject: 'Tạo tài khoản thành công',
+      htmlPath: './template/create-account.html',
+      placeholders: {
+        full_name: full_name,
+        login_email: email,
+        temporary_password: password,
+        CURRENT_YEAR: new Date().getFullYear().toString()
+      }
+    }
+
+    await Promise.all([accountRepo.save(newAccount), sendMail(options)])
+    return newAccount
   }
 
   /**
-   * @description: Lấy tất cả tài khoản admin
-   * @param limit - The limit of the admins
-   * @param page - The page of the admins
+   * @description: Lấy tất cả tài khoản
+   * @param limit - The limit of the accounts
+   * @param page - The page of the accounts
    * @returns: Account[]
    */
-  async getAdmins(limit: string, page: string) {
+  async getAccounts(limit: string, page: string, role: string, banned: string) {
     const limitNumber = parseInt(limit) || 10
     const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
-    const [admins, totalItems] = await accountRepo.findAndCount({
-      where: { role: Role.ADMIN },
+    const [accounts, totalItems] = await accountRepo.findAndCount({
+      where: {
+        role: role === 'all' ? undefined : parseNumericEnum(parseInt(role)),
+        is_banned: banned === 'all' ? undefined : banned === 'true' ? true : false
+      },
       order: { created_at: 'DESC' },
       skip: skip,
       take: limitNumber
     })
     const totalPages = Math.ceil(totalItems / limitNumber)
     return {
-      admins,
+      accounts,
       totalItems,
       totalPages
     }
-  }
-
-  /**
-   * @description: Tạo tài khoản manager
-   * @param full_name: string
-   * @param email: string
-   * @param password: string
-   * @returns: Account
-   */
-  async createManager(full_name: string, email: string, password: string) {
-    const hashedPassword = await hashPassword(password)
-
-    const newManager = accountRepo.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      role: Role.MANAGER
-    })
-    await accountRepo.save(newManager)
-    return newManager
-  }
-
-  /**
-   * @description: Lấy tất cả tài khoản manager
-   * @param limit - The limit of the managers
-   * @param page - The page of the managers
-   * @returns: Account[]
-   */
-  async getManagers(limit: string, page: string) {
-    const limitNumber = parseInt(limit) || 10
-    const pageNumber = parseInt(page) || 1
-    const skip = (pageNumber - 1) * limitNumber
-    const [managers, totalItems] = await accountRepo.findAndCount({
-      where: {
-        role: Role.MANAGER
-      },
-      order: {
-        created_at: 'DESC'
-      },
-      skip: skip,
-      take: limitNumber
-    })
-    const totalPages = Math.ceil(totalItems / limitNumber)
-    return {
-      managers,
-      totalItems,
-      totalPages
-    }
-  }
-
-  /**
-   * @description: Tạo tài khoản staff
-   * @param full_name: string
-   * @param email: string
-   * @param password: string
-   * @returns: Account
-   */
-  async createStaff(full_name: string, email: string, password: string) {
-    const hashedPassword = await hashPassword(password)
-    const newStaff = accountRepo.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      role: Role.STAFF
-    })
-    await accountRepo.save(newStaff)
-    return newStaff
-  }
-
-  /**
-   * @description: Lấy tất cả tài khoản staff
-   * @param limit - The limit of the staffs
-   * @param page - The page of the staffs
-   * @returns: Account[]
-   */
-  async getStaffs(limit: string, page: string) {
-    // 1. Lấy tham số `page` và `limit` từ query string
-    const limitNumber = parseInt(limit) || 10
-    const pageNumber = parseInt(page) || 1
-
-    // 2. Tính toán giá trị `skip` (bỏ qua bao nhiêu mục)
-    // Ví dụ: trang 1 -> skip 0, trang 2 -> skip 10
-    const skip = (pageNumber - 1) * limitNumber
-
-    // 3. Sử dụng `findAndCount` của TypeORM
-    // Sắp xếp theo ngày tạo mới nhất
-    const [staffs, totalItems] = await accountRepo.findAndCount({
-      where: {
-        role: Role.STAFF
-      },
-      order: {
-        created_at: 'DESC'
-      },
-      skip: skip, // Bỏ qua `skip` mục đầu tiên
-      take: limitNumber // Lấy `limit` mục tiếp theo
-    })
-
-    // 4. Tính toán tổng số trang
-    const totalPages = Math.ceil(totalItems / limitNumber)
-    return {
-      staffs,
-      totalItems,
-      totalPages
-    }
-  }
-
-  /**
-   * @description: Tạo tài khoản consultant
-   * @param full_name: string
-   * @param email: string
-   * @param password: string
-   * @returns: Account
-   */
-  async createConsultant(full_name: string, email: string, password: string) {
-    const hashedPassword = await hashPassword(password)
-    const newConsultant = accountRepo.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      role: Role.CONSULTANT
-    })
-    await accountRepo.save(newConsultant)
-    return newConsultant
-  }
-
-  /**
-   * @description: Lấy tất cả tài khoản consultant
-   * @param limit - The limit of the consultants
-   * @param page - The page of the consultants
-   * @returns: Account[]
-   */
-  async getConsultants(limit: string, page: string) {
-    const limitNumber = parseInt(limit) || 10
-    const pageNumber = parseInt(page) || 1
-    const skip = (pageNumber - 1) * limitNumber
-    const [consultants, totalItems] = await accountRepo.findAndCount({
-      where: {
-        role: Role.CONSULTANT
-      },
-      order: {
-        created_at: 'DESC'
-      },
-      skip: skip,
-      take: limitNumber
-    })
-    const totalPages = Math.ceil(totalItems / limitNumber)
-    return {
-      consultants,
-      totalItems,
-      totalPages
-    }
-  }
-
-  /**
-   * @description: Tạo tài khoản customer
-   * @param full_name: string
-   * @param email: string
-   * @param password: string
-   * @returns: Account
-   */
-  async createCustomer(full_name: string, email: string, password: string) {
-    const hashedPassword = await hashPassword(password)
-    const newCustomer = accountRepo.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      role: Role.CUSTOMER
-    })
-    await accountRepo.save(newCustomer)
-    return newCustomer
   }
 
   /**
@@ -497,28 +233,219 @@ class AdminService {
     }
   }
 
+  // report
   /**
-   * @description: Lấy tất cả tài khoản customer
-   * @param limit - The limit of the customers
-   * @param page - The page of the customers
-   * @returns: Account[]
+   * @description: Lấy tổng số lượng khách hàng, lịch thí nghiệm, lịch tư vấn, doanh thu
+   * @param day: number
+   * @returns: {
+   *  totalCustomer: number,
+   *  totalNewCus: number,
+   *  totalLab: number,
+   *  totalCon: number,
+   *  totalRevenue: number,
+   *  totalFeed: number,
+   *  sumFeedRating: number
+   * }
    */
-  async getCustomers(limit: string, page: string) {
+  async getReportOverall(day: number) {
+    const today = new Date()
+    const yesterday = subDays(today, day)
+    const [totalCustomer, totalNewCus, totalLab, totalCon, totalRevenue, totalFeed, sumFeedRating] = await Promise.all([
+      accountRepo.count({
+        where: { role: Role.CUSTOMER }
+      }),
+      accountRepo
+        .createQueryBuilder('account')
+        .select('COUNT(account.account_id)', 'total_new_customer')
+        .where('account.role = :role', { role: Role.CUSTOMER })
+        .andWhere('account.created_at >= :startDate', { startDate: yesterday })
+        .andWhere('account.created_at < :endDate', { endDate: today })
+        .getCount(),
+      labAppRepo.count(),
+      conAppRepo.count(),
+      transactionRepo
+        .createQueryBuilder('transaction')
+        .select('SUM(transaction.amount)', 'total_revenue')
+        .where('transaction.status = :status', { status: TransactionStatus.PAID })
+        .andWhere('transaction.created_at >= :startDate', { startDate: yesterday })
+        .andWhere('transaction.created_at < :endDate', { endDate: today })
+        .getRawOne(),
+      feedbackRepo.count(),
+      feedbackRepo.createQueryBuilder('feedback').select('SUM(feedback.rating)', 'sum_rating').getRawOne()
+    ])
+    return {
+      totalCustomer,
+      totalNewCus,
+      totalApp: totalLab + totalCon,
+      totalLab,
+      totalCon,
+      totalRevenue: totalRevenue.total_revenue,
+      totalFeed: totalFeed,
+      sumFeedRating: sumFeedRating.sum_rating / (totalFeed * 5)
+    }
+  }
+
+  /**
+   * @description: Lấy phần trăm doanh thu
+   * @param day: number
+   * @returns: {
+   *  listDate: string[],
+   *  listSumRevenue: number[]
+   * }
+   */
+  async getPercentRevenue(day: string) {
+    // 1. Tính toán ngày bắt đầu
+    let startDate = new Date()
+    startDate = subDays(startDate, parseInt(day as string))
+    startDate.setHours(0, 0, 0, 0)
+
+    const endDate = new Date()
+    endDate.setHours(23, 59, 59, 999)
+
+    // 2. Sử dụng raw query để tránh conflict với query builder
+    const rawResult = await AppDataSource.query(
+      `
+      SELECT 
+        TO_CHAR(date_series.day, 'YYYY-MM-DD') as date,
+        SUM(transaction.amount)::int as sum_revenue
+      FROM generate_series($1::timestamp, $2::timestamp, '1 day') as date_series(day)
+      LEFT JOIN transaction ON DATE_TRUNC('day', transaction.created_at) = date_series.day 
+        AND transaction.status = $3
+      GROUP BY date_series.day
+      ORDER BY date_series.day ASC
+    `,
+      [startDate, endDate, TransactionStatus.PAID]
+    )
+
+    // 3. Tạo 2 array riêng biệt
+    const listDate: string[] = rawResult.map((item: { date: string; sum_revenue: number }) =>
+      format(new Date(item.date), 'dd/MM')
+    ) // Định dạng ngày: '26/06'
+    const listSumRevenue: number[] = rawResult.map((item: { date: string; sum_revenue: number }) => item.sum_revenue) // Số lượng người tham gia theo index
+
+    return {
+      listDate,
+      listSumRevenue
+    }
+  }
+
+  /**
+   * @description: Lấy phần trăm tài khoản
+   * @param day: number
+   * @returns: {
+   *  listDate: string[],
+   *  listSumRevenue: number[]
+   * }
+   */
+  async getPercentAccount() {
+    const [customer, consultant, staff, admin, manager] = await Promise.all([
+      accountRepo.count({
+        where: { role: Role.CUSTOMER }
+      }),
+      accountRepo.count({
+        where: { role: Role.CONSULTANT }
+      }),
+      accountRepo.count({
+        where: { role: Role.STAFF }
+      }),
+      accountRepo.count({
+        where: { role: Role.ADMIN }
+      }),
+      accountRepo.count({
+        where: { role: Role.MANAGER }
+      })
+    ])
+    return {
+      customer,
+      consultant,
+      staff,
+      admin,
+      manager
+    }
+  }
+
+  /**
+   * @description: Lấy phần trăm doanh thu theo dịch vụ
+   * @returns: {
+   *  listDate: string[],
+   *  listSumRevenue: number[]
+   * }
+   */
+  async getPercentRevenueByService() {
+    const today = new Date()
+    const yesterday = subDays(today, 30)
+    const [lab, con] = await Promise.all([
+      transactionRepo.count({
+        where: {
+          app_id: Like('Lab%'),
+          status: TransactionStatus.PAID,
+          updated_at: Between(yesterday, today)
+        }
+      }),
+      transactionRepo.count({
+        where: {
+          app_id: Like('Con%'),
+          status: TransactionStatus.PAID,
+          updated_at: Between(yesterday, today)
+        }
+      })
+    ])
+    return {
+      lab,
+      con
+    }
+  }
+
+  /**
+   * @description: Lấy phần trăm feedback
+   * @returns: {
+   *  listDate: string[],
+   *  listSumRevenue: number[]
+   * }
+   */
+  async getPercentFeedback() {
+    const today = new Date()
+    const yesterday = subDays(today, 30)
+    const [goodFeed, normalFeed, badFeed] = await Promise.all([
+      feedbackRepo.count({
+        where: {
+          rating: MoreThanOrEqual(4),
+          created_at: Between(yesterday, today)
+        }
+      }),
+      feedbackRepo.count({
+        where: {
+          rating: Equal(3),
+          created_at: Between(yesterday, today)
+        }
+      }),
+      feedbackRepo.count({
+        where: {
+          rating: LessThan(3),
+          created_at: Between(yesterday, today)
+        }
+      })
+    ])
+    return {
+      totalFeed: goodFeed + normalFeed + badFeed,
+      goodFeed,
+      normalFeed,
+      badFeed
+    }
+  }
+
+  async getNotification(limit: string, page: string) {
     const limitNumber = parseInt(limit) || 10
     const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
-    const [customers, totalItems] = await accountRepo.findAndCount({
-      where: { role: Role.CUSTOMER },
-      order: {
-        created_at: 'DESC'
-      },
+    const [notifications, totalItems] = await notificationRepo.findAndCount({
+      order: { created_at: 'DESC' },
       skip: skip,
       take: limitNumber
     })
     const totalPages = Math.ceil(totalItems / limitNumber)
     return {
-      customers,
-      totalItems,
+      notifications,
       totalPages
     }
   }

@@ -27,8 +27,9 @@ export class ConsultAppointmentService {
   async createConsultAppointment(
     pattern_id: string,
     customer_id: string,
-    description: string
-  ): Promise<ConsultAppointment> {
+    description: string,
+    status: StatusAppointment
+  ): Promise<{ savedConsultAppointment: ConsultAppointment; amount: number }> {
     // Validate consultant pattern
     const consultantPattern = await consultantPatternRepository.findOne({
       where: { pattern_id },
@@ -77,7 +78,7 @@ export class ConsultAppointmentService {
       relations: ['consult_appointment']
     })
     console.log('Updated consult_appointment array:', updatedAccount)
-    return savedConsultAppointment
+    return { savedConsultAppointment, amount: 400000 }
   }
 
   /**

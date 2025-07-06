@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chào mừng bạn đến với Gender Health Management System</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7f6;
+        color: #333;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e0e0e0;
+      }
+      .header {
+        background-color: #007bff; /* Thay bằng màu thương hiệu của bạn */
+        padding: 30px;
+        text-align: center;
+      }
+      .header h1 {
+        color: #ffffff;
+        margin: 0;
+        font-size: 24px;
+      }
+      .content {
+        padding: 30px 40px;
+        line-height: 1.7;
+      }
+      .credentials {
+        background-color: #f2f2f2;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        border-left: 5px solid #007bff;
+      }
+      .credentials p {
+        margin: 5px 0;
+      }
+      .button-container {
+        text-align: center;
+        padding: 20px 0;
+      }
+      .button {
+        display: inline-block;
+        background-color: #28a745; /* Màu nút kêu gọi hành động */
+        color: #ffffff;
+        padding: 12px 30px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+      .footer {
+        background-color: #f4f7f6;
+        padding: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+      }
+      .warning {
+        color: #d93025;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f4f7f6">
+      <tr>
+        <td align="center" style="padding: 20px">
+          <table class="container" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td class="header">
+                <h1>Chào mừng bạn đến với Gender Health Management System!</h1>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="content">
+                <p>Chào {{full_name}},</p>
+                <p>
+                  Một tài khoản đã được tạo cho bạn bởi quản trị viên của chúng tôi. Dưới đây là thông tin đăng nhập tạm
+                  thời của bạn:
+                </p>
+
+                <div class="credentials">
+                  <p><strong>Email / Tên đăng nhập:</strong> {{login_email}}</p>
+                  <p><strong>Mật khẩu tạm thời:</strong> <strong>{{temporary_password}}</strong></p>
+                </div>
+
+                <p class="warning">
+                  QUAN TRỌNG: Vì lý do bảo mật, vui lòng đăng nhập và thay đổi mật khẩu của bạn ngay lập tức trong lần
+                  đăng nhập đầu tiên.
+                </p>
+
+                <div class="button-container">
+                  <a href="http://localhost:5173" class="button" target="_blank">Đăng nhập ngay</a>
+                </div>
+
+                <p>Nếu bạn có bất kỳ câu hỏi nào, xin đừng ngần ngại liên hệ với chúng tôi.</p>
+                <p>Trân trọng,<br />Đội ngũ Gender Health Management System</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="footer">
+                <p>&copy; {{CURRENT_YEAR}} Gender Health Management System. Đã đăng ký bản quyền.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
