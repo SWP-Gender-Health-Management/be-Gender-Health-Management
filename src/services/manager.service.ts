@@ -14,7 +14,7 @@ import ConsultantPattern from '~/models/Entity/consultant_pattern.entity.js'
 import Transaction from '~/models/Entity/transaction.entity.js'
 import { TransactionStatus } from '~/enum/transaction.enum.js'
 
-const cusReportRepo = AppDataSource.getRepository(Account)
+const accountRepo = AppDataSource.getRepository(Account)
 const conAppRepo = AppDataSource.getRepository(ConsultAppointment)
 const labAppRepo = AppDataSource.getRepository(LaboratoryAppointment)
 const feedbackRepo = AppDataSource.getRepository(Feedback)
@@ -197,6 +197,40 @@ class ManagerService {
     })
     return {
       appSort: appSort.slice(0, 5)
+    }
+  }
+
+  async getConsultants(page: string, limit: string) {
+    const pageNumber = parseInt(page) || 1
+    const limitNumber = parseInt(limit) || 10
+    const skip = (pageNumber - 1) * limitNumber
+    const [consultants, total] = await accountRepo.findAndCount({
+      where: {
+        role: Role.CONSULTANT
+      },
+      skip,
+      take: limitNumber
+    })
+    return {
+      consultants,
+      totalPage: Math.ceil(total / limitNumber)
+    }
+  }
+
+  async getStaffs(page: string, limit: string) {
+    const pageNumber = parseInt(page) || 1
+    const limitNumber = parseInt(limit) || 10
+    const skip = (pageNumber - 1) * limitNumber
+    const [staffs, total] = await accountRepo.findAndCount({
+      where: {
+        role: Role.STAFF
+      },
+      skip,
+      take: limitNumber
+    })
+    return {
+      staffs,
+      totalPage: Math.ceil(total / limitNumber)
     }
   }
 }

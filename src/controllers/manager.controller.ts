@@ -50,3 +50,29 @@ export const getRecentAppController = async (req: Request, res: Response, next: 
     next(error)
   }
 }
+
+export const getConsultantsController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    const result = await ManagerService.getConsultants(page as string, limit as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_CONSULTANTS_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getStaffsController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    const result = await ManagerService.getStaffs(page as string, limit as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_STAFFS_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
