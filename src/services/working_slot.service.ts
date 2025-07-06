@@ -34,8 +34,8 @@ class WorkingSlotService {
    */
   // Get a slot by type
   async getSlotByType(type: string, pageVar: { limit: string; page: string }): Promise<WorkingSlot[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
-    let page = parseInt(pageVar.page) || 1;
+    const limit = parseInt(pageVar.limit) || LIMIT.default
+    const page = parseInt(pageVar.page) || 1
     const skip = (page - 1) * limit
 
     return await slotRepository.find({
@@ -54,8 +54,8 @@ class WorkingSlotService {
    */
   // Get all slots
   async getSlot(pageVar: { limit: string; page: string }): Promise<WorkingSlot[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
-    let page = parseInt(pageVar.page) || 1;
+    let limit = parseInt(pageVar.limit) || LIMIT.default
+    let page = parseInt(pageVar.page) || 1
     const skip = (page - 1) * limit
     return await slotRepository.find({
       skip,

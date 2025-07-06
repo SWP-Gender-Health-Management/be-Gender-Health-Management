@@ -87,13 +87,8 @@ export const getConsultants = async (req: Request, res: Response, next: NextFunc
 // Create a new consult appointment
 export const createConsultAppointment = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { pattern_id, customer_id, description, status } = req.body
-    const result = await consultAppointmentService.createConsultAppointment(
-      pattern_id,
-      customer_id,
-      description,
-      status
-    )
+    const { pattern_id, customer_id, description } = req.body
+    const result = await consultAppointmentService.createConsultAppointment(pattern_id, customer_id, description)
     await notificationService.createNotification(
       {
         type: TypeNoti.APPOINTMENT_BOOKED,

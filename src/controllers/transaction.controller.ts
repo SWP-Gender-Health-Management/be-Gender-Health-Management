@@ -217,7 +217,8 @@ export const createLaborarityTransactionController = async (req: Request, res: R
 // Create payment URL
 export const createPaymentUrlController = async (req: Request, res: Response) => {
   try {
-    const paymentLink = await transactionService.createPaymentUrlService(req.body)
+    const { orderCode } = req.body
+    const paymentLink = await transactionService.createPaymentUrlService(orderCode)
     // Trả về link thanh toán cho client
     res.status(HTTP_STATUS.OK).json({
       message: TRANSACTION_MESSAGES.PAYMENT_LINK_CREATED_SUCCESS,
