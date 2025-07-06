@@ -53,11 +53,12 @@ class ManagerService {
         .andWhere('transaction.app_id LIKE :app_id', { app_id: 'Con_%' })
         .getRawOne()
         .then((result) => result.totalRevenue),
-      mensRepo.count({
-        where: {
-          created_at: MoreThanOrEqual(today)
-        }
-      })
+      mensRepo
+        .createQueryBuilder('MenstrualCycle')
+        .select('COUNT(mens.id)', 'totalMenstrual')
+        .where("date_trunc('week', MenstrualCycle.created_at) = date_trunc('week', NOW())")
+        .getRawOne()
+        .then((result) => result.totalMenstrual)
     ])
     return {
       totalApp: labApp + conApp,
@@ -71,55 +72,75 @@ class ManagerService {
     const today = new Date()
     const startOfWeekDate = startOfWeek(today)
     const endOfWeekDate = endOfWeek(today)
-    const [pendingLabApp, pendingConApp, completedLabApp, completedConApp, goodFeedback, totalFeedback] =
-      await Promise.all([
-        labAppRepo.count({
-          where: {
-            date: Between(startOfWeekDate, endOfWeekDate),
-            status: StatusAppointment.PENDING
-          }
-        }),
-        conAppRepo.count({
-          where: {
-            consultant_pattern: {
-              date: Between(startOfWeekDate, endOfWeekDate)
-            },
-            status: StatusAppointment.PENDING
-          }
-        }),
-        labAppRepo.count({
-          where: {
-            date: Between(startOfWeekDate, endOfWeekDate),
-            status: StatusAppointment.COMPLETED
-          }
-        }),
-        conAppRepo.count({
-          where: {
-            consultant_pattern: {
-              date: Between(startOfWeekDate, endOfWeekDate)
-            },
-            status: StatusAppointment.COMPLETED
-          }
-        }),
-        feedbackRepo
-          .createQueryBuilder('feedback')
-          .select('SUM(feedback.rating)', 'totalRating')
-          .where('feedback.date BETWEEN :startOfWeek AND :endOfWeek', {
-            startOfWeek: startOfWeekDate,
-            endOfWeek: endOfWeekDate
-          })
-          .getRawOne()
-          .then((result) => result.totalRating),
-        feedbackRepo.count({
-          where: {
+    const [
+      pendingLabApp,
+      pendingConApp,
+      completedLabApp,
+      completedConApp,
+      totalLabApp,
+      totalConApp,
+      goodFeedback,
+      totalFeedback
+    ] = await Promise.all([
+      labAppRepo.count({
+        where: {
+          date: Between(startOfWeekDate, endOfWeekDate),
+          status: StatusAppointment.PENDING
+        }
+      }),
+      conAppRepo.count({
+        where: {
+          consultant_pattern: {
+            date: Between(startOfWeekDate, endOfWeekDate)
+          },
+          status: StatusAppointment.PENDING
+        }
+      }),
+      labAppRepo.count({
+        where: {
+          date: Between(startOfWeekDate, endOfWeekDate),
+          status: StatusAppointment.COMPLETED
+        }
+      }),
+      conAppRepo.count({
+        where: {
+          consultant_pattern: {
+            date: Between(startOfWeekDate, endOfWeekDate)
+          },
+          status: StatusAppointment.COMPLETED
+        }
+      }),
+      labAppRepo.count({
+        where: {
+          date: Between(startOfWeekDate, endOfWeekDate)
+        }
+      }),
+      conAppRepo.count({
+        where: {
+          consultant_pattern: {
             date: Between(startOfWeekDate, endOfWeekDate)
           }
+        }
+      }),
+      feedbackRepo
+        .createQueryBuilder('feedback')
+        .select('SUM(feedback.rating)', 'totalRating')
+        .where('feedback.date BETWEEN :startOfWeek AND :endOfWeek', {
+          startOfWeek: startOfWeekDate,
+          endOfWeek: endOfWeekDate
         })
-      ])
+        .getRawOne()
+        .then((result) => result.totalRating),
+      feedbackRepo.count({
+        where: {
+          date: Between(startOfWeekDate, endOfWeekDate)
+        }
+      })
+    ])
     return {
       totalPendingApp: pendingLabApp + pendingConApp,
       totalCompletedApp: completedLabApp + completedConApp,
-      completedPercent: ((completedLabApp + completedConApp) / (pendingLabApp + pendingConApp)) * 100,
+      completedPercent: ((completedLabApp + completedConApp) / (totalLabApp + totalConApp)) * 100,
       goodFeedPercent: goodFeedback / totalFeedback
     }
   }

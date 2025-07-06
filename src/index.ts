@@ -24,6 +24,7 @@ import feedbackRoute from './routes/feedback.route.js'
 import blogRoute from './routes/blog.route.js'
 import { SocketServer } from './config/websocket.config.js'
 import { SocketIOService } from './services/websocket.service.js'
+import managerRoute from './routes/manager.route.js'
 
 dotenv.config()
 
@@ -58,6 +59,8 @@ initializeApp()
       app.use('/account', accountRoute)
       // route admin
       app.use('/admin', adminRoute)
+      // route manager
+      app.use('/manager', managerRoute)
       // route customer
       app.use('/customer', customerRoute)
       //route staff
