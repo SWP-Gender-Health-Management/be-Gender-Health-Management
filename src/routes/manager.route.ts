@@ -8,7 +8,9 @@ import {
   getOverallWeeklyController,
   getRecentAppController,
   getConsultantsController,
-  getStaffsController
+  getStaffsController,
+  getConAppController,
+  getLabAppController
 } from '~/controllers/manager.controller.js'
 
 const managerRoute = Router()
@@ -60,5 +62,21 @@ managerRoute.get('/get-consultants', restrictTo(Role.MANAGER), wrapRequestHandle
   access: private
 */
 managerRoute.get('/get-staffs', restrictTo(Role.MANAGER), wrapRequestHandler(getStaffsController))
+
+/*
+  description: get-con-app
+  path: /manager/get-con-app
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-con-app', restrictTo(Role.MANAGER), wrapRequestHandler(getConAppController))
+
+/*
+  description: get-lab-app
+  path: /manager/get-lab-app
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-lab-app', restrictTo(Role.MANAGER), wrapRequestHandler(getLabAppController))
 
 export default managerRoute

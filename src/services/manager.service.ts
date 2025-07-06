@@ -1,6 +1,6 @@
-import { Between, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
+import { Between, LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm'
 import { AppDataSource } from '~/config/database.config.js'
-import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
+import { StatusAppointment, stringToStatus } from '~/enum/statusAppointment.enum.js'
 import ConsultAppointment from '~/models/Entity/consult_appointment.entity.js'
 import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity.js'
 import Feedback from '~/models/Entity/feedback.entity.js'
@@ -235,6 +235,58 @@ class ManagerService {
       totalPage: Math.ceil(total / limitNumber)
     }
   }
+
+  async getConApp(
+    pageVar: { limit: number; page: number },
+    filter: { fullname: string; status: number; date: string }
+  ) {
+    const { limit, page } = pageVar
+    const { fullname, status, date } = filter
+    const skip = (page - 1) * limit
+    const conApp = await conAppRepo.findAndCount({
+      where: {
+        customer: {
+          full_name: fullname ? Like(`%${fullname}%`) : undefined
+        },
+        status: status ? stringToStatus(status) : undefined,
+        consultant_pattern: {
+          date: date ? new Date(date) : undefined
+        }
+      },
+      skip,
+      take: limit,
+      relations: {
+        customer: true,
+        consultant_pattern: true
+      }
+    })
+    return conApp
+  }
+
+  async getLabApp(
+    pageVar: { limit: number; page: number },
+    filter: { fullname: string; status: number; date: string }
+  ) {
+    const { limit, page } = pageVar
+    const skip = (page - 1) * limit
+    const { fullname, status, date } = filter
+    const labApp = await labAppRepo.findAndCount({
+      where: {
+        customer: {
+          full_name: fullname ? Like(`%${fullname}%`) : undefined
+        },
+        status: status ? stringToStatus(status) : undefined,
+        date: date ? new Date(date) : undefined
+      },
+      skip,
+      take: limit,
+      relations: {
+        customer: true
+        // working_slot: true
+      }
+    })
+    return labApp
+  }
 }
 const managerService = new ManagerService()
-export default new ManagerService()
+export default managerService

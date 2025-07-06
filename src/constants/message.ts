@@ -154,7 +154,9 @@ export const MANAGER_MESSAGES = {
   GET_APP_PERCENT_SUCCESS: 'Get app percent successfully',
   GET_RECENT_APP_SUCCESS: 'Get recent app successfully',
   GET_CONSULTANTS_SUCCESS: 'Get consultants successfully',
-  GET_STAFFS_SUCCESS: 'Get staffs successfully'
+  GET_STAFFS_SUCCESS: 'Get staffs successfully',
+  GET_CON_APP_SUCCESS: 'Get con app successfully',
+  GET_LAB_APP_SUCCESS: 'Get lab app successfully'
 }
 
 export const LABORARITY_MESSAGES = {
