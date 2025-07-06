@@ -4,7 +4,7 @@ import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
 import ConsultAppointment from '~/models/Entity/consult_appointment.entity.js'
 import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity.js'
 import Feedback from '~/models/Entity/feedback.entity.js'
-import { addDays, endOfWeek, formatDate, startOfWeek, subDays } from 'date-fns'
+import { addDays, endOfWeek, startOfWeek, subDays } from 'date-fns'
 import { TypeAppointment } from '~/enum/type_appointment.enum.js'
 import Account from '~/models/Entity/account.entity.js'
 import { Role } from '~/enum/role.enum.js'
@@ -189,9 +189,14 @@ class ManagerService {
         }
       })
     ])
+    const app = [...labApp, ...conApp]
+    const appSort = app.sort((a, b) => {
+      const aDate = new Date(a.created_at.toString()).getTime()
+      const bDate = new Date(b.created_at.toString()).getTime()
+      return bDate - aDate
+    })
     return {
-      labApp,
-      conApp
+      appSort: appSort.slice(0, 5)
     }
   }
 }
