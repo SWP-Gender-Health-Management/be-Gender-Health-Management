@@ -17,7 +17,6 @@ const accountRepository = AppDataSource.getRepository(Account)
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
 export class BlogService {
-
   // Hàm hỗ trợ chuyển đường dẫn cục bộ thành URL
   private toImageUrl(localPath: string): string {
     // localPath đã là dạng uploads/blog_images/..., chỉ cần thêm BASE_URL
@@ -101,10 +100,10 @@ export class BlogService {
   }
 
   // Get all blogs
-  async getAllBlogs(pageVar: { limit: string, page: string }): Promise<Blog[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
-    let page = parseInt(pageVar.page) || 1;
-    const skip = (page - 1) * limit;
+  async getAllBlogs(pageVar: { limit: string; page: string }): Promise<Blog[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default
+    let page = parseInt(pageVar.page) || 1
+    const skip = (page - 1) * limit
     const blogs = await blogRepository.find({
       skip,
       take: limit,
@@ -147,8 +146,8 @@ export class BlogService {
       })
     }
 
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
-    let page = parseInt(pageVar.page) || 1;
+    let limit = parseInt(pageVar.limit) || LIMIT.default
+    let page = parseInt(pageVar.page) || 1
     const skip = (page - 1) * limit
 
     const blogs = await blogRepository.find({

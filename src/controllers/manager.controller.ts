@@ -141,11 +141,61 @@ export const getMensOverallController = async (req: Request, res: Response, next
   }
 }
 
-export const getMensPercentController = async (req: Request, res: Response, next: NextFunction) => {
+export const getMensAgePercentController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await managerService.getMensPercent()
+    const result = await managerService.getMensAgePercent()
     res.status(HTTP_STATUS.OK).json({
-      message: MANAGER_MESSAGES.GET_MENS_PERCENT_SUCCESS,
+      message: MANAGER_MESSAGES.GET_MENS_AGE_PERCENT_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getMensPeriodPercentController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await managerService.getMensPeriodPercent()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_MENS_PERIOD_PERCENT_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getBlogsController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    const pageVar = {
+      limit: parseInt(limit as string) || 10,
+      page: parseInt(page as string) || 1
+    }
+    const { status } = req.body
+    const statusBlog = status === 'undefined' ? undefined : status.boolean()
+    const result = await managerService.getBlogs(pageVar, statusBlog)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_BLOGS_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getQuestionsController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    const pageVar = {
+      limit: parseInt(limit as string) || 10,
+      page: parseInt(page as string) || 1
+    }
+    const { status } = req.body
+    const statusQuestion = status === 'undefined' ? undefined : status.boolean()
+    const result = await managerService.getQuestions(pageVar, statusQuestion)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_QUESTIONS_SUCCESS,
       result
     })
   } catch (error) {

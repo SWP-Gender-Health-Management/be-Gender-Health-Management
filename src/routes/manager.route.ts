@@ -12,7 +12,10 @@ import {
   getConAppController,
   getLabAppController,
   getMensOverallController,
-  getMensPercentController
+  getMensAgePercentController,
+  getMensPeriodPercentController,
+  getBlogsController,
+  getQuestionsController
 } from '~/controllers/manager.controller.js'
 
 const managerRoute = Router()
@@ -91,11 +94,39 @@ managerRoute.get('/get-lab-app', restrictTo(Role.MANAGER), wrapRequestHandler(ge
 managerRoute.get('/get-mens-overall', restrictTo(Role.MANAGER), wrapRequestHandler(getMensOverallController))
 
 /*
-  description: get-mens-percent
-  path: /manager/get-mens-percent
+  description: get-mens-age-percent
+  path: /manager/get-mens-age-percent
   method: GET
   access: private
 */
-managerRoute.get('/get-mens-percent', restrictTo(Role.MANAGER), wrapRequestHandler(getMensPercentController))
+managerRoute.get('/get-mens-age-percent', restrictTo(Role.MANAGER), wrapRequestHandler(getMensAgePercentController))
+
+/*
+  description: get-mens-period-percent
+  path: /manager/get-mens-period-percent
+  method: GET
+  access: private
+*/
+managerRoute.get(
+  '/get-mens-period-percent',
+  restrictTo(Role.MANAGER),
+  wrapRequestHandler(getMensPeriodPercentController)
+)
+
+/*
+  description: get-blogs
+  path: /manager/get-blogs
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-blogs', restrictTo(Role.MANAGER), wrapRequestHandler(getBlogsController))
+
+/*
+  description: get-questions
+  path: /manager/get-questions
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-questions', restrictTo(Role.MANAGER), wrapRequestHandler(getQuestionsController))
 
 export default managerRoute

@@ -13,6 +13,8 @@ import StaffPattern from '~/models/Entity/staff_pattern.entity.js'
 import ConsultantPattern from '~/models/Entity/consultant_pattern.entity.js'
 import Transaction from '~/models/Entity/transaction.entity.js'
 import { TransactionStatus } from '~/enum/transaction.enum.js'
+import Blog from '~/models/Entity/blog.entity.js'
+import Question from '~/models/Entity/question.entity.js'
 
 const accountRepo = AppDataSource.getRepository(Account)
 const conAppRepo = AppDataSource.getRepository(ConsultAppointment)
@@ -22,6 +24,8 @@ const mensRepo = AppDataSource.getRepository(MenstrualCycle)
 const staffPatternRepo = AppDataSource.getRepository(StaffPattern)
 const conPatternRepo = AppDataSource.getRepository(ConsultantPattern)
 const transactionRepo = AppDataSource.getRepository(Transaction)
+const blogRepo = AppDataSource.getRepository(Blog)
+const questionRepo = AppDataSource.getRepository(Question)
 
 class ManagerService {
   async getOverall() {
@@ -322,23 +326,18 @@ class ManagerService {
     }
   }
 
-  /*
-    21 - 24
-    25 - 27 tuổi
-    28 - 30 tuổi
-    >30 tuổi
-  */
-  async getMensPercent() {
-    const today = new Date()
+  async getMensAgePercent() {
     const result = await accountRepo
       .createQueryBuilder('account')
       .select(
         `
       CASE
-          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 21 AND 24 THEN '21-24 tuổi'
-          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 25 AND 27 THEN '25-27 tuổi'
-          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 28 AND 30 THEN '28-30 tuổi'
-          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) > 30 THEN '>30 tuổi'
+          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 15 AND 19 THEN '15-19 tuổi'
+          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 20 AND 24 THEN '20-24 tuổi'
+          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 25 AND 29 THEN '25-29 tuổi'
+          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 30 AND 34 THEN '30-34 tuổi'
+          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 35 AND 39 THEN '35-39 tuổi'
+          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) > 40 THEN '>40 tuổi'
           ELSE 'Nhóm khác'
       END`,
         'ageGroup'
@@ -350,6 +349,64 @@ class ManagerService {
       .groupBy('ageGroup') // Nhóm kết quả lại theo các nhóm tuổi
       .getRawMany() // Lấy kết quả thô
     return { ...result }
+  }
+
+  async getMensPeriodPercent() {
+    const result = await mensRepo
+      .createQueryBuilder('menstrual_cycle')
+      .select(
+        `
+      CASE
+          WHEN menstrual_cycle.period BETWEEN 21 AND 24 THEN '21-24 ngày'
+          WHEN menstrual_cycle.period BETWEEN 25 AND 27 THEN '25-27 ngày'
+          WHEN menstrual_cycle.period BETWEEN 28 AND 30 THEN '28-30 ngày'
+          WHEN menstrual_cycle.period > 30 THEN '>30 ngày'
+          ELSE 'Nhóm khác'
+      END`,
+        'periodGroup'
+      ) // Đặt tên cho cột kết quả là "ageGroup"
+      .addSelect('COUNT(menstrual_cycle.cycle_id)', 'mensCount') // Đếm số lượng user trong mỗi nhóm
+      .groupBy('periodGroup') // Nhóm kết quả lại theo các nhóm tuổi
+      .getRawMany() // Lấy kết quả thô
+    return { ...result }
+  }
+
+  async getBlogs(pageVar: { limit: number; page: number }, status: boolean) {
+    const { limit, page } = pageVar
+    const skip = (page - 1) * limit
+    const [result, total] = await blogRepo.findAndCount({
+      order: {
+        created_at: 'DESC'
+      },
+      skip,
+      take: limit,
+      where: {
+        status: status
+      }
+    })
+    return {
+      result,
+      totalPage: Math.ceil(total / limit)
+    }
+  }
+
+  async getQuestions(pageVar: { limit: number; page: number }, status: boolean) {
+    const { limit, page } = pageVar
+    const skip = (page - 1) * limit
+    const [result, total] = await questionRepo.findAndCount({
+      order: {
+        created_at: 'DESC'
+      },
+      where: {
+        status: status
+      },
+      skip,
+      take: limit
+    })
+    return {
+      result,
+      totalPage: Math.ceil(total / limit)
+    }
   }
 }
 const managerService = new ManagerService()
