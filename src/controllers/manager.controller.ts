@@ -140,3 +140,15 @@ export const getMensOverallController = async (req: Request, res: Response, next
     next(error)
   }
 }
+
+export const getMensPercentController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await managerService.getMensPercent()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_MENS_PERCENT_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}

@@ -321,6 +321,36 @@ class ManagerService {
       averageDays: totalDays / totalMens
     }
   }
+
+  /*
+    21 - 24
+    25 - 27 tuổi
+    28 - 30 tuổi
+    >30 tuổi
+  */
+  async getMensPercent() {
+    const today = new Date()
+    const result = await accountRepo
+      .createQueryBuilder('account')
+      .select(
+        `
+      CASE
+          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 21 AND 24 THEN '21-24 tuổi'
+          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 25 AND 27 THEN '25-27 tuổi'
+          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) BETWEEN 28 AND 30 THEN '28-30 tuổi'
+          WHEN TIMESTAMPDIFF(YEAR, account.dob, CURDATE()) > 30 THEN '>30 tuổi'
+          ELSE 'Nhóm khác'
+      END`,
+        'ageGroup'
+      ) // Đặt tên cho cột kết quả là "ageGroup"
+      .addSelect('COUNT(account.account_id)', 'userCount') // Đếm số lượng user trong mỗi nhóm
+      .where('account.role = :role', { role: Role.CUSTOMER })
+      .andWhere('account.is_banned = :isBanned', { isBanned: false })
+      .andWhere('account.menstrual_cycle IS NOT NULL')
+      .groupBy('ageGroup') // Nhóm kết quả lại theo các nhóm tuổi
+      .getRawMany() // Lấy kết quả thô
+    return { ...result }
+  }
 }
 const managerService = new ManagerService()
 export default managerService
