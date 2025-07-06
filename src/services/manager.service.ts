@@ -384,8 +384,20 @@ class ManagerService {
         status: status
       }
     })
+    const resultNew: any[] = []
+    result.forEach((element: Blog) => {
+      const blog = {
+        title: element.title,
+        content: element.content,
+        author: element.account.full_name,
+        image: element.images,
+        status: element.status,
+        created_at: element.created_at
+      }
+      resultNew.push(blog)
+    })
     return {
-      result,
+      result: resultNew,
       totalPage: Math.ceil(total / limit)
     }
   }
@@ -401,10 +413,32 @@ class ManagerService {
         status: status
       },
       skip,
-      take: limit
+      take: limit,
+      relations: {
+        reply: true,
+        customer: true
+      }
+    })
+    const resultNew: any[] = []
+    result.forEach((element: Question) => {
+      const question = {
+        customer: element.customer.full_name,
+        content: element.content,
+        created_at: element.created_at,
+        reply: element.reply
+          ? {
+              content: element.reply.content,
+              created_at: element.reply.created_at
+            }
+          : {
+              content: null,
+              created_at: null
+            }
+      }
+      resultNew.push(question)
     })
     return {
-      result,
+      result: resultNew,
       totalPage: Math.ceil(total / limit)
     }
   }
