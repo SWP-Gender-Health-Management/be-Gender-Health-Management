@@ -63,7 +63,7 @@ export class ConsultAppointmentService {
       consultant_pattern: consultantPattern,
       customer: customer,
       description: description || '',
-      status: status || StatusAppointment.PENDING
+      status: StatusAppointment.PENDING
     })
     const savedConsultAppointment = await consultAppointmentRepository.save(consultAppointment)
 
@@ -311,6 +311,21 @@ export class ConsultAppointmentService {
     }
 
     await consultAppointmentRepository.remove(consultAppointment)
+  }
+
+  async getConsultants(page: string, limit: string): Promise<Account[]> {
+    let limitNumber = parseInt(limit) || 9
+    let pageNumber = parseInt(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
+    const consultants = await accountRepository.find({
+      skip: skip,
+      take: limitNumber,
+      where: {
+        role: Role.CONSULTANT,
+        is_banned: false
+      }
+    })
+    return consultants
   }
 }
 

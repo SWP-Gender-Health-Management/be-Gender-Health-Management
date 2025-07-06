@@ -71,18 +71,18 @@ export const updateResultController = async (req: Request, res: Response, next: 
   const { app_id, result } = req.body
   const resultData = await staffService.updateResult(app_id, result as any[])
   if (!resultData) {
-    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+    res.status(HTTP_STATUS.BAD_REQUEST).json({
       message: RESULT_MESSAGES.RESULT_CREATE_FAILED,
       data: resultData
     })
   }
-  if (resultData.length < result.length) {
-    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+  if (Array.isArray(resultData) && resultData.length < result.length) {
+    res.status(HTTP_STATUS.BAD_REQUEST).json({
       message: RESULT_MESSAGES.RESULT_CREATE_NOT_ENOUGH_DATA,
       data: resultData
     })
   }
-  return res.status(HTTP_STATUS.OK).json({
+  res.status(HTTP_STATUS.OK).json({
     message: RESULT_MESSAGES.RESULT_CREATED_SUCCESS,
     data: resultData
   })
@@ -151,7 +151,7 @@ export const updateResultController = async (req: Request, res: Response, next: 
 export const updateAppointmentStatusController = async (req: Request, res: Response, next: NextFunction) => {
   const { appointment_id, status } = req.body
   const appointmentStatus = await staffService.updateAppointmentStatus(appointment_id, status)
-  return res.status(HTTP_STATUS.OK).json({
+  res.status(HTTP_STATUS.OK).json({
     message: LABORARITY_MESSAGES.APPOINTMENT_STATUS_UPDATED_SUCCESS,
     data: appointmentStatus
   })

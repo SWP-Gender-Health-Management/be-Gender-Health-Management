@@ -6,8 +6,9 @@ import Question from '../models/Entity/question.entity.js'
 import Account from '../models/Entity/account.entity.js'
 import Reply from '../models/Entity/reply.entity.js'
 import { Role } from '../enum/role.enum.js'
-import { DeleteResult } from 'typeorm'
+import { DeleteResult, IsNull } from 'typeorm'
 import LIMIT from '~/constants/limit.js'
+import { isNull } from 'lodash'
 
 const questionRepository = AppDataSource.getRepository(Question)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -56,7 +57,7 @@ export class QuestionService {
     return await questionRepository.find({
       skip,
       take: limit,
-      relations: ['customer', 'reply']
+      relations: ['customer', 'reply', 'reply.consultant']
     })
   }
 
@@ -69,7 +70,7 @@ export class QuestionService {
   async getQuestionById(ques_id: string): Promise<Question> {
     const question = await questionRepository.findOne({
       where: { ques_id },
-      relations: ['customer', 'reply']
+      relations: ['customer', 'reply', 'reply.consultant']
     })
 
     if (!question) {
@@ -80,6 +81,34 @@ export class QuestionService {
     }
 
     return question
+  }
+
+  // Get Unreplied questions
+  async getUnrepliedQuestions(pageVar: { limit: string, page: string }): Promise<Question[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
+    const skip = (page - 1) * limit
+
+    return await questionRepository.find({
+      where: { reply: IsNull() },
+      skip,
+      take: limit,
+      relations: ['customer', 'reply', 'reply.consultant']
+    })
+  }
+
+  // Get replied questions by Consultant ID
+  async getRepliedQuestionsByConsultantId(consultant_id: string, pageVar: { limit: string, page: string }): Promise<Question[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let page = parseInt(pageVar.page) || 1;
+    const skip = (page - 1) * limit
+
+    return await questionRepository.find({
+      where: { reply: { consultant: { account_id: consultant_id } } },
+      skip,
+      take: limit,
+      relations: ['customer', 'reply', 'reply.consultant']
+    })
   }
 
   /**
@@ -107,7 +136,7 @@ export class QuestionService {
       where: { customer: {account_id: customer.account_id}},
       skip,
       take: limit,
-      relations: ['customer', 'reply']
+      relations: ['customer', 'reply', 'reply.consultant']
     })
 
     if (!questions || questions.length === 0) {

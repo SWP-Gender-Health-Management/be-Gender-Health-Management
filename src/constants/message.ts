@@ -240,7 +240,8 @@ export const CONSULTANT_APPOINTMENTS_MESSAGES = {
   CONSULTANT_PATTERN_NOT_FOUND: 'Consultant pattern not found',
   CONSULTANT_PATTERN_ALREADY_BOOKED: 'Consultant pattern is already booked',
   CUSTOMER_NOT_FOUND: 'Customer not found',
-  CONSULT_APPOINTMENT_CANNOT_DELETE: 'Cannot delete consult appointment with associated feedback'
+  CONSULT_APPOINTMENT_CANNOT_DELETE: 'Cannot delete consult appointment with associated feedback',
+  CONSULTANTS_RETRIEVED_SUCCESS: 'Consultants retrieved successfully'
 }
 
 export const QUESTION_MESSAGES = {
@@ -309,5 +310,6 @@ export const BLOG_MESSAGES = {
   BLOG_NOT_FOUND: 'Blog not found',
   TITLE_REQUIRED: 'Blog title is required',
   CONTENT_REQUIRED: 'Blog content is required',
-  MAJOR_REQUIRED: 'Blog major is required'
+  MAJOR_REQUIRED: 'Blog major is required',
+  MAJOR_RETRIEVED_SUCCESS: 'Blog majors retrieved successfully'
 }

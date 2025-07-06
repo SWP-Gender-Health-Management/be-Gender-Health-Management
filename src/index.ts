@@ -25,8 +25,16 @@ import blogRoute from './routes/blog.route.js'
 import { SocketServer } from './config/websocket.config.js'
 import { SocketIOService } from './services/websocket.service.js'
 import managerRoute from './routes/manager.route.js'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 dotenv.config()
+
+// Lấy __dirname trong ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+// Get the directory name of the current module
+const uploadsPath = path.join(__dirname, '../uploads')
 
 const app = express()
 
@@ -89,6 +97,8 @@ initializeApp()
       app.use('/transaction/payos', transactionRoute)
       // route blog
       app.use('/blog', blogRoute)
+      // Serve static files from the uploads directory
+      app.use('/uploads', express.static(uploadsPath))
       app.use(defaultErrorHandle)
 
       const port = process.env.PORT || 3000

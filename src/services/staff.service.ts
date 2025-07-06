@@ -39,7 +39,7 @@ class StaffService {
    * @returns The result entities
    */
   // Update the result of a laboratory appointment
-  async updateResult(app_id: string, result: any[]): Promise<Result[] | boolean> {
+  async updateResult(app_id: string, result: any[]): Promise<Result[]> {
     const resultEntities = []
     for (const item of result) {
       const laborarity = await laborarityRepository.findOne({
@@ -48,7 +48,7 @@ class StaffService {
         }
       })
       if (!laborarity) {
-        return false
+        return []
       }
       const resultEntity = resultRepository.create({
         name: item.name,

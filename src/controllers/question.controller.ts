@@ -124,6 +124,43 @@ export const getAllQuestions = async (req: Request, res: Response, next: NextFun
   }
 }
 
+// Get Unreplied questions
+export const getUnrepliedQuestions = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await questionService.getUnrepliedQuestions(pageVar)
+    res.status(HTTP_STATUS.OK).json({
+      message: QUESTION_MESSAGES.QUESTIONS_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// Get questions by consultant ID
+export const getRepliedQuestionsByConsultantId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { consultant_id } = req.params
+    const { limit, page } = req.query
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+    const result = await questionService.getRepliedQuestionsByConsultantId(consultant_id, pageVar)
+    res.status(HTTP_STATUS.OK).json({
+      message: QUESTION_MESSAGES.QUESTIONS_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 /**
  * @swagger
  * /question/get-question-by-id/{ques_id}:
