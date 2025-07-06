@@ -4,7 +4,7 @@ import { StatusAppointment, stringToStatus } from '~/enum/statusAppointment.enum
 import ConsultAppointment from '~/models/Entity/consult_appointment.entity.js'
 import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity.js'
 import Feedback from '~/models/Entity/feedback.entity.js'
-import { addDays, endOfWeek, startOfWeek, subDays } from 'date-fns'
+import { addDays, endOfMonth, endOfWeek, startOfMonth, startOfWeek, subDays } from 'date-fns'
 import { TypeAppointment } from '~/enum/type_appointment.enum.js'
 import Account from '~/models/Entity/account.entity.js'
 import { Role } from '~/enum/role.enum.js'
@@ -286,6 +286,40 @@ class ManagerService {
       }
     })
     return labApp
+  }
+
+  async getMensOverall() {
+    const today = new Date()
+    const startOfMonthDate = startOfMonth(today)
+    const endOfMonthDate = endOfMonth(today)
+    const [totalMens, totalMensMonth, totalPeriod, totalMensDate] = await Promise.all([
+      mensRepo.count(),
+      mensRepo.count({
+        where: {
+          created_at: Between(startOfMonthDate, endOfMonthDate)
+        }
+      }),
+      mensRepo.sum('period'),
+      mensRepo
+        .createQueryBuilder('MenstrualCycle')
+        // EXTRACT(EPOCH FROM ...) sẽ lấy ra tổng số giây giữa 2 mốc thời gian
+        .select(
+          'SUM(EXTRACT(EPOCH FROM ("MenstrualCycle"."end_date" - "MenstrualCycle"."start_date")))',
+          'totalSeconds'
+        )
+        .getRawOne()
+    ])
+    // kết quả trả về là tổng số giây, ví dụ: { totalSeconds: '2592000' }
+    const totalSeconds = parseFloat(totalMensDate.totalSeconds) || 0
+
+    // Chuyển đổi từ giây sang ngày
+    const totalDays = totalSeconds / (60 * 60 * 24)
+    return {
+      totalMens,
+      totalMensMonth,
+      averagePeriod: (totalPeriod as number) / totalMens,
+      averageDays: totalDays / totalMens
+    }
   }
 }
 const managerService = new ManagerService()

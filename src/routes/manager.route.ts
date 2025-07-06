@@ -10,7 +10,8 @@ import {
   getConsultantsController,
   getStaffsController,
   getConAppController,
-  getLabAppController
+  getLabAppController,
+  getMensOverallController
 } from '~/controllers/manager.controller.js'
 
 const managerRoute = Router()
@@ -78,5 +79,14 @@ managerRoute.get('/get-con-app', restrictTo(Role.MANAGER), wrapRequestHandler(ge
   access: private
 */
 managerRoute.get('/get-lab-app', restrictTo(Role.MANAGER), wrapRequestHandler(getLabAppController))
+
+// thống kê người đăng kí quản lý chu kì kinh nguyệt
+/*
+  description: get-mens-overall
+  path: /manager/get-mens-overall
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-mens-overall', restrictTo(Role.MANAGER), wrapRequestHandler(getMensOverallController))
 
 export default managerRoute

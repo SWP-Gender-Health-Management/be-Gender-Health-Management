@@ -156,7 +156,8 @@ export const MANAGER_MESSAGES = {
   GET_CONSULTANTS_SUCCESS: 'Get consultants successfully',
   GET_STAFFS_SUCCESS: 'Get staffs successfully',
   GET_CON_APP_SUCCESS: 'Get con app successfully',
-  GET_LAB_APP_SUCCESS: 'Get lab app successfully'
+  GET_LAB_APP_SUCCESS: 'Get lab app successfully',
+  GET_MENS_OVERALL_SUCCESS: 'Get mens overall successfully'
 }
 
 export const LABORARITY_MESSAGES = {

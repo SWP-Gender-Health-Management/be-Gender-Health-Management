@@ -128,3 +128,15 @@ export const getLabAppController = async (req: Request, res: Response, next: Nex
     next(error)
   }
 }
+
+export const getMensOverallController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await managerService.getMensOverall()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_MENS_OVERALL_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
