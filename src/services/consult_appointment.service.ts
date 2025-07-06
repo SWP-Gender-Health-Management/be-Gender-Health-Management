@@ -27,8 +27,7 @@ export class ConsultAppointmentService {
   async createConsultAppointment(
     pattern_id: string,
     customer_id: string,
-    description: string,
-    status: StatusAppointment
+    description: string
   ): Promise<ConsultAppointment> {
     // Validate consultant pattern
     const consultantPattern = await consultantPatternRepository.findOne({
@@ -63,7 +62,7 @@ export class ConsultAppointmentService {
       consultant_pattern: consultantPattern,
       customer: customer,
       description: description || '',
-      status: status || StatusAppointment.PENDING
+      status: StatusAppointment.PENDING
     })
     const savedConsultAppointment = await consultAppointmentRepository.save(consultAppointment)
 
