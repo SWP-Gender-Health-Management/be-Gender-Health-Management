@@ -40,13 +40,16 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
     }
 
     // 4. Tạo một accessToken MỚI (không tạo refresh token mới ở đây)
-    const newRefreshToken = AccountService.createRefreshToken(user.account_id, user.email)
+    const newAccessToken = AccountService.createAccessToken(user.account_id, user.email)
+
+    // const newRefreshToken = AccountService.createRefreshToken(user.account_id, user.email)
 
     // 5. Trả accessToken mới về cho client
     res.status(HTTP_STATUS.OK).json({
       message: USERS_MESSAGES.REFRESH_TOKEN_SUCCESS,
       data: {
-        accessToken: newRefreshToken
+        accessToken: newAccessToken
+        // refreshToken: newRefreshToken
       }
     })
   })

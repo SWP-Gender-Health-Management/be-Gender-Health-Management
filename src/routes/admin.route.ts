@@ -33,7 +33,7 @@ const adminRoute = Router()
   body:{
   }
 */
-adminRoute.get('/get-overall', restrictTo(Role.ADMIN), wrapRequestHandler(getOverallController))
+adminRoute.get('/get-overall-kpis', restrictTo(Role.ADMIN), wrapRequestHandler(getOverallController))
 
 /*
   description: get percent of customer

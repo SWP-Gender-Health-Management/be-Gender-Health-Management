@@ -27,6 +27,7 @@ import { SocketIOService } from './services/websocket.service.js'
 import managerRoute from './routes/manager.route.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import refreshTokenRoute from './routes/refresh_token.route.js'
 
 dotenv.config()
 
@@ -99,6 +100,8 @@ initializeApp()
       app.use('/blog', blogRoute)
       // Serve static files from the uploads directory
       app.use('/uploads', express.static(uploadsPath))
+      // route refresh token
+      app.use('/refresh-token', refreshTokenRoute)
       app.use(defaultErrorHandle)
 
       const port = process.env.PORT || 3000
