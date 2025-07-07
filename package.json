@@ -11,7 +11,16 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
-    "prettier:fix": "prettier --write ."
+    "prettier:fix": "prettier --write .",
+    "seed:customers": "tsx src/scripts/create-customer-accounts.ts",
+    "seed:consultants": "tsx src/scripts/create-consultant-accounts.ts",
+    "seed:staff": "tsx src/scripts/create-staff-accounts.ts",
+    "seed:consultant-patterns": "tsx src/scripts/create-consultant-patterns.ts",
+    "seed:staff-patterns": "tsx src/scripts/create-staff-patterns.ts",
+    "seed:sti-tests": "tsx src/scripts/create-sti-tests.ts",
+    "seed:blogs": "tsx src/scripts/create-blogs.ts",
+    "seed:menstrual-cycles": "tsx src/scripts/create-menstrual-cycles.ts",
+    "seed:questions-replies": "tsx src/scripts/create-questions-replies.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +28,7 @@
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.27.0",
+    "@faker-js/faker": "^9.9.0",
     "@types/cors": "^2.8.19",
     "@types/dateformat": "^5.0.3",
     "@types/express": "^5.0.2",
