@@ -20,7 +20,10 @@
     "seed:sti-tests": "tsx src/scripts/create-sti-tests.ts",
     "seed:blogs": "tsx src/scripts/create-blogs.ts",
     "seed:menstrual-cycles": "tsx src/scripts/create-menstrual-cycles.ts",
-    "seed:questions-replies": "tsx src/scripts/create-questions-replies.ts"
+    "seed:questions-replies": "tsx src/scripts/create-questions-replies.ts",
+    "migration:run": "tsx -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/config/database.config.ts",
+    "migration:revert": "tsx -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/config/database.config.ts",
+    "migration:generate": "tsx -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/config/database.config.ts"
   },
   "keywords": [],
   "author": "",
@@ -50,6 +53,7 @@
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "tsc-alias": "^1.8.16",
+    "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1"
