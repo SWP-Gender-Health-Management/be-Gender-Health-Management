@@ -348,7 +348,10 @@ export class ConsultAppointmentService {
         'consultant_pattern.working_slot',
         'customer',
         'report'
-      ]
+      ],
+      order: {
+        consultant_pattern: {working_slot: {name: 'ASC'}}
+      }
     })
     if (!consultAppointments.length) {
       throw new ErrorWithStatus({
