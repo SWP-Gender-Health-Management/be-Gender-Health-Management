@@ -58,7 +58,10 @@ export const USERS_MESSAGES = {
   GOOGLE_ACCOUNT_NOT_FOUND: 'Google account not found',
   GOOGLE_VERIFY_SUCCESS: 'Google verify successfully',
   GOOGLE_VERIFY_FAILED: 'Google verify failed',
-  RESET_PASSWORD_SUCCESS: 'Reset password successfully'
+  RESET_PASSWORD_SUCCESS: 'Reset password successfully',
+  GOOGLE_ACCOUNT_NO_PASSWORD: 'Không thể thay đổi mật khẩu cho tài khoản Google',
+  GOOGLE_ACCOUNT_NO_RESET: 'Không thể đặt lại mật khẩu cho tài khoản Google',
+  GOOGLE_ACCOUNT_NO_RESET_EMAIL: 'Không thể gửi email đặt lại mật khẩu cho tài khoản Google'
 }
 
 export const REFRESH_TOKEN_MESSAGES = {

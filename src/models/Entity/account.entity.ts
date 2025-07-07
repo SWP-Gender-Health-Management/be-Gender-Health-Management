@@ -24,7 +24,7 @@ export interface AccountType {
   account_id: string
   full_name?: string | null
   email: string
-  password: string
+  password?: string | null
   phone?: string | null
   dob?: Date | null
   gender?: string | null
@@ -32,6 +32,7 @@ export interface AccountType {
   role: Role
   is_verified?: boolean
   is_banned?: boolean
+  is_google_account?: boolean
   // created_at: Timestamp
   // updated_at: Timestamp
 }
@@ -47,7 +48,7 @@ export default class Account implements AccountType {
   @Column({ type: 'varchar', length: 100, nullable: false })
   email: string
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text', nullable: true })
   password: string
 
   @Column({ type: 'varchar', length: 10, nullable: true })
@@ -70,6 +71,9 @@ export default class Account implements AccountType {
 
   @Column({ type: 'boolean', default: false })
   is_banned: boolean
+
+  @Column({ type: 'boolean', default: false })
+  is_google_account: boolean
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
