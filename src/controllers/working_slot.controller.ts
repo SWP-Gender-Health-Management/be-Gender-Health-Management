@@ -3,6 +3,7 @@ import HTTP_STATUS from '../constants/httpStatus.js'
 import { WORKING_SLOT_MESSAGES } from '../constants/message.js'
 import workingSlotService from '../services/working_slot.service.js'
 
+
 /**
  * @swagger
  * /working-slots/add-slot:
@@ -122,6 +123,20 @@ export const getSlotByTypeController = async (req: Request, res: Response, next:
   return res.status(200).json({
     message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
     data: slot
+  })
+}
+
+export const getSlotByTypeParamController = async (req: Request, res: Response, next: NextFunction) => {
+  const { type } = req.params
+  const {limit, page} = req.query;
+    const pageVar = {
+      limit: limit as string, 
+      page: page as string
+    };
+  const slot = await workingSlotService.getSlotByType(type, pageVar)
+  return res.status(200).json({
+    message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
+    result: slot
   })
 }
 

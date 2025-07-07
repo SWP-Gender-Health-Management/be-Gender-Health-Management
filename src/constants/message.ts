@@ -222,6 +222,7 @@ export const CONSULTANT_PATTERNS_MESSAGES = {
 }
 
 export const CONSULTANT_APPOINTMENTS_MESSAGES = {
+  CONSULTANT_NOT_FOUND: "Consultant not found",
   CONSULT_APPOINTMENT_CREATED_SUCCESS: 'Consult appointment created successfully',
   CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS: 'Consult appointments retrieved successfully',
   CONSULT_APPOINTMENT_RETRIEVED_SUCCESS: 'Consult appointment retrieved successfully',

@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm'
+import { Between, Repository } from 'typeorm'
 import { AppDataSource } from '../config/database.config.js'
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { CONSULTANT_APPOINTMENTS_MESSAGES } from '../constants/message.js'
@@ -99,7 +99,6 @@ export class ConsultAppointmentService {
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
-        'consultant_pattern.consultant',
         'customer',
         'report'
       ]
@@ -118,7 +117,6 @@ export class ConsultAppointmentService {
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
-        'consultant_pattern.consultant',
         'customer',
         'report'
       ]
@@ -164,7 +162,6 @@ export class ConsultAppointmentService {
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
-        'consultant_pattern.consultant',
         'customer',
         'report'
       ]
@@ -196,11 +193,10 @@ export class ConsultAppointmentService {
     }
 
     const consultAppointment = await consultAppointmentRepository.findOne({
-      where: { consultant_pattern: {pattern_id: consultantPattern.pattern_id}  },
+      where: { consultant_pattern: { pattern_id: consultantPattern.pattern_id } },
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
-        'consultant_pattern.consultant',
         'customer',
         'report'
       ]
@@ -311,6 +307,57 @@ export class ConsultAppointmentService {
     }
 
     await consultAppointmentRepository.remove(consultAppointment)
+  }
+
+  async getConsultAppointmentByWeek(consultant_id: string, weekStartDate: string): Promise<ConsultAppointment[]> {
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
+    if (!consultant || consultant.role !== Role.CONSULTANT) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    if (!consultant) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND,
+      });
+    }
+
+    // Validate and calculate week date range
+    const startDate = new Date(weekStartDate);
+    if (isNaN(startDate.getTime())) {
+      throw new ErrorWithStatus({
+        message: 'Invalid weekStartDate format. Use YYYY-MM-DD.',
+        status: HTTP_STATUS.BAD_REQUEST,
+      });
+    }
+    const weekEndDate = new Date(startDate);
+    weekEndDate.setDate(startDate.getDate() + 6); // End of the week
+
+    const consultAppointments = await consultAppointmentRepository.find({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id,
+          date: Between(startDate, weekEndDate)
+        }
+      },
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'customer',
+        'report'
+      ]
+    })
+    if (!consultAppointments.length) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    return consultAppointments
   }
 }
 

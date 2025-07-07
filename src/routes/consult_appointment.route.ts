@@ -6,7 +6,8 @@ import {
   getConsultAppointmentsByCustomerId,
   getConsultAppointmentsByPatternId,
   updateConsultAppointment,
-  deleteConsultAppointment
+  deleteConsultAppointment,
+  getConsultAppointmentsByWeek
 } from '../controllers/consult_appointment.controller.js'
 import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
 import { Role } from '../enum/role.enum.js'
@@ -90,6 +91,21 @@ consultAppointmentRoute.get(
 )
 
 /*
+  Description: Get consult appointment by week of a consultant
+  Method: GET
+  Path: /get-consult-appointment-by-week/:consultant_id
+  Body: {
+    weekStartDate: string
+  }
+*/
+consultAppointmentRoute.get(
+  '/get-consult-appointment-by-week/:consultant_id',
+  // validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  wrapRequestHandler(getConsultAppointmentsByWeek)
+)
+
+/*
   Description: Update a consult appointment (admin or customer)
   Method: PUT
   Path: /update-consult-appointment/:app_id
@@ -98,9 +114,9 @@ consultAppointmentRoute.get(
   }
 */
 consultAppointmentRoute.put(
-  'update-consult-appointment/:app_id',
+  '/update-consult-appointment/:app_id',
   validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CUSTOMER),
+  restrictTo(Role.ADMIN, Role.CUSTOMER, Role.CONSULTANT),
   wrapRequestHandler(updateConsultAppointment)
 )
 

@@ -27,6 +27,7 @@ export default class ConsultantPattern implements ConsultantPatternType {
   @PrimaryGeneratedColumn('uuid')
   pattern_id: string
 
+  //consultant ID
   @Column({ type: 'uuid', nullable: false })
   account_id: string
 

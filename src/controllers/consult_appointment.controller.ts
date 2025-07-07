@@ -191,6 +191,8 @@ export const getConAppById = async (req: Request, res: Response, next: NextFunct
   }
 }
 
+
+
 /**
  * @swagger
  * /consult-appointment/get-consult-appointment-by-id/customer/{customer_id}:
@@ -244,6 +246,24 @@ export const getConsultAppointmentsByCustomerId = async (req: Request, res: Resp
       customer_id as string,
       limit as string,
       page as string
+    )
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getConsultAppointmentsByWeek = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { consultant_id } = req.params
+    const { weekStartDate } = req.query
+    console.log("check weekStartDate: ", weekStartDate);
+    const result = await consultAppointmentService.getConsultAppointmentByWeek(
+      consultant_id as string,
+      weekStartDate as string
     )
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
