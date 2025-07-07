@@ -6,7 +6,16 @@ import {
   getAppPercentController,
   getOverallController,
   getOverallWeeklyController,
-  getRecentAppController
+  getRecentAppController,
+  getConsultantsController,
+  getStaffsController,
+  getConAppController,
+  getLabAppController,
+  getMensOverallController,
+  getMensAgePercentController,
+  getMensPeriodPercentController,
+  getBlogsController,
+  getQuestionsController
 } from '~/controllers/manager.controller.js'
 
 const managerRoute = Router()
@@ -42,5 +51,82 @@ managerRoute.get('/get-app-percent', restrictTo(Role.MANAGER), wrapRequestHandle
   access: private
 */
 managerRoute.get('/get-recent-app', restrictTo(Role.MANAGER), wrapRequestHandler(getRecentAppController))
+
+/*
+  description: get-consultants
+  path: /manager/get-consultants
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-consultants', restrictTo(Role.MANAGER), wrapRequestHandler(getConsultantsController))
+
+/*
+  description: get-staffs
+  path: /manager/get-staffs
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-staffs', restrictTo(Role.MANAGER), wrapRequestHandler(getStaffsController))
+
+/*
+  description: get-con-app
+  path: /manager/get-con-app
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-con-app', restrictTo(Role.MANAGER), wrapRequestHandler(getConAppController))
+
+/*
+  description: get-lab-app
+  path: /manager/get-lab-app
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-lab-app', restrictTo(Role.MANAGER), wrapRequestHandler(getLabAppController))
+
+// thống kê người đăng kí quản lý chu kì kinh nguyệt
+/*
+  description: get-mens-overall
+  path: /manager/get-mens-overall
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-mens-overall', restrictTo(Role.MANAGER), wrapRequestHandler(getMensOverallController))
+
+/*
+  description: get-mens-age-percent
+  path: /manager/get-mens-age-percent
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-mens-age-percent', restrictTo(Role.MANAGER), wrapRequestHandler(getMensAgePercentController))
+
+/*
+  description: get-mens-period-percent
+  path: /manager/get-mens-period-percent
+  method: GET
+  access: private
+*/
+managerRoute.get(
+  '/get-mens-period-percent',
+  restrictTo(Role.MANAGER),
+  wrapRequestHandler(getMensPeriodPercentController)
+)
+
+/*
+  description: get-blogs
+  path: /manager/get-blogs
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-blogs', restrictTo(Role.MANAGER), wrapRequestHandler(getBlogsController))
+
+/*
+  description: get-questions
+  path: /manager/get-questions
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-questions', restrictTo(Role.MANAGER), wrapRequestHandler(getQuestionsController))
 
 export default managerRoute

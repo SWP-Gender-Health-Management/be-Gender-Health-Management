@@ -4,6 +4,6 @@ import wrapRequestHandler from '~/utils/handle.js'
 
 const refreshTokenRoute = Router()
 
-refreshTokenRoute.post('/refresh-token', wrapRequestHandler(refreshTokenController))
+refreshTokenRoute.post('/create-access-token', wrapRequestHandler(refreshTokenController))
 
 export default refreshTokenRoute

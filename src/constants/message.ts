@@ -152,7 +152,17 @@ export const MANAGER_MESSAGES = {
   GET_OVERALL_SUCCESS: 'Get overall successfully',
   GET_OVERALL_WEEKLY_SUCCESS: 'Get overall weekly successfully',
   GET_APP_PERCENT_SUCCESS: 'Get app percent successfully',
-  GET_RECENT_APP_SUCCESS: 'Get recent app successfully'
+  GET_RECENT_APP_SUCCESS: 'Get recent app successfully',
+  GET_CONSULTANTS_SUCCESS: 'Get consultants successfully',
+  GET_STAFFS_SUCCESS: 'Get staffs successfully',
+  GET_CON_APP_SUCCESS: 'Get con app successfully',
+  GET_LAB_APP_SUCCESS: 'Get lab app successfully',
+  GET_MENS_OVERALL_SUCCESS: 'Get mens overall successfully',
+  GET_MENS_PERCENT_SUCCESS: 'Get mens percent successfully',
+  GET_MENS_AGE_PERCENT_SUCCESS: 'Get mens age percent successfully',
+  GET_MENS_PERIOD_PERCENT_SUCCESS: 'Get mens period percent successfully',
+  GET_BLOGS_SUCCESS: 'Get blogs successfully',
+  GET_QUESTIONS_SUCCESS: 'Get questions successfully'
 }
 
 export const LABORARITY_MESSAGES = {
