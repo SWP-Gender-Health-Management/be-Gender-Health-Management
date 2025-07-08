@@ -3,6 +3,7 @@ import {
   createLaborarityAppointmentController,
   createNotificationController,
   getCustomersController,
+  getLaborarityAppointmentsController,
   predictPeriodController,
   trackPeriodController,
   updateMenstrualCycleController
@@ -107,4 +108,19 @@ customerRoute.post(
   validateCreateLaborarityAppointment,
   wrapRequestHandler(createLaborarityAppointmentController)
 )
+
+/*
+  description: lấy danh sách lịch xét nghiệm
+  Path: /customer/get-laborarity-appointments
+  Method: GET
+  Header: {
+    access_token: string
+  }
+*/
+customerRoute.get(
+  '/get-laborarity-appointments',
+  restrictTo(Role.CUSTOMER),
+  wrapRequestHandler(getLaborarityAppointmentsController)
+)
+
 export default customerRoute

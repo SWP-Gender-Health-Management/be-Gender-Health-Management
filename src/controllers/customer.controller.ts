@@ -345,3 +345,13 @@ export const createLaborarityAppointmentController = async (req: Request, res: R
     data: result
   })
 }
+
+export const getLaborarityAppointmentsController = async (req: Request, res: Response, next: NextFunction) => {
+  const { account_id } = req.body
+  const { limit, page } = req.query
+  const result = await customerService.getLaborarityAppointments(limit as string, page as string, account_id)
+  res.status(HTTP_STATUS.OK).json({
+    message: CUSTOMER_MESSAGES.GET_LABORARITY_APPOINTMENTS_SUCCESS,
+    result: result
+  })
+}
