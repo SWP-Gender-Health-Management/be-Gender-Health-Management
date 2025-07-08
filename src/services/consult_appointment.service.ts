@@ -191,6 +191,7 @@ export class ConsultAppointmentService {
         consultant: consultant?.full_name,
         consultant_avatar: consultant?.avatar,
         description: conApp.description,
+        report: conApp.report,
         status: conApp.status,
         app_id: conApp.app_id
       }
