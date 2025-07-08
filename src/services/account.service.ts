@@ -415,17 +415,19 @@ class AccountService {
     full_name?: string,
     phone?: string,
     dob?: string,
-    gender?: string
+    gender?: string,
+    address?: string,
+    description?: string
   ): Promise<Account> {
-    const [user] = await Promise.all([
-      accountRepository.findOne({ where: { account_id } }),
-      accountRepository.update(account_id, {
-        full_name: full_name || undefined,
-        phone: phone || undefined,
-        dob: dob || undefined,
-        gender: gender || undefined
-      })
-    ])
+    await accountRepository.update(account_id, {
+      full_name: full_name || undefined,
+      phone: phone || undefined,
+      dob: dob || undefined,
+      gender: gender || undefined,
+      address: address || undefined,
+      description: description || undefined
+    })
+    const user = await accountRepository.findOne({ where: { account_id } })
     await redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
     return user as Account
   }

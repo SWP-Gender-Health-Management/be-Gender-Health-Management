@@ -75,6 +75,12 @@ export default class Account implements AccountType {
   @Column({ type: 'boolean', default: false })
   is_google_account: boolean
 
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  address?: string
+
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  description?: string
+
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
