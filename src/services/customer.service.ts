@@ -12,6 +12,7 @@ import Laboratory from '../models/Entity/laborarity.entity.js'
 import staffService from './staff.service.js'
 import { Role } from '../enum/role.enum.js'
 import Result from '../models/Entity/result.entity.js'
+import { Like } from 'typeorm'
 
 const menstrualCycleRepository = AppDataSource.getRepository(MenstrualCycle)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -216,6 +217,35 @@ class CustomerService {
         message: CUSTOMER_MESSAGES.LABORARITY_NOT_ENOUGH_STAFF,
         status: 400
       })
+    }
+    if (lab_id.length === 1) {
+      const lab: Laboratory | null = await labRepository.findOne({
+        where: { lab_id: lab_id[0] }
+      })
+      if (!lab) {
+        throw new ErrorWithStatus({
+          message: LABORARITY_MESSAGES.LABORARITY_NOT_FOUND,
+          status: 400
+        })
+      }
+      if (lab.name.startsWith('Gói')) {
+        const description = lab.description.split(':')[1]
+        const labName = description.split(',')
+        const labIds: string[] = []
+        for (const name of labName) {
+          const lab: Laboratory | null = await labRepository.findOne({
+            where: { name: Like(`%${name.trim()}%`) }
+          })
+          if (!lab) {
+            throw new ErrorWithStatus({
+              message: LABORARITY_MESSAGES.LABORARITY_NOT_FOUND,
+              status: 400
+            })
+          }
+          labIds.push(lab.lab_id)
+        }
+        lab_id = labIds
+      }
     }
 
     const appointment = appointmentRepository.create({
