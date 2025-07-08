@@ -23,7 +23,7 @@ laborarityRoute.post(
 //Get all laboratories (admin or user)
 laborarityRoute.get(
   '/get-all-laboratories',
-  validateAccessToken,
+  // validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getAllLaboratories)
 )
@@ -31,7 +31,7 @@ laborarityRoute.get(
 // Get a laboratory by ID (admin or user)
 laborarityRoute.get(
   '/get-laboratory-by-id/:lab_id',
-  validateAccessToken,
+  // validateAccessToken,
   restrictTo(Role.ADMIN),
   wrapRequestHandler(getLaboratoryById)
 )
@@ -39,7 +39,7 @@ laborarityRoute.get(
 // Update a laboratory (admin only)
 laborarityRoute.put(
   '/update-laboratory/:lab_id',
-  validateAccessToken,
+  // validateAccessToken,
   restrictTo(Role.ADMIN),
   wrapRequestHandler(updateLaboratory)
 )
@@ -47,7 +47,7 @@ laborarityRoute.put(
 // Delete a laboratory (admin only)
 laborarityRoute.delete(
   '/delete-laboratory/:lab_id',
-  validateAccessToken,
+  // validateAccessToken,
   restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteLaboratory)
 )

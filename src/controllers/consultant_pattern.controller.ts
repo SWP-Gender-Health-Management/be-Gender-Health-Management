@@ -235,12 +235,14 @@ export const getConsultantPatternById = async (req: Request, res: Response, next
 // Get consultant patterns by Consultant ID
 export const getConsultantPatternByConsultantId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { limit, page } = req.query
+    // const { limit, page } = req.query
     const { consultant_id } = req.params
     const result = await consultantPatternService.getConsultantPatternByConsultantId(
-      consultant_id,
-      limit as string,
-      page as string
+      consultant_id
+      // limit as string,
+      // page as string
+      // limit as string,
+      // page as string
     )
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERNS_RETRIEVED_SUCCESS,

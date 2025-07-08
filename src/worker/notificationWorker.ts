@@ -23,7 +23,7 @@ async function processDueNotifications(): Promise<void> {
   const currentTimeInSeconds = Math.floor(Date.now() / 1000)
 
   try {
-    const dueNotificationStrings: string[] = await redisClient.zRangeByScore(
+    const dueNotificationStrings: string[] = await redisClient.zrangebyscore(
       SCHEDULED_NOTIFICATIONS_KEY,
       0, // min score
       currentTimeInSeconds.toString() // max score

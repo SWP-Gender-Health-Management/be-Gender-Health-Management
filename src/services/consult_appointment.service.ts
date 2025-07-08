@@ -28,8 +28,7 @@ export class ConsultAppointmentService {
     pattern_id: string,
     customer_id: string,
     description: string,
-    status: StatusAppointment
-  ): Promise<ConsultAppointment> {
+  ): Promise<{ savedConsultAppointment: ConsultAppointment; amount: number }> {
     // Validate consultant pattern
     const consultantPattern = await consultantPatternRepository.findOne({
       where: { pattern_id },
@@ -63,7 +62,7 @@ export class ConsultAppointmentService {
       consultant_pattern: consultantPattern,
       customer: customer,
       description: description || '',
-      status: status || StatusAppointment.PENDING
+      status: StatusAppointment.PENDING
     })
     const savedConsultAppointment = await consultAppointmentRepository.save(consultAppointment)
 
@@ -78,7 +77,7 @@ export class ConsultAppointmentService {
       relations: ['consult_appointment']
     })
     console.log('Updated consult_appointment array:', updatedAccount)
-    return savedConsultAppointment
+    return { savedConsultAppointment, amount: 400000 }
   }
 
   /**
@@ -302,11 +301,26 @@ export class ConsultAppointmentService {
     })
     if (consultantPattern) {
       consultantPattern.is_booked = false
-      consultantPattern.consult_appointment = null;
+      consultantPattern.consult_appointment = null
       await consultantPatternRepository.save(consultantPattern)
     }
 
     await consultAppointmentRepository.remove(consultAppointment)
+  }
+
+  async getConsultants(page: string, limit: string): Promise<Account[]> {
+    let limitNumber = parseInt(limit) || 9
+    let pageNumber = parseInt(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
+    const consultants = await accountRepository.find({
+      skip: skip,
+      take: limitNumber,
+      where: {
+        role: Role.CONSULTANT,
+        is_banned: false
+      }
+    })
+    return consultants
   }
 
   async getConsultAppointmentByWeek(consultant_id: string, weekStartDate: string): Promise<ConsultAppointment[]> {

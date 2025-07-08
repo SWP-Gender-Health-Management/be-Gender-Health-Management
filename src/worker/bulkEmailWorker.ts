@@ -4,6 +4,7 @@ import redisClient from '~/config/redis.config.js'
 import { AppDataSource } from '~/config/database.config.js'
 import { sendBulkFromTemplate } from '~/services/email.service.js'
 import Account from '~/models/Entity/account.entity.js'
+import { In } from 'typeorm'
 
 const accountRepository = AppDataSource.getRepository(Account)
 
@@ -21,13 +22,13 @@ const worker = new Worker(
       // VÍ DỤ: Lấy tất cả user
       // QUAN TRỌNG: Lấy theo từng đợt (batch) để không làm quá tải bộ nhớ
       const batchSize = 100
-      let page = targetGroup.page || 1
+      let page = 1
       let accounts
 
       do {
         accounts = await accountRepository.find({
           where: {
-            role: targetGroup.role
+            role: In(targetGroup)
           },
           skip: (page - 1) * batchSize,
           take: batchSize

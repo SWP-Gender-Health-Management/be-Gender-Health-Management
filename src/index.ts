@@ -24,16 +24,18 @@ import feedbackRoute from './routes/feedback.route.js'
 import blogRoute from './routes/blog.route.js'
 import { SocketServer } from './config/websocket.config.js'
 import { SocketIOService } from './services/websocket.service.js'
+import managerRoute from './routes/manager.route.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import refreshTokenRoute from './routes/refresh_token.route.js'
 
 dotenv.config()
 
 // Lấy __dirname trong ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 // Get the directory name of the current module
-const uploadsPath = path.join(__dirname, '../uploads');
+const uploadsPath = path.join(__dirname, '../uploads')
 
 const app = express()
 
@@ -66,6 +68,8 @@ initializeApp()
       app.use('/account', accountRoute)
       // route admin
       app.use('/admin', adminRoute)
+      // route manager
+      app.use('/manager', managerRoute)
       // route customer
       app.use('/customer', customerRoute)
       //route staff
@@ -95,7 +99,9 @@ initializeApp()
       // route blog
       app.use('/blog', blogRoute)
       // Serve static files from the uploads directory
-      app.use('/uploads', express.static(uploadsPath));
+      app.use('/uploads', express.static(uploadsPath))
+      // route refresh token
+      app.use('/refresh-token', refreshTokenRoute)
       app.use(defaultErrorHandle)
 
       const port = process.env.PORT || 3000

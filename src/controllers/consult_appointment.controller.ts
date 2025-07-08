@@ -5,6 +5,19 @@ import consultAppointmentService from '~/services/consult_appointment.service.js
 import notificationService from '~/services/notification.service.js'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
 
+export const getConsultants = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    const result = await consultAppointmentService.getConsultants(page as string, limit as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANTS_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 /**
  * @swagger
  * /consult-appointment/create-consult-appointment:
@@ -74,16 +87,11 @@ import { TypeNoti } from '~/enum/type_noti.enum.js'
 // Create a new consult appointment
 export const createConsultAppointment = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { pattern_id, customer_id, description, status } = req.body
-    const result = await consultAppointmentService.createConsultAppointment(
-      pattern_id,
-      customer_id,
-      description,
-      status
-    )
+    const { pattern_id, customer_id, description } = req.body
+    const result = await consultAppointmentService.createConsultAppointment(pattern_id, customer_id, description)
     await notificationService.createNotification(
       {
-        type: TypeNoti.APPOINTMENT_BOOKED,
+        type: TypeNoti.CONSULT_APPOINTMENT,
         title: 'Appointment booked successfully',
         message: 'Your appointment has been booked successfully'
       },
