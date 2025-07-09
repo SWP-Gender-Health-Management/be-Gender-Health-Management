@@ -332,13 +332,6 @@ export class ConsultAppointmentService {
       })
     }
 
-    if (!consultant) {
-      throw new ErrorWithStatus({
-        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANT_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND,
-      });
-    }
-
     // Validate and calculate week date range
     const startDate = new Date(weekStartDate);
     if (isNaN(startDate.getTime())) {
@@ -363,9 +356,6 @@ export class ConsultAppointmentService {
         'customer',
         'report'
       ],
-      order: {
-        consultant_pattern: {working_slot: {name: 'ASC'}}
-      }
     })
     if (!consultAppointments.length) {
       throw new ErrorWithStatus({
@@ -374,6 +364,31 @@ export class ConsultAppointmentService {
       })
     }
 
+    return consultAppointments
+  }
+
+  async getConsultAppointmentByConsultantId(consultant_id: string): Promise<ConsultAppointment[]> {
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
+    if (!consultant || consultant.role !== Role.CONSULTANT) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    const consultAppointments = await consultAppointmentRepository.find({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id,
+        }
+      },
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'customer',
+        'report'
+      ],
+    })
     return consultAppointments
   }
 }

@@ -434,3 +434,17 @@ export const deleteFeedback = async (req: Request, res: Response, next: NextFunc
     next(error)
   }
 }
+
+export const getAverageRatingAndTotalFeedbackOfConsultant = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { account_id } = req.body;
+    console.log("consultant_id: ", account_id)
+    const result = await feedbackService.getAverageRatingAndTotalFeedbackOfConsultant(account_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: FEEDBACK_MESSAGES.FEEDBACK_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}

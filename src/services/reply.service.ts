@@ -66,7 +66,7 @@ export class ReplyService {
     const savedReply = await replyRepository.save(reply)
 
     // Assign the reply to the question and save the question
-    await questionRepository.update(ques_id, {reply: savedReply})
+    await questionRepository.update(ques_id, {reply: savedReply, status: true})
 
     return savedReply
   }
@@ -235,8 +235,9 @@ export class ReplyService {
     })
 
     if (question) {
-      question.reply = null
-      await questionRepository.save(question)
+      question.reply = null;
+      question.status = false;
+      await questionRepository.save(question);
     }
 
     // Delete the reply

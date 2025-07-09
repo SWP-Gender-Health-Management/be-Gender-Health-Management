@@ -3,6 +3,7 @@ import {
   createFeedback,
   deleteFeedback,
   getAllFeedbacks,
+  getAverageRatingAndTotalFeedbackOfConsultant,
   getByIdFeedback,
   getFeedbackByConsultAppointmentId,
   getFeedbackByLaboratoryAppointmentId,
@@ -24,7 +25,6 @@ const feedbackRoute = Router()
 */
 feedbackRoute.post(
   '/create-feedback',
-  validateAccessToken,
   restrictTo(Role.CUSTOMER),
   wrapRequestHandler(createFeedback)
 )
@@ -39,7 +39,6 @@ feedbackRoute.post(
 */
 feedbackRoute.get(
   '/get-all-feedbacks',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
   wrapRequestHandler(getAllFeedbacks)
 )
@@ -54,7 +53,6 @@ feedbackRoute.get(
 */
 feedbackRoute.get(
   '/get-by-id-feedback/:feed_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
   wrapRequestHandler(getByIdFeedback)
 )
@@ -69,7 +67,6 @@ feedbackRoute.get(
 */
 feedbackRoute.get(
   '/get-by-id-feedback/consult/:app_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
   wrapRequestHandler(getFeedbackByConsultAppointmentId)
 )
@@ -84,7 +81,6 @@ feedbackRoute.get(
 */
 feedbackRoute.get(
   '/get-by-id-feedback/lab/:lab_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
   wrapRequestHandler(getFeedbackByLaboratoryAppointmentId)
 )
@@ -99,7 +95,6 @@ feedbackRoute.get(
 */
 feedbackRoute.put(
   '/update-feedback/:feed_id',
-  validateAccessToken,
   restrictTo(Role.CUSTOMER),
   wrapRequestHandler(updateFeedback)
 )
@@ -114,9 +109,16 @@ feedbackRoute.put(
 */
 feedbackRoute.delete(
   '/delete-feedback/:feed_id',
-  validateAccessToken,
   restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(deleteFeedback)
 )
+
+feedbackRoute.get(
+  '/get-consultant-rating-feedback',
+  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  wrapRequestHandler(getAverageRatingAndTotalFeedbackOfConsultant)
+)
+
+
 
 export default feedbackRoute

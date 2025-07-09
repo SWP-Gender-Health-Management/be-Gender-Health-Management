@@ -199,6 +199,19 @@ export const getConAppById = async (req: Request, res: Response, next: NextFunct
   }
 }
 
+export const getConsultAppointmentByConsultantId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { consultant_id } = req.params
+    const result = await consultAppointmentService.getConsultAppointmentByConsultantId(consultant_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 
 
 /**

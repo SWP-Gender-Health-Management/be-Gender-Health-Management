@@ -90,7 +90,10 @@ export class QuestionService {
     const skip = (page - 1) * limit
 
     return await questionRepository.find({
-      where: { reply: IsNull() },
+      where: {
+        reply: IsNull(),
+        status: false
+      },
       skip,
       take: limit,
       relations: ['customer', 'reply', 'reply.consultant']
@@ -104,7 +107,10 @@ export class QuestionService {
     const skip = (page - 1) * limit
 
     return await questionRepository.find({
-      where: { reply: { consultant: { account_id: consultant_id } } },
+      where: {
+        reply: { consultant: { account_id: consultant_id } },
+        status: true
+      },
       skip,
       take: limit,
       relations: ['customer', 'reply', 'reply.consultant']
@@ -133,7 +139,7 @@ export class QuestionService {
     const skip = (page - 1) * limit
 
     const questions = await questionRepository.find({
-      where: { customer: {account_id: customer.account_id}},
+      where: { customer: { account_id: customer.account_id } },
       skip,
       take: limit,
       relations: ['customer', 'reply', 'reply.consultant']

@@ -10,11 +10,13 @@ import { TypeAppointment } from '~/enum/type_appointment.enum.js'
 import LIMIT from '~/constants/limit.js'
 import Account from '~/models/Entity/account.entity.js'
 import { Role } from '~/enum/role.enum.js'
+import { ConsultAppointmentService } from './consult_appointment.service.js'
 
 const feedbackRepository = AppDataSource.getRepository(Feedback)
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
 const laboratoryAppointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
 const accountRepository = AppDataSource.getRepository(Account)
+const consultAppointmentService = new ConsultAppointmentService()
 
 export class FeedbackService {
   /**
@@ -255,6 +257,47 @@ export class FeedbackService {
   // Delete a feedback
   async deleteFeedback(feed_id: string): Promise<DeleteResult> {
     return await feedbackRepository.delete(feed_id)
+  }
+
+  async getAverageRatingAndTotalFeedbackOfConsultant(consultant_id: string): Promise<Object> {
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } });
+    if (!consultant || consultant.role !== Role.CONSULTANT) {
+      throw new ErrorWithStatus({
+        message: FEEDBACK_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      });
+    }
+    const appointmentsOfConsultant = await consultAppointmentService.getConsultAppointmentByConsultantId(consultant_id);
+
+    if (!appointmentsOfConsultant.length) {
+      return {
+        totalFeedBack: 0,
+        averageFeedBackRating: 0
+      };
+    }
+
+    let totalFeedBack = 0;
+    let totalFeedBackRating = 0;
+
+    await Promise.all(
+      appointmentsOfConsultant.map(async (app) => {
+        try {
+          const feedback = await this.getFeedbackByConsultAppointmentId(app.app_id);
+          if (feedback) {
+            totalFeedBack += 1;
+            totalFeedBackRating += feedback.rating;
+          }
+        } catch (error) {
+          // Bỏ qua lỗi cho từng feedback để không làm hỏng toàn bộ yêu cầu
+          console.error(`Lỗi khi lấy feedback cho app_id ${app.app_id}:`, error);
+        }
+      })
+    );
+
+    return {
+      totalFeedBack,
+      averageFeedBackRating: totalFeedBack > 0 ? totalFeedBackRating / totalFeedBack : 0
+    };
   }
 }
 

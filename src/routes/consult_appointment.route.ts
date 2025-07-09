@@ -8,7 +8,8 @@ import {
   updateConsultAppointment,
   deleteConsultAppointment,
   getConsultants,
-  getConsultAppointmentsByWeek
+  getConsultAppointmentsByWeek,
+  getConsultAppointmentByConsultantId
 } from '../controllers/consult_appointment.controller.js'
 import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
 import { Role } from '../enum/role.enum.js'
@@ -115,6 +116,13 @@ consultAppointmentRoute.get(
   // validateAccessToken,
   restrictTo(Role.ADMIN, Role.CONSULTANT),
   wrapRequestHandler(getConsultAppointmentsByWeek)
+)
+
+consultAppointmentRoute.get(
+  '/get-consult-appointment-by-id/consultant/:consultant_id',
+  // validateAccessToken,
+  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  wrapRequestHandler(getConsultAppointmentByConsultantId)
 )
 
 /*
