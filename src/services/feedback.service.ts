@@ -38,6 +38,14 @@ export class FeedbackService {
       })
     }
 
+    const existedFeedback = await feedbackRepository.findOne({where: {app_id}});
+    if(existedFeedback) {
+      throw new ErrorWithStatus({
+        message: FEEDBACK_MESSAGES.APPOINTMENT_ALREADY_HAVE_FEEDBACK,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+
     if (!customer_id) {
       throw new ErrorWithStatus({
         message: FEEDBACK_MESSAGES.CUSTOMER_NOT_PROVIDED,
@@ -98,7 +106,6 @@ export class FeedbackService {
     return await feedbackRepository.find({
       skip,
       take: limit,
-      relations: ['consult_appointment', 'laboratoryAppointment']
     })
   }
 
@@ -111,7 +118,6 @@ export class FeedbackService {
   async getFeedbackById(feed_id: string): Promise<Feedback> {
     const feedback = await feedbackRepository.findOne({
       where: { feed_id },
-      relations: ['consult_appointment', 'laboratoryAppointment']
     })
 
     if (!feedback) {

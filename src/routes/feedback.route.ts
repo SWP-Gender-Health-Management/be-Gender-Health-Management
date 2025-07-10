@@ -39,7 +39,7 @@ feedbackRoute.post(
 */
 feedbackRoute.get(
   '/get-all-feedbacks',
-  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.STAFF, Role.CUSTOMER),
   wrapRequestHandler(getAllFeedbacks)
 )
 
@@ -53,7 +53,7 @@ feedbackRoute.get(
 */
 feedbackRoute.get(
   '/get-by-id-feedback/:feed_id',
-  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.STAFF, Role.CUSTOMER),
   wrapRequestHandler(getByIdFeedback)
 )
 
@@ -67,7 +67,7 @@ feedbackRoute.get(
 */
 feedbackRoute.get(
   '/get-by-id-feedback/consult/:app_id',
-  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.STAFF, Role.CUSTOMER),
   wrapRequestHandler(getFeedbackByConsultAppointmentId)
 )
 
@@ -81,7 +81,7 @@ feedbackRoute.get(
 */
 feedbackRoute.get(
   '/get-by-id-feedback/lab/:lab_id',
-  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.STAFF, Role.CUSTOMER),
   wrapRequestHandler(getFeedbackByLaboratoryAppointmentId)
 )
 
