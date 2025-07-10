@@ -28,6 +28,9 @@ export default class Question implements QuestionType {
   @Column({ type: 'boolean', default: false })
   status: boolean
 
+  @Column({ type: 'boolean', default: false })
+  is_replied: boolean
+
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 

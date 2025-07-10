@@ -28,7 +28,8 @@
     "seed:laborarity-appointments": "tsx src/scripts/create-laborarity-appointments.ts",
     "seed:laborarity-results": "tsx src/scripts/create-laborarity-results.ts",
     "update:laborarity-status": "tsx src/scripts/update-laborarity-appointment-status.ts",
-    "seed:consult-reports": "tsx src/scripts/create-consult-reports.ts"
+    "seed:consult-reports": "tsx src/scripts/create-consult-reports.ts",
+    "seed:create-9-questions-6-replies": "tsx src/scripts/create-9-questions-6-replies.ts"
   },
   "keywords": [],
   "author": "",
