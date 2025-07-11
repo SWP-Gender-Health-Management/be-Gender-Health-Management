@@ -298,6 +298,7 @@ export const CONSULT_REPORT_MESSAGES = {
 }
 
 export const FEEDBACK_MESSAGES = {
+  STAFF_NOT_FOUND: "Staff not found",
   APPOINTMENT_ALREADY_HAVE_FEEDBACK: "APPOINTMENT_ALREADY_HAVE_FEEDBACK",
   CONSULTANT_NOT_FOUND: "Consultant not found",
   CUSTOMER_NOT_FOUND: 'Customer not found',

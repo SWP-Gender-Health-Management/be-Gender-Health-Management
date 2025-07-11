@@ -49,13 +49,20 @@ class StaffPatternService {
    * @returns The staff patterns
    */
   // Get all staff patterns
+  
+  async getAllStaffPatternOfStaff(staff_id: string): Promise<StaffPattern[]> {
+    const staffPattern = await staffPatternRepository.find({
+      where: { account_id: staff_id, is_active: true}
+    })
+    return staffPattern
+  }
+  
   async getAllStaffPatternInWeek(): Promise<StaffPattern[]> {
     const staffPattern = await staffPatternRepository.find({
       where: { is_active: true }
     })
     return staffPattern
   }
-
   async getAllStaffPatternInMonth(): Promise<StaffPattern[]> {
     const staffPatterns = await staffPatternRepository
       .createQueryBuilder('staff_pattern')
