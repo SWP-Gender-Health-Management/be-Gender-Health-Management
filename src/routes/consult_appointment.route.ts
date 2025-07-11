@@ -76,15 +76,15 @@ consultAppointmentRoute.get(
 /*
   Description: Get consult appointments by customer ID (admin or customer)
   Method: GET
-  Path: /get-consult-appointment-by-id/customer/:customer_id
+  Path: /customer/get-consult-appointment-by-id
   Body: {
     
   }
 */
 consultAppointmentRoute.get(
-  '/get-consult-appointment-by-id/customer/:customer_id',
-  validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CUSTOMER),
+  '/customer/get-con-apps-by-id',
+  // validateAccessToken,
+  restrictTo(Role.CUSTOMER),
   wrapRequestHandler(getConsultAppointmentsByCustomerId)
 )
 

@@ -27,7 +27,8 @@ export class ConsultAppointmentService {
   async createConsultAppointment(
     pattern_id: string,
     customer_id: string,
-    description: string,
+    description: string
+    // status: StatusAppointment
   ): Promise<{ savedConsultAppointment: ConsultAppointment; amount: number }> {
     // Validate consultant pattern
     const consultantPattern = await consultantPatternRepository.findOne({
@@ -140,27 +141,28 @@ export class ConsultAppointmentService {
    */
   // Get consult appointments by Customer ID
   async getConsultAppointmentsByCustomerId(
-    customer_id: string,
+    account_id: string,
     limit: string,
     page: string
-  ): Promise<ConsultAppointment[]> {
+  ): Promise<{ conApp: any[]; pages: number }> {
     let limitNumber = parseInt(limit) || 10
     let pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
-    const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
+    const customer = await accountRepository.findOne({ where: { account_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
         message: CONSULTANT_APPOINTMENTS_MESSAGES.CUSTOMER_NOT_FOUND,
         status: HTTP_STATUS.NOT_FOUND
       })
     }
-    const consultAppointments = await consultAppointmentRepository.find({
-      where: { customer: { account_id: customer_id } },
+    const [consultAppointments, total] = await consultAppointmentRepository.findAndCount({
+      where: { customer: { account_id } },
       skip,
       take: limitNumber,
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
+        // 'consultant_pattern.consultant',
         'customer',
         'report'
       ]
@@ -173,7 +175,31 @@ export class ConsultAppointmentService {
       })
     }
 
-    return consultAppointments
+    const app: any[] = []
+    for (const conApp of consultAppointments) {
+      const consultant = await accountRepository.findOne({
+        where: { account_id: conApp.consultant_pattern.account_id }
+      })
+      const appData = {
+        date: conApp.consultant_pattern.date,
+        time:
+          conApp.consultant_pattern.working_slot.start_at.slice(0, 5) +
+          ' - ' +
+          conApp.consultant_pattern.working_slot.end_at.slice(0, 5),
+        consultant: consultant?.full_name,
+        consultant_avatar: consultant?.avatar,
+        description: conApp.description,
+        report: conApp.report,
+        status: conApp.status,
+        app_id: conApp.app_id
+      }
+      app.push(appData)
+    }
+
+    return {
+      conApp: app,
+      pages: Math.ceil(total / limitNumber)
+    }
   }
 
   /**

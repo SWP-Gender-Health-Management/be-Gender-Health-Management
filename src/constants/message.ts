@@ -42,6 +42,8 @@ export const USERS_MESSAGES = {
   PHONE_INVALID: 'Phone is invalid',
   DOB_INVALID: 'Date of birth is invalid',
   GENDER_INVALID: 'Gender is invalid',
+  ADDRESS_INVALID: 'Address is invalid',
+  DESCRIPTION_INVALID: 'Description is invalid',
   USER_VIEWED_SUCCESS: 'User viewed successfully',
   EMAIL_NOT_VERIFIED: 'Email not verified',
   EMAIL_VERIFIED_TOKEN_EXPIRED: 'Email verified token expired',
@@ -91,7 +93,9 @@ export const CUSTOMER_MESSAGES = {
   LABORARITY_NOT_ENOUGH_STAFF_FOR_SLOT: 'Laborarity not enough staff for slot',
   WORKING_SLOT_INVALID: 'Working slot is invalid',
   GET_CUSTOMER_SUCCESS: 'Get customer successfully',
-  AMOUNT_INVALID: 'Amount is invalid'
+  AMOUNT_INVALID: 'Amount is invalid',
+  LABORARITY_APPOINTMENT_NOT_FOUND: 'Laborarity appointment not found',
+  GET_LABORARITY_APPOINTMENTS_SUCCESS: 'Get laborarity appointments successfully'
 }
 
 export const WORKING_SLOT_MESSAGES = {

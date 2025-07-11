@@ -261,10 +261,11 @@ export const getConsultAppointmentByConsultantId = async (req: Request, res: Res
 // Get consult appointments by Customer ID
 export const getConsultAppointmentsByCustomerId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { customer_id } = req.params
+    // const { customer_id } = req.params
+    const { account_id } = req.body
     const { limit, page } = req.query
     const result = await consultAppointmentService.getConsultAppointmentsByCustomerId(
-      customer_id as string,
+      account_id as string,
       limit as string,
       page as string
     )

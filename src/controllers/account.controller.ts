@@ -448,6 +448,12 @@ export const sendEmailVerifiedController = async (req: Request, res: Response, n
  *               gender:
  *                 type: string
  *                 description: Gender of the account
+ *               address:
+ *                 type: string
+ *                 description: Address of the account
+ *               description:
+ *                 type: string
+ *                 description: Description of the account
  *             required: []
  *     responses:
  *       200:
@@ -466,8 +472,8 @@ export const sendEmailVerifiedController = async (req: Request, res: Response, n
  *         description: Unauthorized (invalid token)
  */
 export const updateAccountController = async (req: Request, res: Response, next: NextFunction) => {
-  const { account_id, full_name, phone, dob, gender } = req.body
-  const result = await accountService.updateProfile(account_id, full_name, phone, dob, gender)
+  const { account_id, full_name, phone, dob, gender, address, description } = req.body
+  const result = await accountService.updateProfile(account_id, full_name, phone, dob, gender, address, description)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_UPDATED_SUCCESS,
     result

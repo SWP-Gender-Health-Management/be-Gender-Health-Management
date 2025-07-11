@@ -323,6 +323,18 @@ export const validateUpdateAccount = validate(
       isString: true,
       trim: true,
       errorMessage: USERS_MESSAGES.GENDER_INVALID
+    },
+    address: {
+      notEmpty: false,
+      isString: true,
+      trim: true,
+      errorMessage: USERS_MESSAGES.ADDRESS_INVALID
+    },
+    description: {
+      notEmpty: false,
+      isString: true,
+      trim: true,
+      errorMessage: USERS_MESSAGES.DESCRIPTION_INVALID
     }
   })
 )

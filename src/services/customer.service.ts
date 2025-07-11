@@ -11,11 +11,13 @@ import LaboratoryAppointment from '../models/Entity/laborarity_appointment.entit
 import Laboratory from '../models/Entity/laborarity.entity.js'
 import staffService from './staff.service.js'
 import { Role } from '../enum/role.enum.js'
+import Result from '../models/Entity/result.entity.js'
 
 const menstrualCycleRepository = AppDataSource.getRepository(MenstrualCycle)
 const accountRepository = AppDataSource.getRepository(Account)
 const appointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
 const labRepository = AppDataSource.getRepository(Laboratory)
+const resultRepository = AppDataSource.getRepository(Result)
 class CustomerService {
   /**
    * Get all customers
@@ -241,6 +243,45 @@ class CustomerService {
     return {
       message: CUSTOMER_MESSAGES.LABORARITY_APPOINTMENT_CREATED_SUCCESS,
       data: { appointment, amount }
+    }
+  }
+
+  async getLaborarityAppointments(limit: string, page: string, account_id: string) {
+    const limitNumber = parseInt(limit) || 10
+    const pageNumber = parseInt(page) || 1
+    const skip = (pageNumber - 1) * limitNumber
+
+    const customer = await accountRepository.findOne({ where: { account_id } })
+    if (!customer || customer.role !== Role.CUSTOMER) {
+      throw new ErrorWithStatus({
+        message: CUSTOMER_MESSAGES.ACCOUNT_ID_INVALID,
+        status: 400
+      })
+    }
+    const [appointments, total] = await appointmentRepository.findAndCount({
+      where: { customer: { account_id } },
+      skip,
+      take: limitNumber,
+      relations: ['laborarity', 'working_slot', 'result']
+    })
+
+    const app: any[] = []
+    for (const appointment of appointments) {
+      const appData = {
+        date: appointment.date,
+        time: appointment.working_slot.start_at.slice(0, 5) + ' - ' + appointment.working_slot.end_at.slice(0, 5),
+        lab: appointment.laborarity,
+        description: appointment.description,
+        result: appointment.result,
+        status: appointment.status,
+        app_id: appointment.app_id
+      }
+      app.push(appData)
+    }
+    console.log(app)
+    return {
+      labApp: app,
+      pages: Math.ceil(total / limitNumber)
     }
   }
 }
