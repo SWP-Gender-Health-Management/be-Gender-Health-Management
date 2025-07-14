@@ -296,6 +296,21 @@ export const getConsultAppointmentsByWeek = async (req: Request, res: Response, 
   }
 }
 
+export const getConsultAppointmentStatByConsultantId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { account_id } = req.body;
+    const result = await consultAppointmentService.getConsultAppointmentStatByConsultantId(
+      account_id as string
+    )
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 /**
  * @swagger
  * /consult-appointment/get-consult-appointment-by-id/pattern/{pattern_id}:

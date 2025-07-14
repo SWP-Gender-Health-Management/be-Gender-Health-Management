@@ -224,7 +224,10 @@ export const RESULT_MESSAGES = {
 }
 
 export const STAFF_MESSAGES = {
-  STAFF_ID_INVALID: 'Staff id is invalid'
+  STAFF_ID_INVALID: 'Staff id is invalid',
+  STAFF_NOT_FOUND: "STAFF_NOT_FOUND",
+  APPOINTMENT_NOT_FOUND: 'APPOINTMENT_NOT_FOUND',
+  APPOINTMENT_OWNED: 'Appointment belong to an other staff'
 }
 
 export const CONSULTANT_PATTERNS_MESSAGES = {

@@ -119,6 +119,17 @@ class StaffPatternService {
     await staffPatternRepository.save(staffPattern)
     return { message: STAFF_PATTERN_MESSAGES.STAFF_PATTERN_DELETED_SUCCESS }
   }
+
+  async getStaffPatternByDate(staff_id: string, date: string): Promise<StaffPattern[]> {
+    const patterns = await staffPatternRepository.find({
+      where: {
+        date: new Date(date),
+        account_id: staff_id
+      },
+      relations: ['working_slot']
+    });
+    return patterns;
+  }
 }
 const staffPatternService = new StaffPatternService()
 export default staffPatternService

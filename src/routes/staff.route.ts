@@ -1,5 +1,7 @@
 import express from 'express'
-import { updateAppointmentStatusController, updateResultController } from '~/controllers/staff.controller.js'
+import { getAppointmentOfStaff, getAppointmentOfStaffByPattern, updateAppointmentStatusController, updateResultController } from '~/controllers/staff.controller.js'
+import { Role } from '~/enum/role.enum.js'
+import { restrictTo } from '~/middlewares/account.middleware.js'
 import { validateUpdateAppointmentStatus, validateUpdateResult } from '~/middlewares/staff.middleware.js'
 import wrapRequestHandler from '~/utils/handle.js'
 
@@ -27,6 +29,18 @@ staffRoute.post(
   '/update-appointment-status',
   validateUpdateAppointmentStatus,
   wrapRequestHandler(updateAppointmentStatusController)
+)
+
+staffRoute.get(
+  '/get-laborarity-appointment-by-pattern',
+  restrictTo(Role.ADMIN, Role.STAFF),
+  wrapRequestHandler(getAppointmentOfStaffByPattern)
+)
+
+staffRoute.get(
+  '/get-laborarity-appointment-of-staff',
+  restrictTo(Role.ADMIN, Role.STAFF),
+  wrapRequestHandler(getAppointmentOfStaff)
 )
 
 export default staffRoute

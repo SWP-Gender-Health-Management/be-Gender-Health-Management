@@ -393,7 +393,7 @@ export class ConsultAppointmentService {
     return consultAppointments
   }
 
-  async getConsultAppointmentByConsultantId(consultant_id: string): Promise<ConsultAppointment[]> {
+  async getConsultAppointmentByConsultantId(consultant_id: string): Promise<Object> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
@@ -416,6 +416,64 @@ export class ConsultAppointmentService {
       ],
     })
     return consultAppointments
+  }
+
+  async getConsultAppointmentStatByConsultantId(consultant_id: string): Promise<{}> {
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
+    if (!consultant || consultant.role !== Role.CONSULTANT) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    const totalAppointments = await consultAppointmentRepository.count({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id,
+        }
+      }
+    });
+    const completedAppointments = await consultAppointmentRepository.count({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id
+        },
+        status: StatusAppointment.COMPLETED
+      }
+    });
+    const confirmedAppointments = await consultAppointmentRepository.count({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id
+        },
+        status: StatusAppointment.CONFIRMED
+      }
+    });
+    const pendingAppointments = await consultAppointmentRepository.count({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id
+        },
+        status: StatusAppointment.PENDING
+      }
+    });
+    const todayAppointments = await consultAppointmentRepository.count({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id,
+          date: new Date()
+        }
+      }
+    });
+    
+    return {
+      totalAppointments,
+      completedAppointments,
+      todayAppointments,
+      confirmedAppointments,
+      pendingAppointments
+    };
   }
 }
 
