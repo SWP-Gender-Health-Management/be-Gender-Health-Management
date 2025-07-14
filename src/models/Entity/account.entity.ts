@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -19,6 +20,7 @@ import Reply from './reply.entity.js'
 import Question from './question.entity.js'
 import Notification from './notification.entity.js'
 import Feedback from './feedback.entity.js'
+import StaffProfile from './staff_profile.entity.js'
 
 export interface AccountType {
   account_id: string
@@ -90,6 +92,10 @@ export default class Account implements AccountType {
   // foreign key
   @OneToOne(() => RefreshToken, (refreshToken: RefreshToken) => refreshToken.account)
   refreshToken: RefreshToken
+
+  @OneToOne(() => StaffProfile, (staffProfile: StaffProfile) => staffProfile.account)
+  @JoinColumn({ name: 'profile' })
+  staff_profile: StaffProfile
 
   @OneToMany(() => Transaction, (transaction: Transaction) => transaction.customer)
   transaction: Transaction[]

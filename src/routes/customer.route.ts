@@ -4,6 +4,7 @@ import {
   createNotificationController,
   getCustomersController,
   getLaborarityAppointmentsController,
+  getMenstrualCycleController,
   predictPeriodController,
   trackPeriodController,
   updateMenstrualCycleController
@@ -21,6 +22,9 @@ const customerRoute = Router()
 //customer
 customerRoute.get('/get-customers', wrapRequestHandler(getCustomersController))
 // theo dõi chu kì kinh nguyệt
+
+customerRoute.get('/get-menstrual-cycle', restrictTo(Role.CUSTOMER), wrapRequestHandler(getMenstrualCycleController))
+
 /*
   Description: nhập thông tin chu kì kinh nguyệt
   Path: /customer/track-period

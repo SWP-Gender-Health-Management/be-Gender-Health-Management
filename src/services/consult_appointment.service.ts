@@ -337,19 +337,35 @@ export class ConsultAppointmentService {
     await consultAppointmentRepository.remove(consultAppointment)
   }
 
-  async getConsultants(page: string, limit: string): Promise<Account[]> {
+  async getConsultants(page: string, limit: string): Promise<{ consultants: Account[]; pages: number }> {
     let limitNumber = parseInt(limit) || 9
     let pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
-    const consultants = await accountRepository.find({
-      skip: skip,
-      take: limitNumber,
-      where: {
-        role: Role.CONSULTANT,
-        is_banned: false
-      }
-    })
-    return consultants
+    const [consultants, total] = await accountRepository
+      .createQueryBuilder('account')
+      .leftJoinAndSelect('account.staff_profile', 'staff_profile')
+      .where('account.role = :role', { role: Role.CONSULTANT })
+      .andWhere('account.is_banned = :is_banned', { is_banned: false })
+      .skip(skip)
+      .take(limitNumber)
+      .getManyAndCount()
+
+    const list: any[] = []
+    for (const consultant of consultants) {
+      list.push({
+        account_id: consultant.account_id,
+        full_name: consultant.full_name,
+        avatar: consultant.avatar,
+        specialty: consultant.staff_profile.specialty,
+        rating: consultant.staff_profile.rating,
+        description: consultant.staff_profile.description,
+        experience: new Date().getFullYear() - new Date(consultant.staff_profile.work_start_date).getFullYear()
+      })
+    }
+    return {
+      consultants: list,
+      pages: Math.ceil(total / limitNumber)
+    }
   }
 }
 
