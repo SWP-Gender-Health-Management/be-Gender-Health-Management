@@ -20,6 +20,58 @@ const appointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
 const labRepository = AppDataSource.getRepository(Laboratory)
 const resultRepository = AppDataSource.getRepository(Result)
 class CustomerService {
+  // tính ngày hành kinh
+  calculatePeriodDays = (lastPeriodStart: Date, lastPeriodEnd: Date, periodLength: number) => {
+    if (!lastPeriodStart || !lastPeriodEnd || !periodLength) return {}
+    const periodDaysMap: any = {}
+    const year = new Date().getFullYear()
+    const lastStartDate = new Date(lastPeriodStart)
+    const lastEndDate = new Date(lastPeriodEnd)
+    const cycleLength = (lastEndDate.getTime() - lastStartDate.getTime()) / (24 * 60 * 60 * 1000) + 1
+    const end = new Date(year + 1, 11, 31)
+
+    let current = new Date(lastStartDate)
+
+    while (current <= end) {
+      const monthKey = `${current.getFullYear()}-${current.getMonth()}`
+      for (let i = 0; i < cycleLength; i++) {
+        const day = new Date(current)
+        day.setDate(current.getDate() + i)
+        if (day.getMonth() === current.getMonth()) {
+          if (!periodDaysMap[monthKey]) periodDaysMap[monthKey] = []
+          periodDaysMap[monthKey].push(day.getDate())
+        }
+      }
+      current.setDate(current.getDate() + periodLength)
+    }
+    return periodDaysMap
+  }
+
+  calculateOvulationDays = (lastPeriodStart: Date, lastPeriodEnd: Date, periodLength: number) => {
+    if (!lastPeriodStart || !lastPeriodEnd || !periodLength) return {}
+    const ovulationDaysMap: any = {}
+    const year = new Date().getFullYear()
+    const lastStartDate = new Date(lastPeriodStart)
+    const lastEndDate = new Date(lastPeriodEnd)
+    const cycleLength = (lastEndDate.getTime() - lastStartDate.getTime()) / (24 * 60 * 60 * 1000) + 1
+    const start = new Date(lastStartDate)
+    const end = new Date(year + 1, 11, 31)
+    let current = new Date(start)
+
+    while (current <= end) {
+      const ovulationDay = new Date(current)
+      ovulationDay.setDate(current.getDate() + periodLength - 14)
+
+      if (ovulationDay.getFullYear() === year || ovulationDay.getFullYear() === year + 1) {
+        const monthKey = `${ovulationDay.getFullYear()}-${ovulationDay.getMonth()}`
+        if (!ovulationDaysMap[monthKey]) ovulationDaysMap[monthKey] = []
+        ovulationDaysMap[monthKey].push(ovulationDay.getDate())
+      }
+      current.setDate(current.getDate() + periodLength)
+    }
+    return ovulationDaysMap
+  }
+
   /**
    * Get all customers
    * @param limit - The limit of the customers
@@ -57,6 +109,24 @@ class CustomerService {
     }
   }
 
+  async getMenstrualCycle(account_id: string): Promise<string> {
+    console.log('Checking menstrual cycle for account:', account_id)
+    const user = JSON.parse((await redisClient.get(`account:${account_id}`)) as string)
+    if (!user) {
+      return '00'
+    }
+    if ((user.gender as string).toLowerCase() !== 'female') {
+      return '01'
+    }
+    const menstrualCycle = await menstrualCycleRepository.findOne({
+      where: { account: { account_id } }
+    })
+    if (!menstrualCycle) {
+      return '10'
+    }
+    return '11'
+  }
+
   /**
    * Create a menstrual cycle
    * @param account_id - The ID of the account
@@ -67,21 +137,22 @@ class CustomerService {
    * @returns The menstrual cycle
    */
   async createMenstrualCycle(account_id: string, start_date: string, end_date: string, period: number, note: string) {
-    const user = JSON.parse((await redisClient.get(account_id)) as string)
+    const user = JSON.parse((await redisClient.get(`account:${account_id}`)) as string)
+    console.log('user', user)
     const menstrual = await menstrualCycleRepository.findOne({
       where: { account: user }
     })
-    if (menstrual) {
-      throw new ErrorWithStatus({
-        message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_ALREADY_EXISTS,
-        status: 400
-      })
-    }
-    if (user?.gender !== 'female') {
-      throw new ErrorWithStatus({
+    // if (menstrual) {
+    //   return {
+    //     message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_ALREADY_EXISTS,
+    //     result: '11'
+    //   }
+    // }
+    if ((user?.gender as string).toLowerCase() !== 'female') {
+      return {
         message: USERS_MESSAGES.YOU_ARE_NOT_FEMALE,
-        status: 400
-      })
+        result: '00'
+      }
     }
     const menstrualCycle = menstrualCycleRepository.create({
       account: user,
@@ -90,7 +161,7 @@ class CustomerService {
       period: period || 30,
       note: note || ''
     })
-    return menstrualCycleRepository.save(menstrualCycle)
+    return await menstrualCycleRepository.save(menstrualCycle)
   }
 
   /**
@@ -106,23 +177,33 @@ class CustomerService {
     })
     console.log('menstrualCycle', menstrualCycle)
     if (!menstrualCycle) {
-      throw new ErrorWithStatus({
+      return {
         message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_NOT_FOUND,
-        status: 400
-      })
+        data: null
+      }
     }
-    const next_start_date = new Date(
-      new Date(menstrualCycle.start_date).getTime() + menstrualCycle.period * 24 * 60 * 60 * 1000
+
+    const periodDaysMap = this.calculatePeriodDays(
+      menstrualCycle.start_date,
+      menstrualCycle.end_date,
+      menstrualCycle.period
     )
-    const next_end_date = new Date(
-      new Date(menstrualCycle.end_date).getTime() + menstrualCycle.period * 24 * 60 * 60 * 1000
+    const ovulationDaysMap = this.calculateOvulationDays(
+      menstrualCycle.start_date,
+      menstrualCycle.end_date,
+      menstrualCycle.period
     )
-    const notiDate = new Date(next_start_date.getTime() - 2 * 24 * 60 * 60 * 1000 + 7 * 60 * 60 * 1000)
+    console.log('periodDaysMap', periodDaysMap)
+    console.log('ovulationDaysMap', ovulationDaysMap)
+
+    const year = new Date().getFullYear()
+    const month = new Date().getMonth()
+    const key = `${year}-${month + 1}`
 
     await redisClient.set(
       `${account_id}: notiDate`,
       JSON.stringify({
-        notiDate,
+        notiDate: periodDaysMap[key][0],
         notiPayload: {
           notificationId: uuidv4(),
           account_id: menstrualCycle.account.account_id,
@@ -130,14 +211,18 @@ class CustomerService {
           message: CUSTOMER_MESSAGES.MENSTRUAL_CYCLE_SCHEDULED_NOTIFICATION,
           notificationType: 'Reminder',
           daysUntilPeriod: 2,
-          predictedPeriodDate: next_start_date.toISOString()
+          predictedPeriodDate: `${periodDaysMap[key][0]}/${month}/${year}`
         } as NotificationPayload
       })
     )
     return {
-      next_start_date,
-      next_end_date,
-      notiDate
+      current_start_date: menstrualCycle.start_date,
+      current_end_date: menstrualCycle.end_date,
+      current_period: menstrualCycle.period,
+      current_note: menstrualCycle.note,
+      periodDaysMap,
+      ovulationDaysMap,
+      notiDate: `${year}-${month}-${periodDaysMap[key][0]}`
     }
   }
 

@@ -95,7 +95,8 @@ export const CUSTOMER_MESSAGES = {
   GET_CUSTOMER_SUCCESS: 'Get customer successfully',
   AMOUNT_INVALID: 'Amount is invalid',
   LABORARITY_APPOINTMENT_NOT_FOUND: 'Laborarity appointment not found',
-  GET_LABORARITY_APPOINTMENTS_SUCCESS: 'Get laborarity appointments successfully'
+  GET_LABORARITY_APPOINTMENTS_SUCCESS: 'Get laborarity appointments successfully',
+  GET_MENSTRUAL_CYCLE_SUCCESS: 'Get menstrual cycle successfully'
 }
 
 export const WORKING_SLOT_MESSAGES = {
