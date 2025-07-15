@@ -12,6 +12,16 @@ export const getCustomersController = async (req: Request, res: Response, next: 
   })
 }
 
+export const getMenstrualCycleController = async (req: Request, res: Response, next: NextFunction) => {
+  const { account_id } = req.body
+  const result = await customerService.getMenstrualCycle(account_id)
+  console.log('result', result)
+  res.status(HTTP_STATUS.OK).json({
+    message: CUSTOMER_MESSAGES.GET_MENSTRUAL_CYCLE_SUCCESS,
+    result: result
+  })
+}
+
 /**
  * @swagger
  * /customer/track-period:
@@ -78,7 +88,7 @@ export const trackPeriodController = async (req: Request, res: Response, next: N
   const result = await customerService.createMenstrualCycle(account_id, start_date, end_date, period, note)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.CREATE_MENSTRUAL_CYCLE_SUCCESS,
-    data: result
+    data1: result
   })
 }
 
@@ -144,7 +154,7 @@ export const predictPeriodController = async (req: Request, res: Response, next:
   const result = await customerService.predictPeriod(account_id)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.PREDICT_PERIOD_SUCCESS,
-    data: result
+    result: result
   })
 }
 

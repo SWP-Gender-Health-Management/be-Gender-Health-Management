@@ -124,6 +124,7 @@ export const validateCreateLaborarityAppointment = validate(
           if (!Array.isArray(value)) {
             throw new Error(CUSTOMER_MESSAGES.LABORARITY_ID_INVALID)
           }
+
           for (const id of value) {
             if (typeof id !== 'string' || id.trim() === '') {
               throw new Error(CUSTOMER_MESSAGES.LABORARITY_ID_INVALID)
