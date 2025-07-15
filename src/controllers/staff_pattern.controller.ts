@@ -162,6 +162,16 @@ export const getAllStaffPatternController = async (req: Request, res: Response, 
   }
 }
 
+export const getStaffPatternByDate = async (req: Request, res: Response, next: NextFunction) => {
+  const { account_id } = req.body
+  const { date } = req.query
+  const pattern = await staffPatternService.getStaffPatternByDate(account_id, date as string)
+  res.status(HTTP_STATUS.OK).json({
+    message: STAFF_PATTERN_MESSAGES.GET_STAFF_PATTERN_SUCCESS,
+    result: pattern
+  })
+}
+
 /**
  * @swagger
  * /api/staff-pattern/update-staff-pattern:

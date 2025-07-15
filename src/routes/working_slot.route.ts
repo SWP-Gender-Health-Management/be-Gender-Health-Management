@@ -3,6 +3,7 @@ import {
   addSlotController,
   deleteSlotController,
   getSlotByTypeController,
+  getSlotByTypeParamController,
   getSlotController,
   updateSlotController
 } from '../controllers/working_slot.controller.js'
@@ -33,6 +34,8 @@ Request Body:{
 }
 */
 workingSlotRoute.get('/get-slot-by-type', validateGetSlotByType, wrapRequestHandler(getSlotByTypeController))
+
+workingSlotRoute.get('/get-slot-by-type/:type', validateGetSlotByType, wrapRequestHandler(getSlotByTypeParamController))
 
 /*
 Description: get all working slots

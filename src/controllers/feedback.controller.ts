@@ -71,8 +71,8 @@ import feedbackService from '~/services/feedback.service.js'
 // Create a new feedback
 export const createFeedback = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { app_id, lab_id, content, rating, customer_id } = req.body
-    const result = await feedbackService.createFeedback(app_id, lab_id, content, rating, customer_id)
+    const { app_id, content, rating, type, customer_id } = req.body
+    const result = await feedbackService.createFeedback( app_id, content, rating, type, customer_id)
     res.status(HTTP_STATUS.CREATED).json({
       message: FEEDBACK_MESSAGES.FEEDBACK_CREATED_SUCCESS,
       result
@@ -429,6 +429,34 @@ export const deleteFeedback = async (req: Request, res: Response, next: NextFunc
     await feedbackService.deleteFeedback(feed_id)
     res.status(HTTP_STATUS.OK).json({
       message: FEEDBACK_MESSAGES.FEEDBACK_DELETED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getAverageRatingAndTotalFeedbackOfConsultant = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { account_id } = req.body;
+    console.log("consultant_id: ", account_id)
+    const result = await feedbackService.getAverageRatingAndTotalFeedbackOfConsultant(account_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: FEEDBACK_MESSAGES.FEEDBACK_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getAverageRatingAndTotalFeedbackOfStaff = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { account_id } = req.body;
+    console.log("consultant_id: ", account_id)
+    const result = await feedbackService.getAverageRatingAndTotalFeedbackOfStaff(account_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: FEEDBACK_MESSAGES.FEEDBACK_RETRIEVED_SUCCESS,
+      result
     })
   } catch (error) {
     next(error)

@@ -30,7 +30,7 @@ const blogRoute = Router()
 */
 blogRoute.post(
   '/create-blog',
-  restrictTo(Role.CONSULTANT, Role.ADMIN),
+  restrictTo(Role.CONSULTANT, Role.ADMIN, Role.STAFF),
   uploadBlogImagesMiddleware.array('images', 10),
   wrapRequestHandler(createBlog)
 )
@@ -101,7 +101,7 @@ blogRoute.put(
 blogRoute.delete(
   '/delete-blog/:blog_id',
   // validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.STAFF),
   wrapRequestHandler(deleteBlog)
 )
 

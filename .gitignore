@@ -2,3 +2,4 @@ node_modules/
 dist/
 uploads/avatar
 .env
+uploads/blog_images

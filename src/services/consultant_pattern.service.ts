@@ -8,6 +8,7 @@ import WorkingSlot from '../models/Entity/working_slot.entity.js'
 import Account from '../models/Entity/account.entity.js'
 import { Role } from '../enum/role.enum.js'
 import LIMIT from '~/constants/limit.js'
+import { TypeAppointment } from '~/enum/type_appointment.enum.js'
 
 const consultantPatternRepository = AppDataSource.getRepository(ConsultantPattern)
 const workingSlotRepository = AppDataSource.getRepository(WorkingSlot)
@@ -36,7 +37,7 @@ export class ConsultantPatternService {
       accountRepository.findOne({ where: { account_id: consultant_id } })
     ])
     // working slot ?
-    if (!workingSlot) {
+    if (!workingSlot || workingSlot.type !== TypeAppointment.CONSULT) {
       throw new ErrorWithStatus({
         message: CONSULTANT_PATTERNS_MESSAGES.WORKING_SLOT_NOT_FOUND,
         status: HTTP_STATUS.NOT_FOUND

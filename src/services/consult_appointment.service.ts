@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm'
+import { Between, Repository } from 'typeorm'
 import { AppDataSource } from '../config/database.config.js'
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { CONSULTANT_APPOINTMENTS_MESSAGES } from '../constants/message.js'
@@ -99,7 +99,6 @@ export class ConsultAppointmentService {
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
-        'consultant_pattern.consultant',
         'customer',
         'report'
       ]
@@ -118,7 +117,6 @@ export class ConsultAppointmentService {
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
-        'consultant_pattern.consultant',
         'customer',
         'report'
       ]
@@ -224,7 +222,6 @@ export class ConsultAppointmentService {
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
-        'consultant_pattern.consultant',
         'customer',
         'report'
       ]
@@ -366,6 +363,133 @@ export class ConsultAppointmentService {
       consultants: list,
       pages: Math.ceil(total / limitNumber)
     }
+  }
+
+  async getConsultAppointmentByWeek(consultant_id: string, weekStartDate: string): Promise<ConsultAppointment[]> {
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
+    if (!consultant || consultant.role !== Role.CONSULTANT) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    // Validate and calculate week date range
+    const startDate = new Date(weekStartDate);
+    if (isNaN(startDate.getTime())) {
+      throw new ErrorWithStatus({
+        message: 'Invalid weekStartDate format. Use YYYY-MM-DD.',
+        status: HTTP_STATUS.BAD_REQUEST,
+      });
+    }
+    const weekEndDate = new Date(startDate);
+    weekEndDate.setDate(startDate.getDate() + 6); // End of the week
+
+    const consultAppointments = await consultAppointmentRepository.find({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id,
+          date: Between(startDate, weekEndDate)
+        }
+      },
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'customer',
+        'report'
+      ],
+    })
+    if (!consultAppointments.length) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    return consultAppointments
+  }
+
+  async getConsultAppointmentByConsultantId(consultant_id: string): Promise<ConsultAppointment[]> {
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
+    if (!consultant || consultant.role !== Role.CONSULTANT) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    const consultAppointments = await consultAppointmentRepository.find({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id,
+        }
+      },
+      relations: [
+        'consultant_pattern',
+        'consultant_pattern.working_slot',
+        'customer',
+        'report'
+      ],
+    })
+    return consultAppointments
+  }
+
+  async getConsultAppointmentStatByConsultantId(consultant_id: string): Promise<{}> {
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
+    if (!consultant || consultant.role !== Role.CONSULTANT) {
+      throw new ErrorWithStatus({
+        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    const totalAppointments = await consultAppointmentRepository.count({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id,
+        }
+      }
+    });
+    const completedAppointments = await consultAppointmentRepository.count({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id
+        },
+        status: StatusAppointment.COMPLETED
+      }
+    });
+    const confirmedAppointments = await consultAppointmentRepository.count({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id
+        },
+        status: StatusAppointment.CONFIRMED
+      }
+    });
+    const pendingAppointments = await consultAppointmentRepository.count({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id
+        },
+        status: StatusAppointment.PENDING
+      }
+    });
+    const todayAppointments = await consultAppointmentRepository.count({
+      where: {
+        consultant_pattern: {
+          account_id: consultant_id,
+          date: new Date()
+        }
+      }
+    });
+    
+    return {
+      totalAppointments,
+      completedAppointments,
+      todayAppointments,
+      confirmedAppointments,
+      pendingAppointments
+    };
   }
 }
 
