@@ -89,8 +89,8 @@ export class ConsultAppointmentService {
    */
   // Get all consult appointments
   async getAllConApps(limit: string, page: string): Promise<ConsultAppointment[]> {
-    let limitNumber = parseInt(limit) || 10
-    let pageNumber = parseInt(page) || 1
+    const limitNumber = parseInt(limit) || 10
+    const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
 
     return await consultAppointmentRepository.find({
@@ -147,8 +147,8 @@ export class ConsultAppointmentService {
     limit: string,
     page: string
   ): Promise<{ conApp: any[]; pages: number }> {
-    let limitNumber = parseInt(limit) || 10
-    let pageNumber = parseInt(page) || 1
+    const limitNumber = parseInt(limit) || 10
+    const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
     const customer = await accountRepository.findOne({ where: { account_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
@@ -338,8 +338,8 @@ export class ConsultAppointmentService {
   }
 
   async getConsultants(page: string, limit: string): Promise<{ consultants: Account[]; pages: number }> {
-    let limitNumber = parseInt(limit) || 9
-    let pageNumber = parseInt(page) || 1
+    const limitNumber = parseInt(limit) || 9
+    const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
     const [consultants, total] = await accountRepository
       .createQueryBuilder('account')
