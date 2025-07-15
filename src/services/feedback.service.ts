@@ -11,6 +11,7 @@ import LIMIT from '~/constants/limit.js'
 import Account from '~/models/Entity/account.entity.js'
 import { Role } from '~/enum/role.enum.js'
 import { ConsultAppointmentService } from './consult_appointment.service.js'
+import staffService from './staff.service.js'
 
 const feedbackRepository = AppDataSource.getRepository(Feedback)
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
@@ -274,9 +275,9 @@ export class FeedbackService {
       });
     }
 
-    const appointmentsOfConsultant = await consultAppointmentService.getConsultAppointmentByConsultantId(staff_id);
+    const appointmentsOfStaff = await staffService.getAppointmentOfStaff(staff_id);
 
-    if (!appointmentsOfConsultant.length) {
+    if (!appointmentsOfStaff.length) {
       return {
         totalFeedBack: 0,
         averageFeedBackRating: 0
@@ -287,7 +288,7 @@ export class FeedbackService {
     let totalFeedBackRating = 0;
 
     await Promise.all(
-      appointmentsOfConsultant.map(async (app) => {
+      appointmentsOfStaff.map(async (app) => {
         try {
           const feedback = await this.getFeedbackByConsultAppointmentId(app.app_id);
           if (feedback) {

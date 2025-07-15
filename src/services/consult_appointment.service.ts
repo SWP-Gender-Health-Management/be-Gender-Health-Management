@@ -409,7 +409,7 @@ export class ConsultAppointmentService {
     return consultAppointments
   }
 
-  async getConsultAppointmentByConsultantId(consultant_id: string): Promise<Object> {
+  async getConsultAppointmentByConsultantId(consultant_id: string): Promise<ConsultAppointment[]> {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({

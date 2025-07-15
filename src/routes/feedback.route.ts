@@ -4,6 +4,7 @@ import {
   deleteFeedback,
   getAllFeedbacks,
   getAverageRatingAndTotalFeedbackOfConsultant,
+  getAverageRatingAndTotalFeedbackOfStaff,
   getByIdFeedback,
   getFeedbackByConsultAppointmentId,
   getFeedbackByLaboratoryAppointmentId,
@@ -117,6 +118,12 @@ feedbackRoute.get(
   '/get-consultant-rating-feedback',
   restrictTo(Role.ADMIN, Role.CONSULTANT),
   wrapRequestHandler(getAverageRatingAndTotalFeedbackOfConsultant)
+)
+
+feedbackRoute.get(
+  '/get-staff-rating-feedback',
+  restrictTo(Role.ADMIN, Role.STAFF),
+  wrapRequestHandler(getAverageRatingAndTotalFeedbackOfStaff)
 )
 
 

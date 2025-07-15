@@ -448,3 +448,17 @@ export const getAverageRatingAndTotalFeedbackOfConsultant = async (req: Request,
     next(error)
   }
 }
+
+export const getAverageRatingAndTotalFeedbackOfStaff = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { account_id } = req.body;
+    console.log("consultant_id: ", account_id)
+    const result = await feedbackService.getAverageRatingAndTotalFeedbackOfStaff(account_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: FEEDBACK_MESSAGES.FEEDBACK_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}

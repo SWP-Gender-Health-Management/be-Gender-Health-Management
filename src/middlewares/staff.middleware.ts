@@ -37,7 +37,7 @@ export const validateUpdateResult = checkSchema({
   },
   result: {
     in: 'body',
-    isInt: true,
+    isArray: true,
     notEmpty: true,
     custom: {
       options: (value) => {
