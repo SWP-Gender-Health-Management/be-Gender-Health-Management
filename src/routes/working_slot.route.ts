@@ -48,7 +48,7 @@ Request Body:{
   date: string
 }
 */
-workingSlotRoute.get('/lab-working-slots', validateDate, wrapRequestHandler(getLabWorkingSlotController))
+workingSlotRoute.post('/lab-working-slots', validateDate, wrapRequestHandler(getLabWorkingSlotController))
 
 /*
 Description: get all working slots

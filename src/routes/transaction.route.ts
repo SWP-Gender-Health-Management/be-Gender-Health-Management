@@ -7,6 +7,7 @@ import {
 } from '../controllers/transaction.controller.js'
 import { validateCreateTransaction } from '../middlewares/transaction.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
+import { validateAccessToken } from '~/middlewares/account.middleware.js'
 
 const transactionRoute = express.Router()
 
@@ -22,7 +23,7 @@ transactionRoute.post(
   wrapRequestHandler(createLaborarityTransactionController)
 )
 
-transactionRoute.post('/create_payment_url', wrapRequestHandler(createPaymentUrlController))
+transactionRoute.post('/create_payment_url', validateAccessToken, wrapRequestHandler(createPaymentUrlController))
 
 transactionRoute.post('/receive-hook', receiveHookController)
 

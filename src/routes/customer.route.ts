@@ -109,7 +109,7 @@ customerRoute.post('/create-notification', restrictTo(Role.CUSTOMER), wrapReques
 customerRoute.post(
   '/create-laborarity-appointment',
   restrictTo(Role.CUSTOMER),
-  validateCreateLaborarityAppointment,
+  // validateCreateLaborarityAppointment,
   wrapRequestHandler(createLaborarityAppointmentController)
 )
 

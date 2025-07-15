@@ -349,10 +349,12 @@ export const createNotificationController = async (req: Request, res: Response, 
 // Create laboratory appointment
 export const createLaborarityAppointmentController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id, laborarity_id, slot_id, date } = req.body
+  console.log('req.body', req.body)
   const result = await customerService.createLaborarityAppointment(account_id, laborarity_id, slot_id, date)
+  console.log('result', result)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.LABORARITY_APPOINTMENT_CREATED_SUCCESS,
-    data: result
+    result: result
   })
 }
 
