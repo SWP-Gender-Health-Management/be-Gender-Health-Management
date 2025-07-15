@@ -297,7 +297,7 @@ class CustomerService {
         }
       })
     ])
-    if (staff < queueIndex) {
+    if (staff * 10 >= queueIndex) {
       throw new ErrorWithStatus({
         message: CUSTOMER_MESSAGES.LABORARITY_NOT_ENOUGH_STAFF,
         status: 400

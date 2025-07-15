@@ -2,11 +2,17 @@ import { Router } from 'express'
 import {
   addSlotController,
   deleteSlotController,
+  getLabWorkingSlotController,
   getSlotByTypeController,
   getSlotController,
   updateSlotController
 } from '../controllers/working_slot.controller.js'
-import { validateGetSlotByType, validateSlot, validateUpdateSlot } from '../middlewares/working_slot.middleware.js'
+import {
+  validateDate,
+  validateGetSlotByType,
+  validateSlot,
+  validateUpdateSlot
+} from '../middlewares/working_slot.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
 
 const workingSlotRoute = Router()
@@ -33,6 +39,16 @@ Request Body:{
 }
 */
 workingSlotRoute.get('/get-slot-by-type', validateGetSlotByType, wrapRequestHandler(getSlotByTypeController))
+
+/*
+Description: get a laborarity working slot by id
+Method: GET
+Path: /lab-working-slots
+Request Body:{
+  date: string
+}
+*/
+workingSlotRoute.get('/lab-working-slots', validateDate, wrapRequestHandler(getLabWorkingSlotController))
 
 /*
 Description: get all working slots
