@@ -149,10 +149,29 @@ export const updateResultController = async (req: Request, res: Response, next: 
  */
 // Update appointment status
 export const updateAppointmentStatusController = async (req: Request, res: Response, next: NextFunction) => {
-  const { appointment_id, status } = req.body
-  const appointmentStatus = await staffService.updateAppointmentStatus(appointment_id, status)
+  const { app_id, status, account_id } = req.body
+  const appointmentStatus = await staffService.updateAppointmentStatus(app_id, status, account_id)
   res.status(HTTP_STATUS.OK).json({
     message: LABORARITY_MESSAGES.APPOINTMENT_STATUS_UPDATED_SUCCESS,
     data: appointmentStatus
+  })
+}
+
+export const getAppointmentOfStaff = async (req: Request, res: Response, next: NextFunction) => {
+  const {account_id } = req.body
+  const appointmentStatus = await staffService.getAppointmentOfStaff(account_id)
+  res.status(HTTP_STATUS.OK).json({
+    message: LABORARITY_MESSAGES.APPOINTMENT_STATUS_UPDATED_SUCCESS,
+    result: appointmentStatus
+  })
+}
+
+export const getAppointmentOfStaffByPattern = async (req: Request, res: Response, next: NextFunction) => {
+  const {account_id } = req.body
+  const {date, slot_id} = req.query
+  const appointmentStatus = await staffService.getAppointmentOfStaffByPattern(account_id, date as string, slot_id as string)
+  res.status(HTTP_STATUS.OK).json({
+    message: LABORARITY_MESSAGES.APPOINTMENT_STATUS_UPDATED_SUCCESS,
+    result: appointmentStatus
   })
 }

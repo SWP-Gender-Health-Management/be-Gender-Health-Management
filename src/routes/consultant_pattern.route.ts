@@ -122,7 +122,7 @@ consultantPatternRoute.put(
 */
 consultantPatternRoute.delete(
   '/delete-consultant-pattern/:pattern_id',
-  restrictTo(Role.ADMIN),
+  // restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteConsultantPattern)
 )
 

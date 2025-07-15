@@ -66,7 +66,7 @@ export class ReplyService {
     const savedReply = await replyRepository.save(reply)
 
     // Assign the reply to the question and save the question
-    await questionRepository.update(ques_id, {reply: savedReply})
+    await questionRepository.update(ques_id, {reply: savedReply, status: true})
 
     return savedReply
   }
@@ -79,7 +79,7 @@ export class ReplyService {
    */
   // Get all replies
   async getAllReplies(pageVar: { limit: string, page: string }): Promise<Reply[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
@@ -129,7 +129,7 @@ export class ReplyService {
       })
     }
 
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
@@ -235,8 +235,9 @@ export class ReplyService {
     })
 
     if (question) {
-      question.reply = null
-      await questionRepository.save(question)
+      question.reply = null;
+      question.status = false;
+      await questionRepository.save(question);
     }
 
     // Delete the reply

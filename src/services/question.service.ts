@@ -49,9 +49,9 @@ export class QuestionService {
    * @returns The questions
    */
   // Get all questions
-  async getAllQuestions(pageVar: { limit: string; page: string }): Promise<Question[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default
-    let page = parseInt(pageVar.page) || 1
+  async getAllQuestions(pageVar: { limit: string, page: string }): Promise<Question[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     return await questionRepository.find({
@@ -84,13 +84,16 @@ export class QuestionService {
   }
 
   // Get Unreplied questions
-  async getUnrepliedQuestions(pageVar: { limit: string; page: string }): Promise<Question[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default
-    let page = parseInt(pageVar.page) || 1
+  async getUnrepliedQuestions(pageVar: { limit: string, page: string }): Promise<Question[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     return await questionRepository.find({
-      where: { reply: IsNull() },
+      where: {
+        reply: IsNull(),
+        status: false
+      },
       skip,
       take: limit,
       relations: ['customer', 'reply', 'reply.consultant']
@@ -98,16 +101,16 @@ export class QuestionService {
   }
 
   // Get replied questions by Consultant ID
-  async getRepliedQuestionsByConsultantId(
-    consultant_id: string,
-    pageVar: { limit: string; page: string }
-  ): Promise<Question[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default
-    let page = parseInt(pageVar.page) || 1
+  async getRepliedQuestionsByConsultantId(consultant_id: string, pageVar: { limit: string, page: string }): Promise<Question[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
+    let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     return await questionRepository.find({
-      where: { reply: { consultant: { account_id: consultant_id } } },
+      where: {
+        reply: { consultant: { account_id: consultant_id } },
+        status: true
+      },
       skip,
       take: limit,
       relations: ['customer', 'reply', 'reply.consultant']
@@ -134,7 +137,7 @@ export class QuestionService {
       })
     }
 
-    let limit = parseInt(pageVar.limit) || LIMIT.default
+    let limit = parseInt(pageVar.limit) || LIMIT.all
     console.log(limit)
     let page = parseInt(pageVar.page) || 1
     console.log(page)

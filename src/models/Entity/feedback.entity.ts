@@ -25,7 +25,7 @@ export default class Feedback implements FeedbackType {
   @PrimaryGeneratedColumn('uuid')
   feed_id: string
 
-  @Column({ type: 'uuid', nullable: true })
+  @Column({ type: 'uuid', nullable: true, unique: true })
   app_id: string
 
   @Column({ type: 'text', nullable: false, charset: 'utf8', collation: 'utf8_general_ci' })

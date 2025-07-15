@@ -55,6 +55,9 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
   @JoinColumn({ name: 'customer_id' })
   customer: Account
 
+  @Column({ type: 'uuid', nullable: true, unique: false })
+  staff_id: string
+
   @ManyToOne(() => WorkingSlot, (working_slot: WorkingSlot) => working_slot.laborarity_appointment)
   @JoinColumn({ name: 'slot_id' })
   working_slot: WorkingSlot

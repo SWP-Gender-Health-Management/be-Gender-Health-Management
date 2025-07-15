@@ -37,7 +37,7 @@ export const validateUpdateResult = checkSchema({
   },
   result: {
     in: 'body',
-    isInt: true,
+    isArray: true,
     notEmpty: true,
     custom: {
       options: (value) => {
@@ -54,7 +54,7 @@ export const validateUpdateResult = checkSchema({
 })
 
 export const validateUpdateAppointmentStatus = checkSchema({
-  appointment_id: {
+  app_id: {
     in: 'body',
     isUUID: true,
     notEmpty: true,
@@ -62,7 +62,8 @@ export const validateUpdateAppointmentStatus = checkSchema({
   },
   status: {
     in: 'body',
-    isInt: true,
+    // isInt: true,
+    isString: true,
     notEmpty: true,
     custom: {
       options: (value) => {
