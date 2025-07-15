@@ -113,6 +113,8 @@ export class ConsultantPatternService {
       list.push({
         date: conPattern.date,
         slot_id: conPattern.working_slot.slot_id,
+        start_at: conPattern.working_slot.start_at,
+        end_at: conPattern.working_slot.end_at,
         is_booked: conPattern.is_booked,
         pattern_id: conPattern.pattern_id
       })
