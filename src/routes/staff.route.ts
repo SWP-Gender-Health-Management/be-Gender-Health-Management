@@ -14,7 +14,11 @@ const staffRoute = express.Router()
     
   }
 */
-staffRoute.post('/update-result', validateUpdateResult, wrapRequestHandler(updateResultController))
+staffRoute.post(
+  '/update-result', 
+  validateUpdateResult, 
+  restrictTo(Role.STAFF),
+  wrapRequestHandler(updateResultController))
 
 /*
   description: update appointmet status
@@ -28,6 +32,7 @@ staffRoute.post('/update-result', validateUpdateResult, wrapRequestHandler(updat
 staffRoute.post(
   '/update-appointment-status',
   validateUpdateAppointmentStatus,
+  restrictTo(Role.STAFF),
   wrapRequestHandler(updateAppointmentStatusController)
 )
 

@@ -78,7 +78,7 @@ class StaffService {
    * @returns The laboratory appointment entity
    */
   // Update the status of a laboratory appointment
-  async updateAppointmentStatus(appointment_id: string, status: number, staff_id: string): Promise<LaboratoryAppointment | boolean> {
+  async updateAppointmentStatus(appointment_id: string, status: string, staff_id: string): Promise<LaboratoryAppointment | boolean> {
     const appointment = await laboratoryAppointmentRepository.findOne({
       where: { app_id: appointment_id }
     })
@@ -89,8 +89,9 @@ class StaffService {
       })
     }
     if ((appointment.staff_id && appointment.staff_id !== staff_id)) {
+      console.log("so sanh appointment.staff_id vs staff_id", appointment.staff_id, " vs ", staff_id);
       throw new ErrorWithStatus({
-        message: STAFF_MESSAGES.APPOINTMENT_OWNED,
+        message: STAFF_MESSAGES.APPOINTMENT_OWNED_BY_OTHER,
         status: HTTP_STATUS.BAD_REQUEST
       })
     }
@@ -104,7 +105,7 @@ class StaffService {
       })
     }
 
-    appointment.status = stringToStatus(status) as StatusAppointment
+    appointment.status = status as StatusAppointment
     appointment.staff_id = staff_id;
     await laboratoryAppointmentRepository.save(appointment)
     return appointment
