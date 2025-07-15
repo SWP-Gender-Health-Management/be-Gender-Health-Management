@@ -92,10 +92,11 @@ export class ConsultantPatternService {
     })
   }
 
-  async getAllConsultantPatternsInWeek(): Promise<ConsultantPattern[]> {
+  async getAllConsultantPatternsInWeek(consultant_id: string): Promise<ConsultantPattern[]> {
     const consultantPatterns = await consultantPatternRepository
       .createQueryBuilder('consultant_pattern')
       .where('date_trunc(\'week\', "consultant_pattern"."date") = date_trunc(\'week\', NOW())')
+      .andWhere('consultant_pattern.account_id = :consultant_id', { consultant_id })
       .orderBy('"consultant_pattern"."date"', 'DESC')
       .getMany()
     return consultantPatterns
