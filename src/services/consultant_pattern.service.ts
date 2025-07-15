@@ -99,7 +99,25 @@ export class ConsultantPatternService {
       .andWhere('consultant_pattern.account_id = :consultant_id', { consultant_id })
       .orderBy('"consultant_pattern"."date"', 'DESC')
       .getMany()
-    return consultantPatterns
+    const list: any[] = []
+    for (const consultantPattern of consultantPatterns) {
+      const conPattern = await consultantPatternRepository.findOne({
+        where: {
+          pattern_id: consultantPattern.pattern_id
+        },
+        relations: ['working_slot']
+      })
+      if (!conPattern) {
+        continue
+      }
+      list.push({
+        date: conPattern.date,
+        slot_id: conPattern.working_slot.slot_id,
+        is_booked: conPattern.is_booked,
+        pattern_id: conPattern.pattern_id
+      })
+    }
+    return list
   }
 
   /**
