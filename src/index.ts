@@ -28,6 +28,7 @@ import managerRoute from './routes/manager.route.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import refreshTokenRoute from './routes/refresh_token.route.js'
+import notiRoute from './routes/notification.route.js'
 
 dotenv.config()
 
@@ -102,6 +103,8 @@ initializeApp()
       app.use('/uploads', express.static(uploadsPath))
       // route refresh token
       app.use('/refresh-token', refreshTokenRoute)
+      // route notification
+      app.use('/notification', notiRoute)
       app.use(defaultErrorHandle)
 
       const port = process.env.PORT || 3000
