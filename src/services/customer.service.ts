@@ -287,7 +287,11 @@ class CustomerService {
    * @param lab_id - The ID of the laboratory
    * @returns The appointment
    */
-  async createLaborarityAppointment(account_id: string, slot_id: string, date: string, lab_id: string[]) {
+  async createLaborarityAppointment(account_id: string, lab_id: string[], slot_id: string, date: string) {
+    console.log('account_id', account_id)
+    console.log('lab_id', lab_id)
+    console.log('slot_id', slot_id)
+    console.log('date', date)
     const [staff, queueIndex] = await Promise.all([
       staffService.countStaff(date, slot_id),
       appointmentRepository.count({
@@ -297,7 +301,9 @@ class CustomerService {
         }
       })
     ])
-    if (staff * 10 >= queueIndex) {
+    console.log('staff', staff)
+    console.log('queueIndex', queueIndex)
+    if (staff * 10 <= queueIndex) {
       throw new ErrorWithStatus({
         message: CUSTOMER_MESSAGES.LABORARITY_NOT_ENOUGH_STAFF,
         status: 400
@@ -356,8 +362,8 @@ class CustomerService {
 
     await appointmentRepository.save(appointment)
     return {
-      message: CUSTOMER_MESSAGES.LABORARITY_APPOINTMENT_CREATED_SUCCESS,
-      data: { appointment, amount }
+      appointment,
+      amount
     }
   }
 
