@@ -41,7 +41,7 @@ Request Body:{
 */
 workingSlotRoute.get('/get-slot-by-type', validateGetSlotByType, wrapRequestHandler(getSlotByTypeController))
 
-workingSlotRoute.get('/get-slot-by-type/:type', validateGetSlotByType, wrapRequestHandler(getSlotByTypeParamController))
+// workingSlotRoute.get('/get-slot-by-type/:type', validateGetSlotByType, wrapRequestHandler(getSlotByTypeParamController))
 
 /*
 Description: get a laborarity working slot by id

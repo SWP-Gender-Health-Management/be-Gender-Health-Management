@@ -84,7 +84,7 @@ export const registerController = async (req: Request, res: Response, next: Next
     httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
     secure: true, // Chỉ gửi cookie qua HTTPS ở môi trường production
     sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
-    maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string) // Thời gian sống của cookie (tính bằng mili giây)
+    maxAge: 60 * 60 * 24 * 30 // Thời gian sống của cookie (tính bằng mili giây)
   })
   await notificationService.createNotification(
     {
