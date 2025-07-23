@@ -123,7 +123,8 @@ export const getAllConsultantPatterns = async (req: Request, res: Response, next
 // Get all consultant patterns in week
 export const getAllConsultantPatternsInWeek = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await consultantPatternService.getAllConsultantPatternsInWeek()
+    const { consultant_id } = req.query
+    const result = await consultantPatternService.getAllConsultantPatternsInWeek(consultant_id as string)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERNS_RETRIEVED_SUCCESS,
       result

@@ -43,6 +43,7 @@ export const validateGetSlotByType = validate(
     }
   })
 )
+
 export const validateUpdateSlot = validate(
   checkSchema({
     name: {
@@ -67,6 +68,32 @@ export const validateUpdateSlot = validate(
       isString: true,
       notEmpty: false,
       errorMessage: WORKING_SLOT_MESSAGES.TYPE_INVALID
+    }
+  })
+)
+
+export const validateDate = validate(
+  checkSchema({
+    date: {
+      isString: true,
+      notEmpty: true,
+      custom: {
+        options: (value) => {
+          const regex = /^\d{4}-\d{2}-\d{2}$/
+          if (!regex.test(value)) {
+            return false
+          }
+
+          const date = new Date(value)
+
+          const timestamp = date.getTime()
+          if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) {
+            return false
+          }
+          return true
+        }
+      },
+      errorMessage: WORKING_SLOT_MESSAGES.DATE_INVALID
     }
   })
 )

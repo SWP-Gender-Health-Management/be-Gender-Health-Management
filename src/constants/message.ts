@@ -108,7 +108,9 @@ export const WORKING_SLOT_MESSAGES = {
   WORKING_SLOT_UPDATED_SUCCESS: 'Working slot updated successfully',
   WORKING_SLOT_DELETED_SUCCESS: 'Working slot deleted successfully',
   WORKING_SLOT_NOT_FOUND: 'Working slot not found',
-  GET_SLOT_SUCCESS: 'Get slot successfully'
+  GET_SLOT_SUCCESS: 'Get slot successfully',
+  DATE_INVALID: 'Date is invalid',
+  GET_LAB_WORKING_SLOT_SUCCESS: 'Get lab working slot successfully'
 }
 
 export const STAFF_PATTERN_MESSAGES = {

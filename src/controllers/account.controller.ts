@@ -7,6 +7,7 @@ import accountService from '~/services/account.service.js'
 import refreshTokenService from '~/services/refresh_token.service.js'
 import notificationService from '~/services/notification.service.js'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
+import { convertRoleToString } from '~/enum/role.enum.js'
 /**
  * @swagger
  * /account/register:
@@ -84,7 +85,7 @@ export const registerController = async (req: Request, res: Response, next: Next
     httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
     secure: true, // Chỉ gửi cookie qua HTTPS ở môi trường production
     sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
-    maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string) // Thời gian sống của cookie (tính bằng mili giây)
+    maxAge: 60 * 60 * 24 * 30 // Thời gian sống của cookie (tính bằng mili giây)
   })
   await notificationService.createNotification(
     {
@@ -583,7 +584,10 @@ export const viewAccountController = async (req: Request, res: Response, next: N
   console.log('result:', result)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_VIEWED_SUCCESS,
-    result
+    result: {
+      ...result,
+      role: convertRoleToString(result.role)
+    }
   })
 }
 

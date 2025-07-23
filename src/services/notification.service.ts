@@ -14,7 +14,20 @@ class NotificationService {
       title: notification.title,
       message: notification.message
     })
-    await Promise.all([notificationRepository.save(noti), websocketService.sendNotification(account_id, noti)])
+    const savedNoti = await notificationRepository.save(noti)
+    await websocketService.sendNotification(account_id, savedNoti)
+    return noti
+  }
+
+  async getNotification(account_id: string): Promise<Notification[]> {
+    const noti = await notificationRepository.find({
+      where: {
+        account: { account_id: account_id }
+      },
+      order: {
+        created_at: 'DESC'
+      }
+    })
     return noti
   }
 }

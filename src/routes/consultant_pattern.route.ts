@@ -53,7 +53,7 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.get(
   '/get-all-consultant-patterns-in-week',
-  restrictTo(Role.ADMIN),
+  restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getAllConsultantPatternsInWeek)
 )
 

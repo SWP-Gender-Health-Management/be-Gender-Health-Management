@@ -315,3 +315,12 @@ export const deleteSlotController = async (req: Request, res: Response, next: Ne
     data: slot
   })
 }
+
+export const getLabWorkingSlotController = async (req: Request, res: Response, next: NextFunction) => {
+  const { date } = req.body
+  const slot = await workingSlotService.getLabWorkingSlot(date)
+  res.status(HTTP_STATUS.OK).json({
+    message: WORKING_SLOT_MESSAGES.GET_LAB_WORKING_SLOT_SUCCESS,
+    data: slot
+  })
+}

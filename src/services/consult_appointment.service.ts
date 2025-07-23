@@ -89,19 +89,14 @@ export class ConsultAppointmentService {
    */
   // Get all consult appointments
   async getAllConApps(limit: string, page: string): Promise<ConsultAppointment[]> {
-    let limitNumber = parseInt(limit) || 10
-    let pageNumber = parseInt(page) || 1
+    const limitNumber = parseInt(limit) || 10
+    const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
 
     return await consultAppointmentRepository.find({
       skip,
       take: limitNumber,
-      relations: [
-        'consultant_pattern',
-        'consultant_pattern.working_slot',
-        'customer',
-        'report'
-      ]
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'customer', 'report']
     })
   }
 
@@ -114,12 +109,7 @@ export class ConsultAppointmentService {
   async getConAppById(app_id: string): Promise<ConsultAppointment> {
     const consultAppointment = await consultAppointmentRepository.findOne({
       where: { app_id },
-      relations: [
-        'consultant_pattern',
-        'consultant_pattern.working_slot',
-        'customer',
-        'report'
-      ]
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'customer', 'report']
     })
 
     if (!consultAppointment) {
@@ -145,8 +135,8 @@ export class ConsultAppointmentService {
     limit: string,
     page: string
   ): Promise<{ conApp: any[]; pages: number }> {
-    let limitNumber = parseInt(limit) || 10
-    let pageNumber = parseInt(page) || 1
+    const limitNumber = parseInt(limit) || 10
+    const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
     const customer = await accountRepository.findOne({ where: { account_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
@@ -219,12 +209,7 @@ export class ConsultAppointmentService {
 
     const consultAppointment = await consultAppointmentRepository.findOne({
       where: { consultant_pattern: { pattern_id: consultantPattern.pattern_id } },
-      relations: [
-        'consultant_pattern',
-        'consultant_pattern.working_slot',
-        'customer',
-        'report'
-      ]
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'customer', 'report']
     })
 
     if (!consultAppointment) {
@@ -335,8 +320,8 @@ export class ConsultAppointmentService {
   }
 
   async getConsultants(page: string, limit: string): Promise<{ consultants: Account[]; pages: number }> {
-    let limitNumber = parseInt(limit) || 9
-    let pageNumber = parseInt(page) || 1
+    const limitNumber = parseInt(limit) || 9
+    const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
     const [consultants, total] = await accountRepository
       .createQueryBuilder('account')
@@ -375,15 +360,15 @@ export class ConsultAppointmentService {
     }
 
     // Validate and calculate week date range
-    const startDate = new Date(weekStartDate);
+    const startDate = new Date(weekStartDate)
     if (isNaN(startDate.getTime())) {
       throw new ErrorWithStatus({
         message: 'Invalid weekStartDate format. Use YYYY-MM-DD.',
-        status: HTTP_STATUS.BAD_REQUEST,
-      });
+        status: HTTP_STATUS.BAD_REQUEST
+      })
     }
-    const weekEndDate = new Date(startDate);
-    weekEndDate.setDate(startDate.getDate() + 6); // End of the week
+    const weekEndDate = new Date(startDate)
+    weekEndDate.setDate(startDate.getDate() + 6) // End of the week
 
     const consultAppointments = await consultAppointmentRepository.find({
       where: {
@@ -392,12 +377,7 @@ export class ConsultAppointmentService {
           date: Between(startDate, weekEndDate)
         }
       },
-      relations: [
-        'consultant_pattern',
-        'consultant_pattern.working_slot',
-        'customer',
-        'report'
-      ],
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'customer', 'report']
     })
     if (!consultAppointments.length) {
       throw new ErrorWithStatus({
@@ -421,20 +401,15 @@ export class ConsultAppointmentService {
     const consultAppointments = await consultAppointmentRepository.find({
       where: {
         consultant_pattern: {
-          account_id: consultant_id,
+          account_id: consultant_id
         }
       },
-      relations: [
-        'consultant_pattern',
-        'consultant_pattern.working_slot',
-        'customer',
-        'report'
-      ],
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'customer', 'report']
     })
     return consultAppointments
   }
 
-  async getConsultAppointmentStatByConsultantId(consultant_id: string): Promise<{}> {
+  async getConsultAppointmentStatByConsultantId(consultant_id: string) {
     const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
     if (!consultant || consultant.role !== Role.CONSULTANT) {
       throw new ErrorWithStatus({
@@ -446,10 +421,10 @@ export class ConsultAppointmentService {
     const totalAppointments = await consultAppointmentRepository.count({
       where: {
         consultant_pattern: {
-          account_id: consultant_id,
+          account_id: consultant_id
         }
       }
-    });
+    })
     const completedAppointments = await consultAppointmentRepository.count({
       where: {
         consultant_pattern: {
@@ -457,7 +432,7 @@ export class ConsultAppointmentService {
         },
         status: StatusAppointment.COMPLETED
       }
-    });
+    })
     const confirmedAppointments = await consultAppointmentRepository.count({
       where: {
         consultant_pattern: {
@@ -465,7 +440,7 @@ export class ConsultAppointmentService {
         },
         status: StatusAppointment.CONFIRMED
       }
-    });
+    })
     const pendingAppointments = await consultAppointmentRepository.count({
       where: {
         consultant_pattern: {
@@ -473,7 +448,7 @@ export class ConsultAppointmentService {
         },
         status: StatusAppointment.PENDING
       }
-    });
+    })
     const todayAppointments = await consultAppointmentRepository.count({
       where: {
         consultant_pattern: {
@@ -481,15 +456,15 @@ export class ConsultAppointmentService {
           date: new Date()
         }
       }
-    });
-    
+    })
+
     return {
       totalAppointments,
       completedAppointments,
       todayAppointments,
       confirmedAppointments,
       pendingAppointments
-    };
+    }
   }
 }
 

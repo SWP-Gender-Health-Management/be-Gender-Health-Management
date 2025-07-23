@@ -7,12 +7,12 @@ export enum Role {
   RECEPTIONIST //5
 }
 
-function convertRoleToString(roleValue: Role): string | undefined {
+export function convertRoleToString(roleValue: Role): string | undefined {
   // TypeScript cho phép truy cập tên của enum bằng chỉ số của nó
   return Role[roleValue]
 }
 
-function convertStringToRole(roleName: string): Role | undefined {
+export function convertStringToRole(roleName: string): Role | undefined {
   // TypeScript cũng cho phép truy cập giá trị của enum bằng tên (dưới dạng chuỗi)
   return Role[roleName as keyof typeof Role]
 }

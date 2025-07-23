@@ -10,7 +10,7 @@ export class SocketIOService {
 
   constructor(io: Server) {
     this.io = io
-    console.log('✅ Socket.IO Service đã được khởi tạo.')
+    console.log('✅✅✅ Socket.IO Service đã được khởi tạo.')
   }
 
   /**
@@ -22,6 +22,10 @@ export class SocketIOService {
     console.log(`Service đang gửi thông báo cho user: ${account_id}`)
 
     try {
+      if (data.account.account_id !== account_id) {
+        // throw new Error('Notification not found')
+        return
+      }
       // Bước 1: Luôn luôn lưu thông báo vào DB trước
       const notification = await notificationRepository.findOne({
         where: {
@@ -36,7 +40,7 @@ export class SocketIOService {
       }
 
       // Bước 2: Dùng instance `this.io` để gửi sự kiện real-time đến phòng của user
-      this.io.to(account_id).emit('new_notification', JSON.stringify(notification))
+      this.io.to(account_id).emit(data.title, JSON.stringify(notification))
 
       console.log(`Service đã gửi thành công thông báo real-time cho user: ${account_id}`)
     } catch (error) {
