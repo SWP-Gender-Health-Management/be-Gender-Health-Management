@@ -1,4 +1,4 @@
-import { DeleteResult, Repository, UpdateResult } from 'typeorm'
+import { Between, DeleteResult, Repository, UpdateResult } from 'typeorm'
 import { AppDataSource } from '../config/database.config.js'
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { CONSULTANT_PATTERNS_MESSAGES } from '../constants/message.js'
@@ -203,6 +203,45 @@ export class ConsultantPatternService {
 
     return consultantPattern
   }
+
+  async getConsultPatternByWeek(consultant_id: string, weekStartDate: string): Promise<ConsultantPattern[]> {
+      const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } })
+      if (!consultant || consultant.role !== Role.CONSULTANT) {
+        throw new ErrorWithStatus({
+          message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_NOT_FOUND,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+  
+      // Validate and calculate week date range
+      const startDate = new Date(weekStartDate);
+      if (isNaN(startDate.getTime())) {
+        throw new ErrorWithStatus({
+          message: 'Invalid weekStartDate format. Use YYYY-MM-DD.',
+          status: HTTP_STATUS.BAD_REQUEST,
+        });
+      }
+      const weekEndDate = new Date(startDate);
+      weekEndDate.setDate(startDate.getDate() + 6); // End of the week
+  
+      const consultantPatterns = await consultantPatternRepository.find({
+        where: {
+            account_id: consultant_id,
+            date: Between(startDate, weekEndDate)
+        },
+        relations: [
+          'working_slot',
+        ],
+      })
+      if (!consultantPatterns.length) {
+        throw new ErrorWithStatus({
+          message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_NOT_FOUND,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+  
+      return consultantPatterns
+    }
 
   /**
    * @description Update a consultant pattern
