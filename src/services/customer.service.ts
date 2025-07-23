@@ -288,10 +288,10 @@ class CustomerService {
    * @returns The appointment
    */
   async createLaborarityAppointment(account_id: string, lab_id: string[], slot_id: string, date: string) {
-    console.log('account_id', account_id)
-    console.log('lab_id', lab_id)
-    console.log('slot_id', slot_id)
-    console.log('date', date)
+    // console.log('account_id', account_id)
+    // console.log('lab_id', lab_id)
+    // console.log('slot_id', slot_id)
+    // console.log('date', date)
     const [staff, queueIndex] = await Promise.all([
       staffService.countStaff(date, slot_id),
       appointmentRepository.count({
@@ -301,42 +301,13 @@ class CustomerService {
         }
       })
     ])
-    console.log('staff', staff)
-    console.log('queueIndex', queueIndex)
+    // console.log('staff', staff)
+    // console.log('queueIndex', queueIndex)
     if (staff * 10 <= queueIndex) {
       throw new ErrorWithStatus({
         message: CUSTOMER_MESSAGES.LABORARITY_NOT_ENOUGH_STAFF,
         status: 400
       })
-    }
-    if (lab_id.length === 1) {
-      const lab: Laboratory | null = await labRepository.findOne({
-        where: { lab_id: lab_id[0] }
-      })
-      if (!lab) {
-        throw new ErrorWithStatus({
-          message: LABORARITY_MESSAGES.LABORARITY_NOT_FOUND,
-          status: 400
-        })
-      }
-      if (lab.name.startsWith('Gói')) {
-        const description = lab.description.split(':')[1]
-        const labName = description.split(',')
-        const labIds: string[] = []
-        for (const name of labName) {
-          const lab: Laboratory | null = await labRepository.findOne({
-            where: { name: Like(`%${name.trim()}%`) }
-          })
-          if (!lab) {
-            throw new ErrorWithStatus({
-              message: LABORARITY_MESSAGES.LABORARITY_NOT_FOUND,
-              status: 400
-            })
-          }
-          labIds.push(lab.lab_id)
-        }
-        lab_id = labIds
-      }
     }
 
     const appointment = appointmentRepository.create({
