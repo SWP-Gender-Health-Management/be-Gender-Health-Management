@@ -149,8 +149,8 @@ export const updateResultController = async (req: Request, res: Response, next: 
  */
 // Update appointment status
 export const updateAppointmentStatusController = async (req: Request, res: Response, next: NextFunction) => {
-  const { app_id, status, account_id } = req.body
-  const appointmentStatus = await staffService.updateAppointmentStatus(app_id, status, account_id)
+  const { app_id, status, account_id, description } = req.body
+  const appointmentStatus = await staffService.updateAppointmentStatus(app_id, status, account_id, description)
   res.status(HTTP_STATUS.OK).json({
     message: LABORARITY_MESSAGES.APPOINTMENT_STATUS_UPDATED_SUCCESS,
     data: appointmentStatus

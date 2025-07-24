@@ -90,7 +90,10 @@ export class FeedbackService {
 
     // Save the feedback
     const savedFeedback = await feedbackRepository.save(feedback);
-    await consultAppointmentRepository.update(app_id, { feed_id: savedFeedback.feed_id })
+    if (savedFeedback.type === TypeAppointment.CONSULT)
+      await consultAppointmentRepository.update(app_id, { feed_id: savedFeedback.feed_id });
+    if (savedFeedback.type === TypeAppointment.LABORATORY)
+      await laboratoryAppointmentRepository.update(app_id, { feed_id: savedFeedback.feed_id });
 
     return savedFeedback
   }

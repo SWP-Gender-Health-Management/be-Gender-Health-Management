@@ -366,7 +366,8 @@ class CustomerService {
         description: appointment.description,
         result: appointment.result,
         status: appointment.status,
-        app_id: appointment.app_id
+        app_id: appointment.app_id,
+        feed_id: appointment.feed_id
       }
       app.push(appData)
     }

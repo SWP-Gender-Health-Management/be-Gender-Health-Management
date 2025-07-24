@@ -59,7 +59,7 @@ class StaffService {
         name: item.name,
         result: item.result,
         unit: laborarity.unit,
-        normal_range: laborarity.normal_range,
+        normal_range: laborarity.normal_range || '',
         conclusion: item.result > laborarity.normal_range ? 'Positive' : 'Negative',
         laboratoryAppointment: {
           app_id: app_id
@@ -78,7 +78,7 @@ class StaffService {
    * @returns The laboratory appointment entity
    */
   // Update the status of a laboratory appointment
-  async updateAppointmentStatus(appointment_id: string, status: string, staff_id: string): Promise<LaboratoryAppointment | boolean> {
+  async updateAppointmentStatus(appointment_id: string, status: string, staff_id: string, description: string): Promise<LaboratoryAppointment | boolean> {
     const appointment = await laboratoryAppointmentRepository.findOne({
       where: { app_id: appointment_id }
     })
@@ -107,6 +107,9 @@ class StaffService {
 
     appointment.status = status as StatusAppointment
     appointment.staff_id = staff_id;
+    if (!appointment.description || appointment.description?.trim() !== description.trim()) {
+      appointment.description = description.trim();
+    }
     await laboratoryAppointmentRepository.save(appointment)
     return appointment
   }
