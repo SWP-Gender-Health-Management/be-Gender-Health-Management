@@ -28,7 +28,7 @@ async function createStaffPatterns() {
 
     // Lấy slot 1 (slot đầu tiên) cho staff
     const existingWorkingSlots = await workingSlotRepository.find({
-      where: { type: TypeAppointment.CONSULT },
+      where: { type: TypeAppointment.LABORATORY },
       skip: 1,
       take: 1
     })
@@ -41,8 +41,8 @@ async function createStaffPatterns() {
     console.log(`Using ${existingWorkingSlots.length} working slot for staffs (slot 1 only)`)
 
     // Tạo pattern cho mỗi staff từ 16/6 đến 30/6/2025
-    const startDate = new Date('2025-06-16')
-    const endDate = new Date('2025-06-30')
+    const startDate = new Date('2025-07-24')
+    const endDate = new Date('2025-07-24')
     const patterns = []
 
     for (const staff of staffs) {
