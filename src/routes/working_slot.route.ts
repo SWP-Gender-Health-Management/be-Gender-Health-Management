@@ -39,7 +39,7 @@ Request Body:{
   type: enum
 }
 */
-workingSlotRoute.get('/get-slot-by-type', validateGetSlotByType, wrapRequestHandler(getSlotByTypeController))
+workingSlotRoute.get('/get-slot-by-type/:type', validateGetSlotByType, wrapRequestHandler(getSlotByTypeController))
 
 // workingSlotRoute.get('/get-slot-by-type/:type', validateGetSlotByType, wrapRequestHandler(getSlotByTypeParamController))
 

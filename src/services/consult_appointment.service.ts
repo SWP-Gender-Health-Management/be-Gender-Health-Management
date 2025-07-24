@@ -331,7 +331,6 @@ export class ConsultAppointmentService {
       .skip(skip)
       .take(limitNumber)
       .getManyAndCount()
-
     const list: any[] = []
     for (const consultant of consultants) {
       list.push({

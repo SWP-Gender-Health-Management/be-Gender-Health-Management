@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { WORKING_SLOT_MESSAGES } from '../constants/message.js'
 import workingSlotService from '../services/working_slot.service.js'
+import { result } from 'lodash'
 
 
 /**
@@ -113,7 +114,7 @@ export const addSlotController = async (req: Request, res: Response, next: NextF
  */
 // Get working slots by type
 export const getSlotByTypeController = async (req: Request, res: Response, next: NextFunction) => {
-  const { type } = req.body
+  const { type } = req.params
   const { limit, page } = req.query
   const pageVar = {
     limit: limit as string,
@@ -122,7 +123,7 @@ export const getSlotByTypeController = async (req: Request, res: Response, next:
   const slot = await workingSlotService.getSlotByType(type, pageVar)
   res.status(200).json({
     message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
-    data: slot
+    result: slot
   })
 }
 
