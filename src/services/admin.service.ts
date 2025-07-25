@@ -1,6 +1,6 @@
 import { AppDataSource } from '../config/database.config.js'
 import Account from '../models/Entity/account.entity.js'
-import { parseNumericEnum, Role } from '../enum/role.enum.js'
+import { convertRoleToString, parseNumericEnum, Role } from '../enum/role.enum.js'
 import { hashPassword } from '../utils/crypto.js'
 import { ADMIN_MESSAGES, USERS_MESSAGES } from '~/constants/message.js'
 import { ErrorWithStatus } from '~/models/Error.js'
@@ -206,9 +206,14 @@ class AdminService {
       skip: skip,
       take: limitNumber
     })
+
+    const proccessedRoleAccount = await accounts.map(acc => ({
+      ...acc,
+      role: convertRoleToString(acc.role)
+    }))
     const totalPages = Math.ceil(totalItems / limitNumber)
     return {
-      accounts,
+      accounts: proccessedRoleAccount,
       totalItems,
       totalPages
     }

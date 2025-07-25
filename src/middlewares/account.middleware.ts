@@ -372,7 +372,7 @@ export const restrictTo = (...allowedRoles: Role[]) => {
             // req.body.account_id = decoded.account_id
             req.body = {
               ...req.body,
-              email: decoded.email,
+              // email: decoded.email,
               account_id: decoded.account_id
             }
 
