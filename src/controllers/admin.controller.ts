@@ -8,7 +8,7 @@ import { format } from 'date-fns'
 import { emailQueue } from '~/routes/admin.route.js'
 
 export const getOverallController = async (req: Request, res: Response, next: NextFunction) => {
-  const { day } = req.body
+  const { day } = req.query
   const result = await adminService.getOverall(parseInt(day as string))
   res.status(HTTP_STATUS.OK).json({
     message: ADMIN_MESSAGES.OVERALL_SUCCESS,
@@ -25,7 +25,7 @@ export const getRecentNewsController = async (req: Request, res: Response, next:
 }
 
 export const getPercentCustomerController = async (req: Request, res: Response, next: NextFunction) => {
-  const { day } = req.body
+  const { day } = req.query
   const result = await adminService.getPercentCustomer(parseInt(day as string))
   res.status(HTTP_STATUS.OK).json({
     message: ADMIN_MESSAGES.PERCENT_CUSTOMER_SUCCESS,
@@ -88,8 +88,8 @@ export const getReportOverallController = async (req: Request, res: Response, ne
 }
 
 export const getPercentRevenueController = async (req: Request, res: Response, next: NextFunction) => {
-  const { day } = req.body
-  const result = await adminService.getPercentRevenue(day)
+  const { day } = req.query
+  const result = await adminService.getPercentRevenue(day as string)
   res.status(HTTP_STATUS.OK).json({
     message: ADMIN_MESSAGES.PERCENT_REVENUE_SUCCESS,
     data: result
