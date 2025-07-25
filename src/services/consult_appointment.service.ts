@@ -47,6 +47,7 @@ export class ConsultAppointmentService {
       relations: ['staff_profile']
     })
     const gg_meet = consultant?.staff_profile?.gg_meet
+    // console.log('gg_meet', gg_meet)
 
     // Check if pattern is already booked
     if (consultantPattern.is_booked || consultantPattern.consult_appointment) {
