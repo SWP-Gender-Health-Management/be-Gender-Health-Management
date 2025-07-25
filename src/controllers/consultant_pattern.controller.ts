@@ -134,6 +134,19 @@ export const getAllConsultantPatternsInWeek = async (req: Request, res: Response
   }
 }
 
+export const getConsultantPatternsByWeek = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { weekStartDate, consultant_id } = req.query
+    const result = await consultantPatternService.getConsultPatternByWeek(consultant_id as string ,weekStartDate as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERNS_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 /**
  * @swagger
  * /consultant-pattern/get-consultant-pattern-by-id/{pattern_id}:

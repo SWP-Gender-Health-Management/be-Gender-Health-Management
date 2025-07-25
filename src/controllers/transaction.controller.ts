@@ -280,6 +280,7 @@ export const createPaymentUrlController = async (req: Request, res: Response) =>
 // Receive PayOS webhook
 export const receiveHookController = async (req: Request, res: Response) => {
   const webhookData = req.body
+  console.error("hello");
   console.log('Webhook received:', JSON.stringify(webhookData, null, 2))
 
   try {

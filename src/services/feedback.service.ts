@@ -39,8 +39,8 @@ export class FeedbackService {
       })
     }
 
-    const existedFeedback = await feedbackRepository.findOne({where: {app_id}});
-    if(existedFeedback) {
+    const existedFeedback = await feedbackRepository.findOne({ where: { app_id } });
+    if (existedFeedback) {
       throw new ErrorWithStatus({
         message: FEEDBACK_MESSAGES.APPOINTMENT_ALREADY_HAVE_FEEDBACK,
         status: HTTP_STATUS.BAD_REQUEST
@@ -86,8 +86,14 @@ export class FeedbackService {
       account: customer
     })
 
+
+
     // Save the feedback
-    const savedFeedback = await feedbackRepository.save(feedback)
+    const savedFeedback = await feedbackRepository.save(feedback);
+    if (savedFeedback.type === TypeAppointment.CONSULT)
+      await consultAppointmentRepository.update(app_id, { feed_id: savedFeedback.feed_id });
+    if (savedFeedback.type === TypeAppointment.LABORATORY)
+      await laboratoryAppointmentRepository.update(app_id, { feed_id: savedFeedback.feed_id });
 
     return savedFeedback
   }

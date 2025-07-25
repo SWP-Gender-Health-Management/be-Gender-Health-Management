@@ -152,7 +152,6 @@ export class ConsultAppointmentService {
       relations: [
         'consultant_pattern',
         'consultant_pattern.working_slot',
-        // 'consultant_pattern.consultant',
         'customer',
         'report'
       ]
@@ -181,7 +180,8 @@ export class ConsultAppointmentService {
         description: conApp.description,
         report: conApp.report,
         status: conApp.status,
-        app_id: conApp.app_id
+        app_id: conApp.app_id,
+        feed_id: conApp.feed_id
       }
       app.push(appData)
     }
@@ -331,7 +331,6 @@ export class ConsultAppointmentService {
       .skip(skip)
       .take(limitNumber)
       .getManyAndCount()
-
     const list: any[] = []
     for (const consultant of consultants) {
       list.push({

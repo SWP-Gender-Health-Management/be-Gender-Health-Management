@@ -173,7 +173,8 @@ export class QuestionService {
     }
 
     return {
-      questions: ques,
+      // questions: ques,
+      questions,
       total,
       totalPages: Math.ceil(total / limit)
     }
