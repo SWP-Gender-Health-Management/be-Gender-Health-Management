@@ -46,6 +46,7 @@ class AdminService {
         .createQueryBuilder('account')
         // So sánh tháng và năm của cột 'createdAt' với tháng và năm của ngày hiện tại
         .where("date_trunc('month', account.created_at) = date_trunc('month', NOW())")
+        .andWhere('account.role = :role', { role: Role.CUSTOMER })
         .getCount(), // Dùng getCount() để lấy kết quả đếm trực tiếp
       transactionRepo
         .createQueryBuilder('transaction')
