@@ -36,6 +36,9 @@ export default class ConsultAppointment implements ConsultAppointmentType {
   description: string
 
   @Column({ type: 'text', nullable: true })
+  gg_meet: string
+
+  @Column({ type: 'text', nullable: true })
   feed_id: string
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })

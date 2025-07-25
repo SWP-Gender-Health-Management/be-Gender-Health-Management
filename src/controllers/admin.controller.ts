@@ -1,11 +1,14 @@
 import { NextFunction, Request, Response } from 'express'
 import adminService from '../services/admin.service.js'
-import { ADMIN_MESSAGES } from '../constants/message.js'
+import { ADMIN_MESSAGES, USERS_MESSAGES } from '../constants/message.js'
 import notificationService from '~/services/notification.service.js'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
 import HTTP_STATUS from '~/constants/httpStatus.js'
 import { format } from 'date-fns'
 import { emailQueue } from '~/routes/admin.route.js'
+import { Role } from '~/enum/role.enum.js'
+import accountService from '~/services/account.service.js'
+import StaffProfile from '~/models/Entity/staff_profile.entity.js'
 
 export const getOverallController = async (req: Request, res: Response, next: NextFunction) => {
   const { day } = req.query
@@ -57,6 +60,21 @@ export const getAccountsController = async (req: Request, res: Response, next: N
   res.status(200).json({
     message: ADMIN_MESSAGES.ACCOUNT_CREATED_SUCCESS,
     data: result
+  })
+}
+
+export const updateAccountAdminController = async (req: Request, res: Response, next: NextFunction) => {
+  const { account_id, full_name, phone, dob, gender, address, description } = req.body
+  const result = await accountService.updateProfile(account_id, full_name, phone, dob, gender, address, description)
+  let staffProfile: StaffProfile | null = null
+  if (result.role === Role.CONSULTANT) {
+    const { specialty, rating, description, gg_meet } = req.body
+    staffProfile = await adminService.updateStaffProfile(account_id, specialty, rating, description, gg_meet)
+  }
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.USER_UPDATED_SUCCESS,
+    result,
+    staffProfile
   })
 }
 

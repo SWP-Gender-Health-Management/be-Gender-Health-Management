@@ -284,6 +284,12 @@ export const validateResetPassword = validate(
 
 export const validateUpdateAccount = validate(
   checkSchema({
+    account_id: {
+      isUUID: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: USERS_MESSAGES.ACCOUNT_ID_INVALID
+    },
     full_name: {
       notEmpty: false,
       isString: true,

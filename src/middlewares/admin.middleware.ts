@@ -1,8 +1,10 @@
 import { checkSchema } from 'express-validator'
-import { ADMIN_MESSAGES } from '../constants/message.js'
+import { ADMIN_MESSAGES, USERS_MESSAGES } from '../constants/message.js'
 import accountService from '../services/account.service.js'
 import { validate } from '../utils/validations.js'
 import multer from 'multer'
+import { NextFunction, Request, Response } from 'express'
+import { convertStringToRole, Role } from '~/enum/role.enum.js'
 
 export const validateCreateAccount = validate(
   checkSchema({
@@ -58,6 +60,34 @@ export const validateCreateAccount = validate(
   })
 )
 
+export const validateUpdateStaffProfile = validate(
+  checkSchema({
+    specialty: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: ADMIN_MESSAGES.SPECIALTY_REQUIRED
+    },
+    rating: {
+      isString: true,
+      notEmpty: true,
+      errorMessage: ADMIN_MESSAGES.RATING_REQUIRED
+    },
+    description: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: ADMIN_MESSAGES.DESCRIPTION_REQUIRED
+    },
+    gg_meet: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: ADMIN_MESSAGES.GG_MEET_REQUIRED
+    }
+  })
+)
+
 export const validateBanAccount = validate(
   checkSchema({
     account_id: {
@@ -83,3 +113,19 @@ export const upload = multer({
   },
   limits: { fileSize: 1024 * 1024 * 2 } // 2MB
 })
+
+export const conditionalAdminCheck = (req: Request, res: Response, next: NextFunction) => {
+  const { update_role } = req.body
+  const parseRole = convertStringToRole(update_role as string)
+  if (parseRole === Role.CONSULTANT) {
+    // Nếu client yêu cầu kiểm tra an ninh (secure=true),
+    // thì cho phép đi tiếp đến middleware tiếp theo (là restrictTo).
+    console.log('Điều kiện secure=true được áp dụng. Sẽ kiểm tra quyền Admin.')
+    return next('route')
+  } else {
+    // Nếu không, bỏ qua các middleware còn lại của route này
+    // và nhảy đến route tiếp theo (là route không cần quyền).
+    console.log('Bỏ qua kiểm tra quyền Admin.')
+    return next()
+  }
+}

@@ -15,6 +15,7 @@ import { Between, LessThan, LessThanOrEqual, MoreThanOrEqual, Like, Equal, In } 
 import { TypeNoti } from '~/enum/type_noti.enum.js'
 import Notification from '~/models/Entity/notification.entity.js'
 import { MailOptions, sendMail } from './email.service.js'
+import StaffProfile from '~/models/Entity/staff_profile.entity.js'
 
 const accountRepo = AppDataSource.getRepository(Account)
 const labAppRepo = AppDataSource.getRepository(LaboratoryAppointment)
@@ -22,6 +23,7 @@ const conAppRepo = AppDataSource.getRepository(ConsultAppointment)
 const transactionRepo = AppDataSource.getRepository(Transaction)
 const feedbackRepo = AppDataSource.getRepository(Feedback)
 const notificationRepo = AppDataSource.getRepository(Notification)
+const staffProfileRepo = AppDataSource.getRepository(StaffProfile)
 
 class AdminService {
   // Overall
@@ -163,6 +165,26 @@ class AdminService {
 
     await Promise.all([accountRepo.save(newAccount), sendMail(options)])
     return newAccount
+  }
+
+  async updateStaffProfile(
+    account_id: string,
+    specialty: string,
+    rating: string,
+    description: string,
+    gg_meet: string
+  ) {
+    const account = await accountRepo.findOne({
+      where: { account_id },
+      relations: ['staff_profile']
+    })
+    const staffProfile = account?.staff_profile ?? staffProfileRepo.create({})
+    staffProfile.specialty = specialty
+    staffProfile.rating = parseInt(rating)
+    staffProfile.description = description
+    staffProfile.gg_meet = gg_meet
+    await staffProfileRepo.save(staffProfile)
+    return staffProfile
   }
 
   /**

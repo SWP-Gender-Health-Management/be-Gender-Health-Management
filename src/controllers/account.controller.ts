@@ -7,7 +7,8 @@ import accountService from '~/services/account.service.js'
 import refreshTokenService from '~/services/refresh_token.service.js'
 import notificationService from '~/services/notification.service.js'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
-import { convertRoleToString } from '~/enum/role.enum.js'
+import { convertRoleToString, Role } from '~/enum/role.enum.js'
+import adminService from '~/services/admin.service.js'
 /**
  * @swagger
  * /account/register:

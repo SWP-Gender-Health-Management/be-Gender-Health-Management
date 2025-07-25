@@ -14,6 +14,7 @@ export const HTTP_MESSAGE = {
 }
 
 export const USERS_MESSAGES = {
+  ACCOUNT_ID_INVALID: 'Account id is invalid',
   USER_GET_ACCOUNT_ID_SUCCESS: 'Get account ID success',
   VALIDATION_ERROR: 'Validation error',
   USER_NOT_FOUND: 'User not found',
@@ -63,7 +64,8 @@ export const USERS_MESSAGES = {
   RESET_PASSWORD_SUCCESS: 'Reset password successfully',
   GOOGLE_ACCOUNT_NO_PASSWORD: 'Không thể thay đổi mật khẩu cho tài khoản Google',
   GOOGLE_ACCOUNT_NO_RESET: 'Không thể đặt lại mật khẩu cho tài khoản Google',
-  GOOGLE_ACCOUNT_NO_RESET_EMAIL: 'Không thể gửi email đặt lại mật khẩu cho tài khoản Google'
+  GOOGLE_ACCOUNT_NO_RESET_EMAIL: 'Không thể gửi email đặt lại mật khẩu cho tài khoản Google',
+  GG_MEET_INVALID: 'GG meet is invalid'
 }
 
 export const REFRESH_TOKEN_MESSAGES = {
@@ -148,7 +150,11 @@ export const ADMIN_MESSAGES = {
   PERCENT_ACCOUNT_SUCCESS: 'Percent account success',
   PERCENT_REVENUE_SERVICE_SUCCESS: 'Percent revenue service success',
   PERCENT_FEEDBACK_SUCCESS: 'Percent feedback success',
-  NOTIFICATION_SUCCESS: 'Notification success'
+  NOTIFICATION_SUCCESS: 'Notification success',
+  SPECIALTY_REQUIRED: 'Specialty is required',
+  RATING_REQUIRED: 'Rating is required',
+  DESCRIPTION_REQUIRED: 'Description is required',
+  GG_MEET_REQUIRED: 'GG meet is required'
 }
 
 export const MANAGER_MESSAGES = {
@@ -228,7 +234,7 @@ export const RESULT_MESSAGES = {
 
 export const STAFF_MESSAGES = {
   STAFF_ID_INVALID: 'Staff id is invalid',
-  STAFF_NOT_FOUND: "STAFF_NOT_FOUND",
+  STAFF_NOT_FOUND: 'STAFF_NOT_FOUND',
   APPOINTMENT_NOT_FOUND: 'APPOINTMENT_NOT_FOUND',
   APPOINTMENT_OWNED_BY_OTHER: 'Appointment belong to an other staff'
 }
@@ -254,7 +260,7 @@ export const CONSULTANT_PATTERNS_MESSAGES = {
 }
 
 export const CONSULTANT_APPOINTMENTS_MESSAGES = {
-  CONSULTANT_NOT_FOUND: "Consultant not found",
+  CONSULTANT_NOT_FOUND: 'Consultant not found',
   CONSULT_APPOINTMENT_CREATED_SUCCESS: 'Consult appointment created successfully',
   CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS: 'Consult appointments retrieved successfully',
   CONSULT_APPOINTMENT_RETRIEVED_SUCCESS: 'Consult appointment retrieved successfully',
@@ -308,9 +314,9 @@ export const CONSULT_REPORT_MESSAGES = {
 }
 
 export const FEEDBACK_MESSAGES = {
-  STAFF_NOT_FOUND: "Staff not found",
-  APPOINTMENT_ALREADY_HAVE_FEEDBACK: "APPOINTMENT_ALREADY_HAVE_FEEDBACK",
-  CONSULTANT_NOT_FOUND: "Consultant not found",
+  STAFF_NOT_FOUND: 'Staff not found',
+  APPOINTMENT_ALREADY_HAVE_FEEDBACK: 'APPOINTMENT_ALREADY_HAVE_FEEDBACK',
+  CONSULTANT_NOT_FOUND: 'Consultant not found',
   CUSTOMER_NOT_FOUND: 'Customer not found',
   CUSTOMER_NOT_PROVIDED: 'Customer must be provided',
   FEEDBACK_CREATED_SUCCESS: 'Feedback created successfully',

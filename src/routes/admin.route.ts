@@ -12,9 +12,16 @@ import {
   getPercentRevenueController,
   getPercentAccountController,
   getPercentRevenueByServiceController,
-  getPercentFeedbackController
+  getPercentFeedbackController,
+  updateAccountAdminController
 } from '../controllers/admin.controller.js'
-import { upload, validateBanAccount, validateCreateAccount } from '../middlewares/admin.middleware.js'
+import {
+  conditionalAdminCheck,
+  upload,
+  validateBanAccount,
+  validateCreateAccount,
+  validateUpdateStaffProfile
+} from '../middlewares/admin.middleware.js'
 import wrapRequestHandler from '../utils/handle.js'
 import { restrictTo, validateUpdateAccount } from '~/middlewares/account.middleware.js'
 import { Role } from '~/enum/role.enum.js'
@@ -108,8 +115,17 @@ adminRoute.post('/view-account', restrictTo(Role.ADMIN), wrapRequestHandler(view
 adminRoute.post(
   '/update-profile',
   restrictTo(Role.ADMIN),
+  conditionalAdminCheck,
   validateUpdateAccount,
   wrapRequestHandler(updateAccountController)
+)
+
+adminRoute.post(
+  '/update-con-profile',
+  restrictTo(Role.ADMIN),
+  validateUpdateAccount,
+  validateUpdateStaffProfile,
+  wrapRequestHandler(updateAccountAdminController)
 )
 
 /*
