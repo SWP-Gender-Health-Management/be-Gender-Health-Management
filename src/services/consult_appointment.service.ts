@@ -42,6 +42,12 @@ export class ConsultAppointmentService {
       })
     }
 
+    const consultant = await accountRepository.findOne({
+      where: { account_id: consultantPattern.account_id },
+      relations: ['staff_profile']
+    })
+    const gg_meet = consultant?.staff_profile?.gg_meet
+
     // Check if pattern is already booked
     if (consultantPattern.is_booked || consultantPattern.consult_appointment) {
       throw new ErrorWithStatus({
@@ -63,7 +69,8 @@ export class ConsultAppointmentService {
       consultant_pattern: consultantPattern,
       customer: customer,
       description: description || '',
-      status: StatusAppointment.PENDING
+      status: StatusAppointment.PENDING,
+      gg_meet: gg_meet || ''
     })
     const savedConsultAppointment = await consultAppointmentRepository.save(consultAppointment)
 
@@ -149,12 +156,7 @@ export class ConsultAppointmentService {
       where: { customer: { account_id } },
       skip,
       take: limitNumber,
-      relations: [
-        'consultant_pattern',
-        'consultant_pattern.working_slot',
-        'customer',
-        'report'
-      ]
+      relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'customer', 'report']
     })
 
     if (!consultAppointments.length) {
