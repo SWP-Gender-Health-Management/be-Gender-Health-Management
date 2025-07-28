@@ -53,7 +53,7 @@ export const validateCreateAccount = validate(
       errorMessage: ADMIN_MESSAGES.PASSWORD_REQUIRED
     },
     role: {
-      isInt: true,
+      isString: true,
       notEmpty: true,
       errorMessage: ADMIN_MESSAGES.ROLE_REQUIRED
     }

@@ -1,7 +1,8 @@
 export enum StatusAppointment {
   PENDING = 'pending',
   CONFIRMED = 'confirmed',
-  CANCELLED = 'cancelled',
+  PENDING_CANCELLED = 'pending_cancelled',
+  CONFIRMED_CANCELLED = 'confirmed_cancelled',
   COMPLETED = 'completed',
   IN_PROGRESS = 'in_progress',
   DELAYED = 'delayed'
@@ -14,7 +15,7 @@ export const stringToStatus = (status: number) => {
     case 1:
       return StatusAppointment.COMPLETED
     case 2:
-      return StatusAppointment.CANCELLED
+      return StatusAppointment.PENDING_CANCELLED
     case 3:
       return StatusAppointment.CONFIRMED
     case 4:

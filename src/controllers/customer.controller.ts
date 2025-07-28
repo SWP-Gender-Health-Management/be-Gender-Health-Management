@@ -367,3 +367,27 @@ export const getLaborarityAppointmentsController = async (req: Request, res: Res
     result: result
   })
 }
+
+export const cancelLaborarityAppointment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    console.log('Canceling laboratory appointment with ID:', req.params.app_id);
+    await customerService.cancelLaborarityAppointment(req.params.app_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: CUSTOMER_MESSAGES.LABORARITY_APPOINTMENT_CANCELLED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const createLabAppointmentRefund = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id, description, accountNumber, bankName } = req.body
+    await customerService.createLabAppointmentRefund(app_id, description, bankName, accountNumber)
+    res.status(HTTP_STATUS.OK).json({
+      message: CUSTOMER_MESSAGES.LAB_APPOINTMENT_REFUND_CREATED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
+}

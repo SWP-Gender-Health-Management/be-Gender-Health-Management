@@ -140,11 +140,11 @@ class WorkingSlotService {
     })
     return {
       morning: {
-        isFull: amountMorning >= morning.length * 10,
+        isFull: amountMorning >= morning[1] * 10,
         slot: slots[0]
       },
       afternoon: {
-        isFull: amountAfternoon >= afternoon.length * 10,
+        isFull: amountAfternoon >= afternoon[1] * 10,
         slot: slots[1]
       }
     }

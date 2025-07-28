@@ -77,8 +77,8 @@ adminRoute.get('/get-recent-news', restrictTo(Role.ADMIN), wrapRequestHandler(ge
 */
 adminRoute.post(
   '/create-account',
-  restrictTo(Role.ADMIN),
   validateCreateAccount,
+  restrictTo(Role.ADMIN),
   wrapRequestHandler(createAccountController)
 )
 

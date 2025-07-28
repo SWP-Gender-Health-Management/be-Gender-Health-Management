@@ -6,7 +6,7 @@ import { TypeNoti } from '~/enum/type_noti.enum.js'
 import HTTP_STATUS from '~/constants/httpStatus.js'
 import { format } from 'date-fns'
 import { emailQueue } from '~/routes/admin.route.js'
-import { Role } from '~/enum/role.enum.js'
+import { convertStringToRole, Role } from '~/enum/role.enum.js'
 import accountService from '~/services/account.service.js'
 import StaffProfile from '~/models/Entity/staff_profile.entity.js'
 
@@ -38,7 +38,8 @@ export const getPercentCustomerController = async (req: Request, res: Response, 
 
 export const createAccountController = async (req: Request, res: Response, next: NextFunction) => {
   const { full_name, email, password, role } = req.body
-  const account = await adminService.createAccount(full_name, email, password, role)
+  const proccessedRole =  convertStringToRole(role);
+  const account = await adminService.createAccount(full_name, email, password, proccessedRole as Role)
   await notificationService.createNotification(
     {
       type: TypeNoti.CREATE_ACCOUNT,
@@ -79,16 +80,16 @@ export const updateAccountAdminController = async (req: Request, res: Response, 
 }
 
 export const banAccountController = async (req: Request, res: Response, next: NextFunction) => {
-  const { account_id } = req.body
-  await adminService.banAccount(account_id)
+  const { selected_account_id } = req.body
+  await adminService.banAccount(selected_account_id)
   res.status(200).json({
     message: ADMIN_MESSAGES.ACCOUNT_BANNED_SUCCESS
   })
 }
 
 export const unbanAccountController = async (req: Request, res: Response, next: NextFunction) => {
-  const { account_id } = req.body
-  await adminService.unbanAccount(account_id)
+  const { selected_account_id } = req.body
+  await adminService.unbanAccount(selected_account_id)
   res.status(200).json({
     message: ADMIN_MESSAGES.ACCOUNT_UNBANNED_SUCCESS
   })

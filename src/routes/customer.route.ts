@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import {
+  cancelLaborarityAppointment,
+  createLabAppointmentRefund,
   createLaborarityAppointmentController,
   createNotificationController,
   getCustomersController,
@@ -125,6 +127,19 @@ customerRoute.get(
   '/get-laborarity-appointments',
   restrictTo(Role.CUSTOMER),
   wrapRequestHandler(getLaborarityAppointmentsController)
+)
+
+customerRoute.put(
+  '/cancel-lab-appointment/:app_id',
+  restrictTo(Role.CUSTOMER),
+  wrapRequestHandler(cancelLaborarityAppointment)
+)
+
+customerRoute.post(
+  '/create-lab-appointment-refund',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER, Role.ADMIN),
+  wrapRequestHandler(createLabAppointmentRefund)
 )
 
 export default customerRoute

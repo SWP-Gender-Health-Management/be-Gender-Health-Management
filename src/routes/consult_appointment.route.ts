@@ -10,7 +10,11 @@ import {
   getConsultants,
   getConsultAppointmentsByWeek,
   getConsultAppointmentByConsultantId,
-  getConsultAppointmentStatByConsultantId
+  getConsultAppointmentStatByConsultantId,
+  cancelConsultAppointment,
+  createConsultAppointmentRefund,
+  getRefundInfoByAppId,
+  refundConsultAppointment
 } from '../controllers/consult_appointment.controller.js'
 import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
 import { Role } from '../enum/role.enum.js'
@@ -158,6 +162,34 @@ consultAppointmentRoute.delete(
   // validateAccessToken,
   // restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteConsultAppointment)
+)
+
+consultAppointmentRoute.put(
+  '/cancel-appointment/:app_id',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER, Role.ADMIN),
+  wrapRequestHandler(cancelConsultAppointment)
+)
+
+consultAppointmentRoute.post(
+  '/create-appointment-refund',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER, Role.ADMIN),
+  wrapRequestHandler(createConsultAppointmentRefund)
+)
+
+consultAppointmentRoute.get(
+  '/get-refund-info/:app_id',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER, Role.ADMIN, Role.MANAGER),
+  wrapRequestHandler(getRefundInfoByAppId)
+)
+
+consultAppointmentRoute.put(
+  '/refund/:app_id',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER, Role.ADMIN, Role.MANAGER),
+  wrapRequestHandler(refundConsultAppointment)
 )
 
 export default consultAppointmentRoute

@@ -1,4 +1,4 @@
-import { Between, LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm'
+import { Between, In, LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm'
 import { AppDataSource } from '~/config/database.config.js'
 import { StatusAppointment, stringToStatus } from '~/enum/statusAppointment.enum.js'
 import ConsultAppointment from '~/models/Entity/consult_appointment.entity.js'
@@ -15,6 +15,10 @@ import Transaction from '~/models/Entity/transaction.entity.js'
 import { TransactionStatus } from '~/enum/transaction.enum.js'
 import Blog from '~/models/Entity/blog.entity.js'
 import Question from '~/models/Entity/question.entity.js'
+import Refund from '~/models/Entity/refund.entity.js'
+import { ErrorWithStatus } from '~/models/Error.js'
+import { MANAGER_MESSAGES } from '~/constants/message.js'
+import HTTP_STATUS from '~/constants/httpStatus.js'
 
 const accountRepo = AppDataSource.getRepository(Account)
 const conAppRepo = AppDataSource.getRepository(ConsultAppointment)
@@ -26,6 +30,8 @@ const conPatternRepo = AppDataSource.getRepository(ConsultantPattern)
 const transactionRepo = AppDataSource.getRepository(Transaction)
 const blogRepo = AppDataSource.getRepository(Blog)
 const questionRepo = AppDataSource.getRepository(Question)
+const transactionRepository = AppDataSource.getRepository(Transaction)
+const refundRepository = AppDataSource.getRepository(Refund)
 
 class ManagerService {
   async getOverall() {
@@ -269,27 +275,82 @@ class ManagerService {
 
   async getLabApp(
     pageVar: { limit: number; page: number },
-    filter: { fullname: string; status: number; date: string }
+    filter: { fullname: string; status: string; date: string }
   ) {
     const { limit, page } = pageVar
     const skip = (page - 1) * limit
+
     const { fullname, status, date } = filter
-    const labApp = await labAppRepo.findAndCount({
+    const dateFilter = !date || date === '' ? null : new Date(date)
+    const searchFilter = !fullname || fullname === '' ? null : `%${fullname}%`
+    const statusFilter = status === 'all' ? null : status
+    const [appointments, total] = await labAppRepo.findAndCount({
       where: {
-        customer: {
-          full_name: fullname ? Like(`%${fullname}%`) : undefined
-        },
-        status: status ? stringToStatus(status) : undefined,
-        date: date ? new Date(date) : undefined
+        ...(searchFilter && {
+          customer: {
+            full_name: Like(searchFilter)
+          }
+        }),
+        ...(statusFilter &&
+          (statusFilter === 'cancelled'
+            ? {
+                status: In([StatusAppointment.PENDING_CANCELLED, StatusAppointment.CONFIRMED_CANCELLED])
+              }
+            : {
+                status: statusFilter as StatusAppointment
+              })),
+        ...(dateFilter && {
+          date: dateFilter
+        })
       },
       skip,
       take: limit,
-      relations: {
-        customer: true
-        // working_slot: true
-      }
+      relations: ['laborarity', 'working_slot', 'result', 'customer']
     })
-    return labApp
+
+    const app: any[] = []
+    for (const appointment of appointments) {
+      let isRequestedRefund = false
+      let isRefunded = false
+      let amount = 0
+      if (appointment.status === StatusAppointment.CONFIRMED_CANCELLED) {
+        const transaction = await transactionRepository.findOne({
+          where: { app_id: 'Lab_' + appointment.app_id },
+          relations: ['refund']
+        })
+        if (transaction && transaction.refund && !transaction.refund.is_refunded) {
+          isRequestedRefund = true
+        }
+
+        if (transaction && transaction.refund && transaction.refund.is_refunded) {
+          isRefunded = true
+        }
+      }
+      appointment.laborarity.forEach((lab) => {
+        amount += lab.price
+      })
+      const appData = {
+        date: appointment.date,
+        time: appointment.working_slot.start_at.slice(0, 5) + ' - ' + appointment.working_slot.end_at.slice(0, 5),
+        lab: appointment.laborarity,
+        description: appointment.description,
+        result: appointment.result,
+        status: appointment.status,
+        app_id: appointment.app_id,
+        feed_id: appointment.feed_id,
+        isRequestedRefund,
+        isRefunded,
+        customer: appointment.customer,
+        created_at: appointment.created_at,
+        amount
+      }
+      app.push(appData)
+    }
+    console.log(app)
+    return {
+      labApp: app,
+      pages: Math.ceil(total / limit)
+    }
   }
 
   async getMensOverall() {
@@ -450,6 +511,58 @@ class ManagerService {
       result: resultNew,
       totalPage: Math.ceil(total / limit)
     }
+  }
+
+  async getRefundInfoByAppId(app_id: string): Promise<Refund | null> {
+    const labApp = await labAppRepo.findOne({
+      where: { app_id }
+    })
+
+    if (!labApp) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.LAB_APP_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    const transaction = await transactionRepository.findOne({
+      where: { app_id: 'Lab_' + labApp.app_id },
+      relations: ['refund']
+    })
+
+    if (transaction && transaction.refund) {
+      return transaction.refund
+    }
+
+    return null
+  }
+
+  async refundLabAppointment(app_id: string): Promise<void> {
+    const labApp = await labAppRepo.findOne({
+      where: { app_id }
+    })
+
+    if (!labApp) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.LAB_APP_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    const transaction = await transactionRepository.findOne({
+      where: { app_id: 'Lab_' + labApp.app_id },
+      relations: ['refund']
+    })
+
+    if (!transaction || !transaction.refund || transaction.refund.is_refunded) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.REFUND_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    transaction.refund.is_refunded = true
+    await refundRepository.save(transaction.refund)
   }
 }
 const managerService = new ManagerService()

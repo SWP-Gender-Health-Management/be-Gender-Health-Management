@@ -13,12 +13,21 @@ import staffService from './staff.service.js'
 import { Role } from '../enum/role.enum.js'
 import Result from '../models/Entity/result.entity.js'
 import { Like } from 'typeorm'
+import Transaction from '~/models/Entity/transaction.entity.js'
+import { TransactionStatus } from '~/enum/transaction.enum.js'
+import { StatusAppointment } from '~/enum/statusAppointment.enum.js'
+import Refund from '~/models/Entity/refund.entity.js'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import REFUND_RATE from '~/constants/refundRate.js'
 
 const menstrualCycleRepository = AppDataSource.getRepository(MenstrualCycle)
 const accountRepository = AppDataSource.getRepository(Account)
 const appointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
 const labRepository = AppDataSource.getRepository(Laboratory)
 const resultRepository = AppDataSource.getRepository(Result)
+const transactionRepository = AppDataSource.getRepository(Transaction)
+const refundRepository = AppDataSource.getRepository(Refund)
+
 class CustomerService {
   // tính ngày hành kinh
   calculatePeriodDays = (lastPeriodStart: Date, lastPeriodEnd: Date, periodLength: number) => {
@@ -359,6 +368,20 @@ class CustomerService {
 
     const app: any[] = []
     for (const appointment of appointments) {
+      let isRequestedRefund: boolean = false
+      let isRefunded: boolean = false
+      if (appointment.status === StatusAppointment.CONFIRMED_CANCELLED) {
+        const transaction = await transactionRepository.findOne({
+          where: { app_id: 'Lab_' + appointment.app_id },
+          relations: ['refund']
+        })
+        if (transaction && transaction.refund) {
+          isRequestedRefund = true
+          if( transaction.refund.is_refunded) {
+            isRefunded = true
+          }
+        }
+      }
       const appData = {
         date: appointment.date,
         time: appointment.working_slot.start_at.slice(0, 5) + ' - ' + appointment.working_slot.end_at.slice(0, 5),
@@ -367,7 +390,9 @@ class CustomerService {
         result: appointment.result,
         status: appointment.status,
         app_id: appointment.app_id,
-        feed_id: appointment.feed_id
+        feed_id: appointment.feed_id,
+        isRequestedRefund,
+        isRefunded
       }
       app.push(appData)
     }
@@ -375,6 +400,91 @@ class CustomerService {
     return {
       labApp: app,
       pages: Math.ceil(total / limitNumber)
+    }
+  }
+
+  async cancelLaborarityAppointment(app_id: string) {
+    const appointment: LaboratoryAppointment | null = await appointmentRepository.findOne({
+      where: { app_id },
+      relations: ['customer', 'laborarity']
+    })
+
+    if (!appointment) {
+      throw new ErrorWithStatus({
+        message: CUSTOMER_MESSAGES.LABORARITY_APPOINTMENT_NOT_FOUND,
+        status: 400
+      })
+    }
+
+    const transaction = await transactionRepository.findOne({
+      where: { app_id: 'Lab_' + appointment.app_id }
+    })
+    if (transaction && transaction.status === TransactionStatus.PAID) {
+      await appointmentRepository.update(appointment.app_id, {
+        status: StatusAppointment.CONFIRMED_CANCELLED
+      })
+    } else {
+      await appointmentRepository.update(appointment.app_id, {
+        status: StatusAppointment.PENDING_CANCELLED
+      })
+    }
+  }
+
+  async createLabAppointmentRefund(
+    app_id: string,
+    description: string,
+    bankName: string,
+    accountNumber: string
+    // status: StatusAppointment
+  ): Promise<{ savedLabAppointmentRefund: Refund; amount: number }> {
+    // Validate consultant pattern
+    const labAppointment = await appointmentRepository.findOne({
+      where: { app_id }
+    })
+
+    if (!labAppointment) {
+      throw new ErrorWithStatus({
+        message: CUSTOMER_MESSAGES.LABORARITY_APPOINTMENT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    const transaction = await transactionRepository.findOne({
+      where: { app_id: 'Lab_' + labAppointment.app_id }
+    })
+
+    if (!transaction || transaction.status !== TransactionStatus.PAID) {
+      throw new ErrorWithStatus({
+        message: CUSTOMER_MESSAGES.TRANSACTION_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    if (transaction.refund) {
+      throw new ErrorWithStatus({
+        message: CUSTOMER_MESSAGES.LAB_APPOINTMENT_REFUND_ALREADY_EXISTS,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+
+    let refundAmount = transaction.amount * REFUND_RATE.LAB_APPOINTMENT // 70% refund;
+    if (refundAmount < 0) {
+      refundAmount = 0 // Ensure refund amount is not negative
+    }
+
+    const refund = new Refund()
+    refund.description = description || ''
+    refund.amount = refundAmount
+    refund.is_refunded = false
+    refund.transaction = transaction
+    refund.bankName = bankName || ''
+    refund.accountNumber = accountNumber || ''
+
+    const savedRefund = await refundRepository.save(refund)
+
+    return {
+      savedLabAppointmentRefund: savedRefund,
+      amount: refundAmount
     }
   }
 }

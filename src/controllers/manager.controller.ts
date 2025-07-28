@@ -113,11 +113,11 @@ export const getLabAppController = async (req: Request, res: Response, next: Nex
       limit: parseInt(limit as string) || 10,
       page: parseInt(page as string) || 1
     }
-    const { fullname, status, date } = req.body
+    const { fullname, status, date } = req.query
     const filter = {
-      fullname: fullname as string,
-      status: status as number,
-      date: date as string
+      fullname: fullname ? (fullname as string) : '',
+      status: status ? (status as string) : '',
+      date: date ? (date as string) : ''
     }
     const result = await managerService.getLabApp(pageVar, filter)
     res.status(HTTP_STATUS.OK).json({
@@ -202,6 +202,32 @@ export const getQuestionsController = async (req: Request, res: Response, next: 
     const result = await managerService.getQuestions(pageVar, statusQuestion)
     res.status(HTTP_STATUS.OK).json({
       message: MANAGER_MESSAGES.GET_QUESTIONS_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getRefundInfoByAppId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id } = req.params
+    const result = await managerService.getRefundInfoByAppId(app_id as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.CONSULT_APPOINTMENT_REFUND_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const refundLabAppointment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id } = req.params
+    const result = await managerService.refundLabAppointment(app_id as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.CONSULT_APPOINTMENT_REFUND_SUCCESS,
       result
     })
   } catch (error) {
