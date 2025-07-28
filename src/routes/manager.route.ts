@@ -15,8 +15,11 @@ import {
   getMensAgePercentController,
   getMensPeriodPercentController,
   getBlogsController,
-  getQuestionsController
+  getQuestionsController,
+  getRefundInfoByAppId,
+  refundLabAppointment
 } from '~/controllers/manager.controller.js'
+
 
 const managerRoute = Router()
 
@@ -82,7 +85,11 @@ managerRoute.get('/get-con-app', restrictTo(Role.MANAGER), wrapRequestHandler(ge
   method: GET
   access: private
 */
-managerRoute.get('/get-lab-app', restrictTo(Role.MANAGER), wrapRequestHandler(getLabAppController))
+managerRoute.get(
+  '/get-lab-app', 
+  // restrictTo(Role.MANAGER), 
+  wrapRequestHandler(getLabAppController)
+)
 
 // thống kê người đăng kí quản lý chu kì kinh nguyệt
 /*
@@ -128,5 +135,17 @@ managerRoute.get('/get-blogs', restrictTo(Role.MANAGER), wrapRequestHandler(getB
   access: private
 */
 managerRoute.get('/get-questions', restrictTo(Role.MANAGER), wrapRequestHandler(getQuestionsController))
+
+managerRoute.get(
+  '/get-refund-info/:app_id',
+  restrictTo(Role.CUSTOMER, Role.ADMIN, Role.MANAGER),
+  wrapRequestHandler(getRefundInfoByAppId)
+)
+
+managerRoute.put(
+  '/refund/:app_id',
+  restrictTo(Role.CUSTOMER, Role.ADMIN, Role.MANAGER),
+  wrapRequestHandler(refundLabAppointment)
+)
 
 export default managerRoute

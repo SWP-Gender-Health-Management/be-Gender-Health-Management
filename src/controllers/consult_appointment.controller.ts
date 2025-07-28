@@ -132,8 +132,8 @@ export const createConsultAppointment = async (req: Request, res: Response, next
 // Get all consult appointments
 export const getAllConApps = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { limit, page } = req.query
-    const result = await consultAppointmentService.getAllConApps(limit as string, page as string)
+    const { limit, page, search, status, date } = req.query
+    const result = await consultAppointmentService.getAllConApps(limit as string, page as string, search as string, status as string, date as string)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
       result
@@ -510,6 +510,56 @@ export const deleteConsultAppointment = async (req: Request, res: Response, next
     await consultAppointmentService.deleteConsultAppointment(req.params.app_id)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_DELETED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const cancelConsultAppointment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+        console.log('Canceling consult appointment with ID:', req.params.app_id);
+    await consultAppointmentService.cancelConsultAppointment(req.params.app_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_CANCELLED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const createConsultAppointmentRefund = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id, description, accountNumber, bankName } = req.body
+    await consultAppointmentService.createConsultAppointmentRefund(app_id, description, bankName, accountNumber)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_REFUND_CREATED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getRefundInfoByAppId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id } = req.params
+    const result = await consultAppointmentService.getRefundInfoByAppId(app_id as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_REFUND_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const refundConsultAppointment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id } = req.params
+    const result = await consultAppointmentService.refundConsultAppointment(app_id as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_REFUND_SUCCESS,
+      result
     })
   } catch (error) {
     next(error)

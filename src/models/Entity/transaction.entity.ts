@@ -6,10 +6,13 @@ import {
   Timestamp,
   UpdateDateColumn,
   CreateDateColumn,
-  Generated
+  Generated,
+  OneToOne,
+  JoinColumn
 } from 'typeorm'
 import Account from './account.entity.js'
 import { TransactionStatus } from '../../enum/transaction.enum.js'
+import Refund from './refund.entity.js'
 
 export interface TransactionType {
   transaction_id: string
@@ -54,4 +57,8 @@ export default class Transaction implements TransactionType {
 
   @ManyToOne(() => Account, (customer: Account) => customer.transaction)
   customer: Account
+
+  @OneToOne(() => Refund, (refund: Refund) => refund.transaction)
+  @JoinColumn({ name: 'refund' })
+  refund: Refund
 }

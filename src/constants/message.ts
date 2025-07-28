@@ -74,6 +74,10 @@ export const REFRESH_TOKEN_MESSAGES = {
 }
 
 export const CUSTOMER_MESSAGES = {
+  LAB_APPOINTMENT_REFUND_ALREADY_EXISTS: 'Lab appointment refund already exists',
+  LAB_APPOINTMENT_REFUND_CREATED_SUCCESS: 'Lab appointment refund created successfully',
+  TRANSACTION_NOT_FOUND: 'Transaction not found',
+  LABORARITY_APPOINTMENT_CANCELLED_SUCCESS: 'Laboratory appointment cancelled successfully',
   CREATE_MENSTRUAL_CYCLE_SUCCESS: 'Menstrual cycle created successfully',
   PREDICT_PERIOD_SUCCESS: 'Period predicted successfully',
   START_DATE_GREATER_THAN_END_DATE: 'Start date must be before end date',
@@ -158,6 +162,10 @@ export const ADMIN_MESSAGES = {
 }
 
 export const MANAGER_MESSAGES = {
+  CONSULT_APPOINTMENT_REFUND_RETRIEVED_SUCCESS: 'Consult appointment refund retrieved successfully',
+  CONSULT_APPOINTMENT_REFUND_SUCCESS: 'Consult appointment refund created successfully',
+  REFUND_NOT_FOUND: 'REFUND_NOT_FOUND',
+  LAB_APP_NOT_FOUND: 'LAB_APP_NOT_FOUND',
   PERFORMANCE_REPORT_SUCCESS: 'Performance report successfully',
   REPORT_SUCCESS: 'Report successfully',
   CREATE_STAFF_PATTERN_SUCCESS: 'Create staff pattern successfully',
@@ -260,14 +268,21 @@ export const CONSULTANT_PATTERNS_MESSAGES = {
 }
 
 export const CONSULTANT_APPOINTMENTS_MESSAGES = {
+  REFUND_REQUESTED_ALREADY: 'Refund already requested for this consult appointment',
+  CONSULT_APPOINTMENT_REFUND_SUCCESS: 'Consult appointment refund created successfully',
+  REFUND_NOT_FOUND: 'Refund not found',
   CONSULTANT_NOT_FOUND: 'Consultant not found',
   CONSULT_APPOINTMENT_CREATED_SUCCESS: 'Consult appointment created successfully',
+  CONSULT_APPOINTMENT_REFUND_CREATED_SUCCESS: 'Consult appointment refund created successfully',
+  CONSULT_APPOINTMENT_REFUND_RETRIEVED_SUCCESS: 'Consult appointment refund retrieved successfully',
   CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS: 'Consult appointments retrieved successfully',
   CONSULT_APPOINTMENT_RETRIEVED_SUCCESS: 'Consult appointment retrieved successfully',
   CONSULT_APPOINTMENT_UPDATED_SUCCESS: 'Consult appointment updated successfully',
   CONSULT_APPOINTMENT_DELETED_SUCCESS: 'Consult appointment deleted successfully',
+  CONSULT_APPOINTMENT_CANCELLED_SUCCESS: 'Consult appointment cancelled successfully',
   CONSULT_APPOINTMENT_NOT_FOUND: 'Consult appointment not found',
   CONSULTANT_PATTERN_NOT_FOUND: 'Consultant pattern not found',
+  TRANSACTION_NOT_FOUND: 'Transaction not found',
   CONSULTANT_PATTERN_ALREADY_BOOKED: 'Consultant pattern is already booked',
   CUSTOMER_NOT_FOUND: 'Customer not found',
   CONSULT_APPOINTMENT_CANNOT_DELETE: 'Cannot delete consult appointment with associated feedback',
