@@ -163,11 +163,11 @@ export class ConsultAppointmentService {
           where: { app_id: 'Con_' + conApp.app_id },
           relations: ['refund']
         })
-        if (transaction && transaction.refund && !transaction.refund.is_refunded) {
+        if (transaction && transaction.refund) {
           isRequestedRefund = true
-        }
-        if (transaction && transaction.refund && transaction.refund.is_refunded) {
-          isRefunded = true
+          if (transaction.refund.is_refunded) {
+            isRefunded = true
+          }
         }
       }
       const appData = {
@@ -232,7 +232,7 @@ export class ConsultAppointmentService {
     limit: string,
     page: string
   ): Promise<{ conApp: any[]; pages: number }> {
-    const limitNumber = parseInt(limit) || 10
+    const limitNumber = parseInt(limit) || 0
     const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
     const customer = await accountRepository.findOne({ where: { account_id } })
@@ -599,15 +599,21 @@ export class ConsultAppointmentService {
       }
     })
 
+    let updateEffected = null;
+
     if (transaction && transaction.status === TransactionStatus.PAID) {
-      await consultAppointmentRepository.update(consultAppointment.app_id, {
+      updateEffected = await consultAppointmentRepository.update(consultAppointment.app_id, {
         status: StatusAppointment.CONFIRMED_CANCELLED
       })
     } else {
-      await consultAppointmentRepository.update(consultAppointment.app_id, {
+      updateEffected = await consultAppointmentRepository.update(consultAppointment.app_id, {
         status: StatusAppointment.PENDING_CANCELLED
       })
     }
+    
+    await consultantPatternRepository.update(consultAppointment.consultant_pattern.pattern_id, {
+      is_booked: false
+    })
   }
 
   async createConsultAppointmentRefund(
