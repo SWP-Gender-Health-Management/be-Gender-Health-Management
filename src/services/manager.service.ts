@@ -318,12 +318,11 @@ class ManagerService {
           where: { app_id: 'Lab_' + appointment.app_id },
           relations: ['refund']
         })
-        if (transaction && transaction.refund && !transaction.refund.is_refunded) {
+        if (transaction && transaction.refund) {
           isRequestedRefund = true
-        }
-
-        if (transaction && transaction.refund && transaction.refund.is_refunded) {
-          isRefunded = true
+          if( transaction.refund.is_refunded) {
+            isRefunded = true
+          }
         }
       }
       appointment.laborarity.forEach((lab) => {
