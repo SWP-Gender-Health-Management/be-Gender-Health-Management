@@ -5,6 +5,19 @@ import consultAppointmentService from '~/services/consult_appointment.service.js
 import notificationService from '~/services/notification.service.js'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
 
+export const getConsultants = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    const result = await consultAppointmentService.getConsultants(page as string, limit as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULTANTS_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 /**
  * @swagger
  * /consult-appointment/create-consult-appointment:
@@ -74,16 +87,11 @@ import { TypeNoti } from '~/enum/type_noti.enum.js'
 // Create a new consult appointment
 export const createConsultAppointment = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { pattern_id, customer_id, description, status } = req.body
-    const result = await consultAppointmentService.createConsultAppointment(
-      pattern_id,
-      customer_id,
-      description,
-      status
-    )
+    const { pattern_id, customer_id, description } = req.body
+    const result = await consultAppointmentService.createConsultAppointment(pattern_id, customer_id, description)
     await notificationService.createNotification(
       {
-        type: TypeNoti.APPOINTMENT_BOOKED,
+        type: TypeNoti.CONSULT_APPOINTMENT,
         title: 'Appointment booked successfully',
         message: 'Your appointment has been booked successfully'
       },
@@ -124,8 +132,8 @@ export const createConsultAppointment = async (req: Request, res: Response, next
 // Get all consult appointments
 export const getAllConApps = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { limit, page } = req.query
-    const result = await consultAppointmentService.getAllConApps(limit as string, page as string)
+    const { limit, page, search, status, date } = req.query
+    const result = await consultAppointmentService.getAllConApps(limit as string, page as string, search as string, status as string, date as string)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
       result
@@ -191,6 +199,21 @@ export const getConAppById = async (req: Request, res: Response, next: NextFunct
   }
 }
 
+export const getConsultAppointmentByConsultantId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { consultant_id } = req.params
+    const result = await consultAppointmentService.getConsultAppointmentByConsultantId(consultant_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+
 /**
  * @swagger
  * /consult-appointment/get-consult-appointment-by-id/customer/{customer_id}:
@@ -238,12 +261,46 @@ export const getConAppById = async (req: Request, res: Response, next: NextFunct
 // Get consult appointments by Customer ID
 export const getConsultAppointmentsByCustomerId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { customer_id } = req.params
+    // const { customer_id } = req.params
+    const { account_id } = req.body
     const { limit, page } = req.query
     const result = await consultAppointmentService.getConsultAppointmentsByCustomerId(
-      customer_id as string,
+      account_id as string,
       limit as string,
       page as string
+    )
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getConsultAppointmentsByWeek = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { consultant_id } = req.params
+    const { weekStartDate } = req.query
+    console.log("check weekStartDate: ", weekStartDate);
+    const result = await consultAppointmentService.getConsultAppointmentByWeek(
+      consultant_id as string,
+      weekStartDate as string
+    )
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getConsultAppointmentStatByConsultantId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { account_id } = req.body;
+    const result = await consultAppointmentService.getConsultAppointmentStatByConsultantId(
+      account_id as string
     )
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS,
@@ -453,6 +510,56 @@ export const deleteConsultAppointment = async (req: Request, res: Response, next
     await consultAppointmentService.deleteConsultAppointment(req.params.app_id)
     res.status(HTTP_STATUS.OK).json({
       message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_DELETED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const cancelConsultAppointment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+        console.log('Canceling consult appointment with ID:', req.params.app_id);
+    await consultAppointmentService.cancelConsultAppointment(req.params.app_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_CANCELLED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const createConsultAppointmentRefund = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id, description, accountNumber, bankName } = req.body
+    await consultAppointmentService.createConsultAppointmentRefund(app_id, description, bankName, accountNumber)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_REFUND_CREATED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getRefundInfoByAppId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id } = req.params
+    const result = await consultAppointmentService.getRefundInfoByAppId(app_id as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_REFUND_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const refundConsultAppointment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id } = req.params
+    const result = await consultAppointmentService.refundConsultAppointment(app_id as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_REFUND_SUCCESS,
+      result
     })
   } catch (error) {
     next(error)

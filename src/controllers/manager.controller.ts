@@ -1,57 +1,236 @@
 import { NextFunction, Request, Response } from 'express'
+import { Like } from 'typeorm'
 import HTTP_STATUS from '~/constants/httpStatus.js'
 import { MANAGER_MESSAGES } from '~/constants/message.js'
-import ManagerService from '~/services/manager.service.js'
+import managerService from '~/services/manager.service.js'
+import { stringToStatus } from '~/enum/statusAppointment.enum.js'
 
-export const reportPerformanceController = async (req: Request, res: Response, next: NextFunction) => {
-  const performanceReport = await ManagerService.reportPerformance()
-  res.status(HTTP_STATUS.OK).json({
-    message: MANAGER_MESSAGES.PERFORMANCE_REPORT_SUCCESS,
-    data: performanceReport
-  })
+export const getOverallController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await managerService.getOverall()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_OVERALL_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
-export const reportCustomerController = async (req: Request, res: Response, next: NextFunction) => {
-  const { dateText } = req.query
-  const customerReport = await ManagerService.reportCustomer(dateText as string)
-  res.status(HTTP_STATUS.OK).json({
-    message: MANAGER_MESSAGES.REPORT_SUCCESS,
-    data: customerReport
-  })
+export const getOverallWeeklyController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await managerService.getOverallWeekly()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_OVERALL_WEEKLY_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
-export const createStaffPatternController = async (req: Request, res: Response, next: NextFunction) => {
-  const { date, account_id, slot_id } = req.body
-  const staffPattern = await ManagerService.createStaffPattern(date, account_id, slot_id)
-  res.status(HTTP_STATUS.CREATED).json({
-    message: MANAGER_MESSAGES.CREATE_STAFF_PATTERN_SUCCESS,
-    data: staffPattern
-  })
+export const getAppPercentController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await managerService.getAppPercent()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_APP_PERCENT_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
-export const createConsultantPatternController = async (req: Request, res: Response, next: NextFunction) => {
-  const { date, consultant_id, slot_id } = req.body
-  const consultantPattern = await ManagerService.createConsultantPattern(date, consultant_id, slot_id)
-  res.status(HTTP_STATUS.CREATED).json({
-    message: MANAGER_MESSAGES.CREATE_CONSULTANT_PATTERN_SUCCESS,
-    data: consultantPattern
-  })
+export const getRecentAppController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await managerService.getRecentApp()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_RECENT_APP_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
-export const getStaffPatternController = async (req: Request, res: Response, next: NextFunction) => {
-  const { staff_id } = req.body
-  const staffPattern = await ManagerService.getStaffPattern(staff_id)
-  res.status(HTTP_STATUS.OK).json({
-    message: MANAGER_MESSAGES.GET_STAFF_PATTERN_SUCCESS,
-    data: staffPattern
-  })
+export const getConsultantsController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    let { isBan } = req.body
+    isBan = isBan === 'undefined' ? undefined : isBan.boolean()
+    const result = await managerService.getConsultants(page as string, limit as string, isBan)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_CONSULTANTS_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
-export const getConsultantPatternController = async (req: Request, res: Response, next: NextFunction) => {
-  const { consultant_id } = req.body
-  const consultantPattern = await ManagerService.getConsultantPattern(consultant_id)
-  res.status(HTTP_STATUS.OK).json({
-    message: MANAGER_MESSAGES.GET_CONSULTANT_PATTERN_SUCCESS,
-    data: consultantPattern
-  })
+export const getStaffsController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    let { isBan } = req.body
+    isBan = isBan === 'undefined' ? undefined : isBan.boolean()
+    const result = await managerService.getStaffs(page as string, limit as string, isBan)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_STAFFS_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getConAppController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { limit, page } = req.query
+    const pageVar = {
+      limit: parseInt(limit as string) || 10,
+      page: parseInt(page as string) || 1
+    }
+    const { fullname, status, date } = req.body
+    const filter = {
+      fullname: fullname as string,
+      status: status as number,
+      date: date as string
+    }
+    const result = await managerService.getConApp(pageVar, filter)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_CON_APP_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getLabAppController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { limit, page } = req.query
+    const pageVar = {
+      limit: parseInt(limit as string) || 10,
+      page: parseInt(page as string) || 1
+    }
+    const { fullname, status, date } = req.query
+    const filter = {
+      fullname: fullname ? (fullname as string) : '',
+      status: status ? (status as string) : '',
+      date: date ? (date as string) : ''
+    }
+    const result = await managerService.getLabApp(pageVar, filter)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_LAB_APP_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getMensOverallController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await managerService.getMensOverall()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_MENS_OVERALL_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getMensAgePercentController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await managerService.getMensAgePercent()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_MENS_AGE_PERCENT_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getMensPeriodPercentController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await managerService.getMensPeriodPercent()
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_MENS_PERIOD_PERCENT_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getBlogsController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    const pageVar = {
+      limit: parseInt(limit as string) || 10,
+      page: parseInt(page as string) || 1
+    }
+    const { title, content, author, status } = req.body
+    const statusBlog = status === 'undefined' ? undefined : status.boolean()
+    const filter = {
+      title: title as string,
+      content: content as string,
+      author: author as string,
+      status: statusBlog as boolean
+    }
+    const result = await managerService.getBlogs(pageVar, filter)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_BLOGS_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getQuestionsController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query
+    const pageVar = {
+      limit: parseInt(limit as string) || 10,
+      page: parseInt(page as string) || 1
+    }
+    const { status } = req.body
+    const statusQuestion = status === 'undefined' ? undefined : status.boolean()
+    const result = await managerService.getQuestions(pageVar, statusQuestion)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_QUESTIONS_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getRefundInfoByAppId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id } = req.params
+    const result = await managerService.getRefundInfoByAppId(app_id as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.CONSULT_APPOINTMENT_REFUND_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const refundLabAppointment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id } = req.params
+    const result = await managerService.refundLabAppointment(app_id as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.CONSULT_APPOINTMENT_REFUND_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
 }

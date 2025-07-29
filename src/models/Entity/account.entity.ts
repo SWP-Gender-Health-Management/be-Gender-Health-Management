@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -19,12 +20,13 @@ import Reply from './reply.entity.js'
 import Question from './question.entity.js'
 import Notification from './notification.entity.js'
 import Feedback from './feedback.entity.js'
+import StaffProfile from './staff_profile.entity.js'
 
 export interface AccountType {
   account_id: string
   full_name?: string | null
   email: string
-  password: string
+  password?: string | null
   phone?: string | null
   dob?: Date | null
   gender?: string | null
@@ -32,6 +34,7 @@ export interface AccountType {
   role: Role
   is_verified?: boolean
   is_banned?: boolean
+  is_google_account?: boolean
   // created_at: Timestamp
   // updated_at: Timestamp
 }
@@ -47,7 +50,7 @@ export default class Account implements AccountType {
   @Column({ type: 'varchar', length: 100, nullable: false })
   email: string
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text', nullable: true })
   password: string
 
   @Column({ type: 'varchar', length: 10, nullable: true })
@@ -71,6 +74,15 @@ export default class Account implements AccountType {
   @Column({ type: 'boolean', default: false })
   is_banned: boolean
 
+  @Column({ type: 'boolean', default: false })
+  is_google_account: boolean
+
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  address?: string
+
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  description?: string
+
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Timestamp
 
@@ -80,6 +92,10 @@ export default class Account implements AccountType {
   // foreign key
   @OneToOne(() => RefreshToken, (refreshToken: RefreshToken) => refreshToken.account)
   refreshToken: RefreshToken
+
+  @OneToOne(() => StaffProfile, (staffProfile: StaffProfile) => staffProfile.account)
+  @JoinColumn({ name: 'profile' })
+  staff_profile: StaffProfile
 
   @OneToMany(() => Transaction, (transaction: Transaction) => transaction.customer)
   transaction: Transaction[]

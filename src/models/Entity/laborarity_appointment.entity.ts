@@ -38,6 +38,9 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
   @Column({ type: 'text', nullable: true, charset: 'utf8', collation: 'utf8_general_ci' })
   description: string
 
+  @Column({ type: 'text', nullable: true })
+  feed_id: string
+
   @Column({ type: 'date', nullable: true })
   date: Date
 
@@ -54,6 +57,9 @@ export default class LaboratoryAppointment implements LaboratoryAppointmentType 
   @ManyToOne(() => Account, (customer: Account) => customer.labAppointment)
   @JoinColumn({ name: 'customer_id' })
   customer: Account
+
+  @Column({ type: 'uuid', nullable: true, unique: false })
+  staff_id: string
 
   @ManyToOne(() => WorkingSlot, (working_slot: WorkingSlot) => working_slot.laborarity_appointment)
   @JoinColumn({ name: 'slot_id' })

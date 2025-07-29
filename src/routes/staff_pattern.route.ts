@@ -3,6 +3,7 @@ import {
   addStaffPatternController,
   deleteStaffPatternController,
   getAllStaffPatternController,
+  getStaffPatternByDate,
   getStaffPatternController,
   updateStaffPatternController
 } from '../controllers/staff_pattern.controller.js'
@@ -80,6 +81,12 @@ staffPatternRoute.delete(
   '/delete-staff-pattern',
   restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteStaffPatternController)
+)
+
+staffPatternRoute.get(
+  '/get-pattern-by-date',
+  restrictTo(Role.ADMIN, Role.STAFF),
+  wrapRequestHandler(getStaffPatternByDate)
 )
 
 export default staffPatternRoute

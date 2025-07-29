@@ -8,9 +8,12 @@ import HTTP_STATUS from '../constants/httpStatus.js'
 import { sendMail } from './email.service.js'
 import { CheckoutResponseDataType, PaymentLinkDataType, WebhookDataType, WebhookType } from '@payos/node/lib/type.js'
 import LaboratoryAppointment from '../models/Entity/laborarity_appointment.entity.js'
+import ConsultAppointment from '../models/Entity/consult_appointment.entity.js'
+import { StatusAppointment } from '../enum/statusAppointment.enum.js'
 
 const transactionRepository = AppDataSource.getRepository(Transaction)
 const labAppointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
+const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
 
 export class createTransactionService {
   /**
@@ -21,7 +24,12 @@ export class createTransactionService {
    * @returns The transaction
    */
   // Create a consult transaction
-  async createConsultTransaction(app_id: string, amount: number, description: string): Promise<Transaction> {
+  async createConsultTransaction(
+    app_id: string,
+    amount: number,
+    description: string,
+    date: Date
+  ): Promise<Transaction> {
     const appointment = await labAppointmentRepository.findOne({
       where: {
         app_id: app_id
@@ -33,7 +41,8 @@ export class createTransactionService {
       customer: {
         account_id: appointment?.customer.account_id
       },
-      description
+      description,
+      date
     })
     await transactionRepository.save(transaction)
     return transaction
@@ -50,9 +59,9 @@ export class createTransactionService {
   // Create a laborarity transaction
   async createLaborarityTransaction(
     app_id: string,
-    orderCode: number,
     amount: number,
-    description: string
+    description: string,
+    date: Date
   ): Promise<Transaction> {
     const appointment: LaboratoryAppointment | null = await labAppointmentRepository.findOne({
       where: {
@@ -70,7 +79,7 @@ export class createTransactionService {
     const account_id = appointment.customer.account_id
     const transaction = transactionRepository.create({
       app_id: 'Lab_' + app_id,
-      order_code: orderCode,
+      date: date,
       amount: amount,
       description: description || 'Pay for lab appointment',
       customer: {
@@ -179,16 +188,24 @@ export class createTransactionService {
     const transaction = await transactionRepository.findOne({
       where: { order_code: verifiedData.orderCode }
     })
-    const labAppointment = await labAppointmentRepository.findOne({
-      where: { app_id: transaction?.app_id.split('_')[1] }
-    })
+    const type = transaction?.app_id.split('_')[0]
+    let app = null
+    if (type === 'Lab') {
+      app = await labAppointmentRepository.findOne({
+        where: { app_id: transaction?.app_id.split('_')[1] }
+      })
+    } else if (type === 'Con') {
+      app = await consultAppointmentRepository.findOne({
+        where: { app_id: transaction?.app_id.split('_')[1] }
+      })
+    }
     // Xử lý logic dựa trên trạng thái thanh toán
     if (verifiedData.code === '00') {
       console.log(`Payment for order ${verifiedData.orderCode} was successful.`)
 
       // TODO: Xử lý logic nghiệp vụ của bạn ở đây
       // 1. Kiểm tra xem `orderCode` có tồn tại trong DB của bạn không.
-      if (!labAppointment) {
+      if (!app) {
         throw new ErrorWithStatus({
           message: TRANSACTION_MESSAGES.TRANSACTION_NOT_FOUND,
           status: HTTP_STATUS.NOT_FOUND
@@ -211,6 +228,13 @@ export class createTransactionService {
       if (transaction.amount === verifiedData.amount) {
         // 4. Cập nhật trạng thái đơn hàng thành "ĐÃ THANH TOÁN".
         transaction.status = TransactionStatus.PAID
+        if (type === 'Lab') {
+          app!.status = StatusAppointment.CONFIRMED
+          await labAppointmentRepository.save(app as LaboratoryAppointment)
+        } else if (type === 'Con') {
+          app!.status = StatusAppointment.CONFIRMED
+          await consultAppointmentRepository.save(app as ConsultAppointment)
+        }
         await transactionRepository.save(transaction)
       }
       // 5. Gửi email xác nhận, bắt đầu quá trình giao hàng, v.v. --> gửi trong controller

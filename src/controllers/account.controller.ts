@@ -7,6 +7,8 @@ import accountService from '~/services/account.service.js'
 import refreshTokenService from '~/services/refresh_token.service.js'
 import notificationService from '~/services/notification.service.js'
 import { TypeNoti } from '~/enum/type_noti.enum.js'
+import { convertRoleToString, Role } from '~/enum/role.enum.js'
+import adminService from '~/services/admin.service.js'
 /**
  * @swagger
  * /account/register:
@@ -84,13 +86,13 @@ export const registerController = async (req: Request, res: Response, next: Next
     httpOnly: true, // Quan trọng: Ngăn JavaScript phía client truy cập
     secure: true, // Chỉ gửi cookie qua HTTPS ở môi trường production
     sameSite: 'strict', // Hoặc 'lax'. Giúp chống tấn công CSRF. 'strict' là an toàn nhất.
-    maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string) // Thời gian sống của cookie (tính bằng mili giây)
+    maxAge: 60 * 60 * 24 * 30 // Thời gian sống của cookie (tính bằng mili giây)
   })
   await notificationService.createNotification(
     {
-      type: TypeNoti.ACCOUNT_REGISTER_SUCCESS,
-      title: 'Account registered successfully',
-      message: 'Your account has been registered successfully'
+      type: TypeNoti.CREATE_ACCOUNT,
+      title: 'Tạo tài khoản thành công',
+      message: `Tài khoản ${email} đã được tạo thành công`
     },
     account_id
   )
@@ -181,8 +183,11 @@ export const googleVerifyController = async (req: Request, res: Response, next: 
     console.log('Token:', idToken)
 
     const result = await accountService.googleVerify(idToken)
+    console.log('result:', result.account)
+
     const { accessToken, refreshToken, account } = result
     await Promise.all([
+      redisClient.set(`account:${account.account_id}`, JSON.stringify(account), 'EX', 60 * 60),
       refreshTokenService.updateRefreshToken({ account: account, token: refreshToken }),
       redisClient.set(`accessToken:${account.account_id}`, JSON.stringify(accessToken), 'EX', 60 * 60)
     ])
@@ -284,14 +289,6 @@ export const changePasswordController = async (req: Request, res: Response, next
     path: '/' // Hoặc đặt path rộng hơn nếu cần thiết cho các kịch bản khác nhau
   })
 
-  await notificationService.createNotification(
-    {
-      type: TypeNoti.PASSWORD_CHANGED_SUCCESS,
-      title: 'Password changed successfully',
-      message: 'Your password has been changed successfully'
-    },
-    account.account_id
-  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.PASSWORD_CHANGED_SUCCESS,
     result
@@ -322,14 +319,6 @@ export const resetPasswordController = async (req: Request, res: Response, next:
   const { account, newPassword } = req.body
   console.log('newPassword:', newPassword)
   const result = await accountService.resetPassword(account.account_id, newPassword)
-  await notificationService.createNotification(
-    {
-      type: TypeNoti.PASSWORD_RESET_SUCCESS,
-      title: 'Password reset successfully',
-      message: 'Your password has been reset successfully'
-    },
-    account.account_id
-  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS,
     result
@@ -386,14 +375,6 @@ export const resetPasswordController = async (req: Request, res: Response, next:
 export const verifyEmailController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id, secretPasscode } = req.body
   await accountService.verifyEmail(account_id, secretPasscode)
-  await notificationService.createNotification(
-    {
-      type: TypeNoti.EMAIL_VERIFIED,
-      title: 'Email verified successfully',
-      message: 'Your email has been verified successfully'
-    },
-    account_id
-  )
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
   })
@@ -469,6 +450,12 @@ export const sendEmailVerifiedController = async (req: Request, res: Response, n
  *               gender:
  *                 type: string
  *                 description: Gender of the account
+ *               address:
+ *                 type: string
+ *                 description: Address of the account
+ *               description:
+ *                 type: string
+ *                 description: Description of the account
  *             required: []
  *     responses:
  *       200:
@@ -487,16 +474,8 @@ export const sendEmailVerifiedController = async (req: Request, res: Response, n
  *         description: Unauthorized (invalid token)
  */
 export const updateAccountController = async (req: Request, res: Response, next: NextFunction) => {
-  const { account_id, full_name, phone, dob, gender } = req.body
-  const result = await accountService.updateProfile(account_id, full_name, phone, dob, gender)
-  await notificationService.createNotification(
-    {
-      type: TypeNoti.ACCOUNT_UPDATED_SUCCESS,
-      title: 'Account updated successfully',
-      message: 'Your account has been updated successfully'
-    },
-    account_id
-  )
+  const { account_id, full_name, phone, dob, gender, address, description } = req.body
+  const result = await accountService.updateProfile(account_id, full_name, phone, dob, gender, address, description)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_UPDATED_SUCCESS,
     result
@@ -603,9 +582,13 @@ export const checkEmailVerifiedController = async (req: Request, res: Response, 
 export const viewAccountController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id } = req.body
   const result = await accountService.viewAccount(account_id)
+  console.log('result:', result)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_VIEWED_SUCCESS,
-    result
+    result: {
+      ...result,
+      role: convertRoleToString(result.role)
+    }
   })
 }
 

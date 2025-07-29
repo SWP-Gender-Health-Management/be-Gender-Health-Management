@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express'
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { WORKING_SLOT_MESSAGES } from '../constants/message.js'
 import workingSlotService from '../services/working_slot.service.js'
+import { result } from 'lodash'
+
 
 /**
  * @swagger
@@ -59,7 +61,7 @@ import workingSlotService from '../services/working_slot.service.js'
 export const addSlotController = async (req: Request, res: Response, next: NextFunction) => {
   const { name, start_at, end_at, type } = req.body
   const slot = await workingSlotService.addSlot(name, start_at, end_at, type)
-  return res.status(HTTP_STATUS.OK).json({
+  res.status(HTTP_STATUS.OK).json({
     message: WORKING_SLOT_MESSAGES.WORKING_SLOT_CREATED_SUCCESS,
     data: slot
   })
@@ -112,7 +114,21 @@ export const addSlotController = async (req: Request, res: Response, next: NextF
  */
 // Get working slots by type
 export const getSlotByTypeController = async (req: Request, res: Response, next: NextFunction) => {
-  const { type } = req.body
+  const { type } = req.params
+  const { limit, page } = req.query
+  const pageVar = {
+    limit: limit as string,
+    page: page as string
+  }
+  const slot = await workingSlotService.getSlotByType(type, pageVar)
+  res.status(200).json({
+    message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
+    result: slot
+  })
+}
+
+export const getSlotByTypeParamController = async (req: Request, res: Response, next: NextFunction) => {
+  const { type } = req.params
   const {limit, page} = req.query;
     const pageVar = {
       limit: limit as string, 
@@ -121,7 +137,7 @@ export const getSlotByTypeController = async (req: Request, res: Response, next:
   const slot = await workingSlotService.getSlotByType(type, pageVar)
   return res.status(200).json({
     message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
-    data: slot
+    result: slot
   })
 }
 
@@ -150,13 +166,13 @@ export const getSlotByTypeController = async (req: Request, res: Response, next:
  */
 // Get all working slots
 export const getSlotController = async (req: Request, res: Response, next: NextFunction) => {
-  const {limit, page} = req.query;
-    const pageVar = {
-      limit: limit as string, 
-      page: page as string
-    };
+  const { limit, page } = req.query
+  const pageVar = {
+    limit: limit as string,
+    page: page as string
+  }
   const slot = await workingSlotService.getSlot(pageVar)
-  return res.status(200).json({
+  res.status(200).json({
     message: WORKING_SLOT_MESSAGES.GET_SLOT_SUCCESS,
     data: slot
   })
@@ -232,7 +248,7 @@ export const getSlotController = async (req: Request, res: Response, next: NextF
 export const updateSlotController = async (req: Request, res: Response, next: NextFunction) => {
   const { id, name, start_at, end_at, type } = req.body
   const slot = await workingSlotService.updateSlot(id, name, start_at, end_at, type)
-  return res.status(HTTP_STATUS.OK).json({
+  res.status(HTTP_STATUS.OK).json({
     message: WORKING_SLOT_MESSAGES.WORKING_SLOT_UPDATED_SUCCESS,
     data: slot
   })
@@ -295,8 +311,17 @@ export const updateSlotController = async (req: Request, res: Response, next: Ne
 export const deleteSlotController = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.body
   const slot = await workingSlotService.deleteSlot(id)
-  return res.status(HTTP_STATUS.OK).json({
+  res.status(HTTP_STATUS.OK).json({
     message: WORKING_SLOT_MESSAGES.WORKING_SLOT_DELETED_SUCCESS,
+    data: slot
+  })
+}
+
+export const getLabWorkingSlotController = async (req: Request, res: Response, next: NextFunction) => {
+  const { date } = req.body
+  const slot = await workingSlotService.getLabWorkingSlot(date)
+  res.status(HTTP_STATUS.OK).json({
+    message: WORKING_SLOT_MESSAGES.GET_LAB_WORKING_SLOT_SUCCESS,
     data: slot
   })
 }

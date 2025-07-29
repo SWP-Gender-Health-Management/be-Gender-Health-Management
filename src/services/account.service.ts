@@ -108,42 +108,73 @@ class AccountService {
    * @description: Tạo tài khoản
    * @param email: string
    * @param password: string
+   * @param isGoogleAccount?: boolean
    * @returns: {
    *   account_id: string
    *   accessToken: string
    *   refreshToken: string
-   *   emailVerifiedToken: string
+   *   emailVerifiedToken?: string
    * }
    */
   async createAccount(
     email: string,
-    password: string
+    password?: string,
+    isGoogleAccount: boolean = false
   ): Promise<{
     account_id: string
     accessToken: string
     refreshToken: string
-    emailVerifiedToken: string
+    emailVerifiedToken?: string
   }> {
-    const passwordHash = await hashPassword(password)
-    const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
+    let passwordHash: string | undefined
+    let secretPasscode: string | undefined
 
-    const user = accountRepository.create({
+    if (!isGoogleAccount && password) {
+      passwordHash = await hashPassword(password)
+      secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
+    }
+
+    const userData: Partial<Account> = {
       email: email,
-      password: passwordHash
-    })
+      is_google_account: isGoogleAccount
+    }
+
+    if (passwordHash) {
+      userData.password = passwordHash
+    }
+
+    if (isGoogleAccount) {
+      userData.is_verified = true // Tài khoản Google đã được xác thực
+    }
+
+    const user = accountRepository.create(userData)
     await accountRepository.save(user)
 
-    const [accessToken, refreshToken, emailVerifiedToken] = await Promise.all([
+    const [accessToken, refreshToken] = await Promise.all([
       this.createAccessToken(user.account_id, email),
-      this.createRefreshToken(user.account_id, email),
-      this.createEmailVerifiedToken(user.account_id, secretPasscode)
+      this.createRefreshToken(user.account_id, email)
     ])
-    // await this.sendEmailVerified(user.account_id)
-    //lưu token và user vào redis
-    await Promise.all([
-      redisClient.set(`${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${user.account_id}`, emailVerifiedToken, 'EX', 60 * 60),
-      redisClient.set(user.account_id, JSON.stringify(user), 'EX', 60 * 60)
-    ])
+
+    let emailVerifiedToken: string | undefined
+    if (secretPasscode) {
+      emailVerifiedToken = await this.createEmailVerifiedToken(user.account_id, secretPasscode)
+    }
+
+    // Lưu token và user vào redis
+    const redisPromises = [redisClient.set(user.account_id, JSON.stringify(user), 'EX', 60 * 60)]
+
+    if (emailVerifiedToken) {
+      redisPromises.push(
+        redisClient.set(
+          `${process.env.EMAIL_VERRIFY_TOKEN_REDIS}:${user.account_id}`,
+          emailVerifiedToken,
+          'EX',
+          60 * 60
+        )
+      )
+    }
+
+    await Promise.all(redisPromises)
 
     return {
       account_id: user.account_id,
@@ -170,6 +201,7 @@ class AccountService {
   ): Promise<{
     accessToken: string
     refreshToken: string
+    role: string
   }> {
     const user = (await redisClient.get(`account:${account_id}`)) as string
     const user_data = JSON.parse(user)
@@ -180,7 +212,7 @@ class AccountService {
     ])
     // console.log('accessToken:', accessToken)
     // console.log('refreshToken:', refreshToken)
-    return { accessToken, refreshToken }
+    return { accessToken, refreshToken, role: user_data.role as string }
   }
 
   /**
@@ -225,13 +257,25 @@ class AccountService {
     console.log('account:', account)
 
     if (!account) {
-      // Nếu người dùng không tồn tại, tạo mới
+      // Nếu người dùng không tồn tại, tạo mới tài khoản Google (không có mật khẩu)
       account = accountRepository.create({
         email: email,
         full_name: displayName,
-        avatar: avatar
+        avatar: avatar,
+        is_google_account: true,
+        is_verified: true // Tài khoản Google đã được xác thực
       })
       await accountRepository.save(account)
+    } else {
+      // Nếu tài khoản đã tồn tại, cập nhật thông tin Google nếu cần
+      if (!account.is_google_account) {
+        await accountRepository.update(account.account_id, {
+          is_google_account: true,
+          is_verified: true
+        })
+        account.is_google_account = true
+        account.is_verified = true
+      }
     }
 
     // Tạo JWT token của riêng ứng dụng để trả về cho client
@@ -261,6 +305,22 @@ class AccountService {
     accessToken: string
     refreshToken: string
   }> {
+    // Kiểm tra xem tài khoản có phải là Google account không
+    const account = await accountRepository.findOne({ where: { account_id } })
+    if (!account) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.ACCOUNT_NOT_FOUND,
+        status: 400
+      })
+    }
+
+    if (account.is_google_account) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.GOOGLE_ACCOUNT_NO_PASSWORD,
+        status: 400
+      })
+    }
+
     const passwordHash = await hashPassword(newPassword)
     const [userRedis] = await Promise.all([
       redisClient.get(`account:${account_id}`),
@@ -355,17 +415,19 @@ class AccountService {
     full_name?: string,
     phone?: string,
     dob?: string,
-    gender?: string
+    gender?: string,
+    address?: string,
+    description?: string
   ): Promise<Account> {
-    const [user] = await Promise.all([
-      accountRepository.findOne({ where: { account_id } }),
-      accountRepository.update(account_id, {
-        full_name: full_name || undefined,
-        phone: phone || undefined,
-        dob: dob || undefined,
-        gender: gender || undefined
-      })
-    ])
+    await accountRepository.update(account_id, {
+      full_name: full_name || undefined,
+      phone: phone || undefined,
+      dob: dob || undefined,
+      gender: gender || undefined,
+      address: address || undefined,
+      description: description || undefined
+    })
+    const user = await accountRepository.findOne({ where: { account_id } })
     await redisClient.set(account_id, JSON.stringify(user), 'EX', 60 * 60)
     return user as Account
   }
@@ -422,7 +484,8 @@ class AccountService {
 
   async viewAccount(account_id: string): Promise<Account> {
     const user = (await redisClient.get(`account:${account_id}`)) as string
-    return JSON.parse(user)
+    const userParse = JSON.parse(user)
+    return userParse
   }
 
   /**
@@ -452,8 +515,27 @@ class AccountService {
     email: string
   ): Promise<{
     message: string
+    secretPasscode: string
   }> {
+    // Kiểm tra xem tài khoản có phải là Google account không
+    const account = await accountRepository.findOne({ where: { account_id } })
+    if (!account) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.ACCOUNT_NOT_FOUND,
+        status: 400
+      })
+    }
+
+    if (account.is_google_account) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.GOOGLE_ACCOUNT_NO_RESET_EMAIL,
+        status: 400
+      })
+    }
+
     const secretPasscode = crypto.randomInt(100000, 999999).toString()
+    console.log('secretPasscode:', secretPasscode)
+
     const resetPasswordToken = await this.createEmailResetPasswordToken(account_id, secretPasscode)
     console.log('resetPasswordToken:', resetPasswordToken)
     const options = {
@@ -476,7 +558,8 @@ class AccountService {
       sendMail(options)
     ])
     return {
-      message: USERS_MESSAGES.SEND_RESET_PASSWORD_SUCCESS
+      message: USERS_MESSAGES.SEND_RESET_PASSWORD_SUCCESS,
+      secretPasscode: secretPasscode
     }
   }
 
@@ -493,8 +576,8 @@ class AccountService {
       token: userToken as string,
       secretKey: process.env.JWT_SECRET_RESET_PASSWORD_TOKEN as string
     })
-    console.log(userTokenParse)
-    console.log(passcode)
+    console.log('userTokenParse:', userTokenParse)
+    console.log('passcode:', passcode)
     if (passcode !== userTokenParse.secretPasscode || userTokenParse.account_id !== account_id) {
       throw new ErrorWithStatus({
         message: USERS_MESSAGES.SECRET_PASSCODE_MISMATCH,
@@ -509,6 +592,22 @@ class AccountService {
   ): Promise<{
     message: string
   }> {
+    // Kiểm tra xem tài khoản có phải là Google account không
+    const account = await accountRepository.findOne({ where: { account_id } })
+    if (!account) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.ACCOUNT_NOT_FOUND,
+        status: 400
+      })
+    }
+
+    if (account.is_google_account) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.GOOGLE_ACCOUNT_NO_RESET,
+        status: 400
+      })
+    }
+
     const passwordHash = await hashPassword(new_password)
     await accountRepository.update(account_id, { password: passwordHash })
     // await redisClient.del(`${process.env.JWT_FORFOT_PASSWORD_TOKEN}:${account_id}`)

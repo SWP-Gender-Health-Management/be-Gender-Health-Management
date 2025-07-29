@@ -3,129 +3,149 @@ import { Role } from '~/enum/role.enum.js'
 import { restrictTo } from '~/middlewares/account.middleware.js'
 import wrapRequestHandler from '~/utils/handle.js'
 import {
-  createConsultantPatternController,
-  createStaffPatternController,
-  reportCustomerController,
-  reportPerformanceController,
-  getConsultantPatternController,
-  getStaffPatternController
+  getAppPercentController,
+  getOverallController,
+  getOverallWeeklyController,
+  getRecentAppController,
+  getConsultantsController,
+  getStaffsController,
+  getConAppController,
+  getLabAppController,
+  getMensOverallController,
+  getMensAgePercentController,
+  getMensPeriodPercentController,
+  getBlogsController,
+  getQuestionsController,
+  getRefundInfoByAppId,
+  refundLabAppointment
 } from '~/controllers/manager.controller.js'
-import { validateAddStaffPattern } from '~/middlewares/staff_pattern.middleware.js'
-import { validateAddConsultantPattern } from '~/middlewares/consultant_pattern.middleware.js'
-import { getConsultantsController, getStaffsController } from '~/controllers/admin.controller.js'
-import { validateId } from '~/middlewares/manager.middleware.js'
-import { getCustomersController } from '~/controllers/customer.controller.js'
+
 
 const managerRoute = Router()
 
 /*
-  description: performance-report
-  path: /manager/report-performance
+  description: get-overall
+  path: /manager/get-overall
   method: GET
   access: private
 */
-managerRoute.get('/report-performance', restrictTo(Role.MANAGER), wrapRequestHandler(reportPerformanceController))
+managerRoute.get('/get-overall', restrictTo(Role.MANAGER), wrapRequestHandler(getOverallController))
 
 /*
-  description: report-customer
-  path: /manager/report-customer
+  description: get-overall-weekly
+  path: /manager/get-overall-weekly
   method: GET
   access: private
 */
-managerRoute.get('/report-customer', restrictTo(Role.MANAGER), wrapRequestHandler(reportCustomerController))
+managerRoute.get('/get-overall-weekly', restrictTo(Role.MANAGER), wrapRequestHandler(getOverallWeeklyController))
 
 /*
-  description: get-staffs
-  path: /manager/get-staffs
+  description: get-app-percent
+  path: /manager/get-app-percent
   method: GET
   access: private
-  query: {
-    limit: number
-    page: number
-  }
 */
-managerRoute.get('/get-staffs', restrictTo(Role.MANAGER), wrapRequestHandler(getStaffsController))
+managerRoute.get('/get-app-percent', restrictTo(Role.MANAGER), wrapRequestHandler(getAppPercentController))
 
 /*
-  description: get-staff-pattern
-  path: /manager/get-staff-pattern
+  description: get-recent-app
+  path: /manager/get-recent-app
   method: GET
   access: private
-  body: {
-    staff_id: string
-  }
 */
-managerRoute.get(
-  '/get-staff-pattern',
-  restrictTo(Role.MANAGER),
-  validateId,
-  wrapRequestHandler(getStaffPatternController)
-)
+managerRoute.get('/get-recent-app', restrictTo(Role.MANAGER), wrapRequestHandler(getRecentAppController))
 
 /*
   description: get-consultants
   path: /manager/get-consultants
   method: GET
   access: private
-  query: {
-    limit: number
-    page: number
-  }
 */
 managerRoute.get('/get-consultants', restrictTo(Role.MANAGER), wrapRequestHandler(getConsultantsController))
 
 /*
-  description: get-consultant-pattern
-  path: /manager/get-consultant-pattern
+  description: get-staffs
+  path: /manager/get-staffs
   method: GET
   access: private
-  body: {
-    consultant_id: string
-  }
+*/
+managerRoute.get('/get-staffs', restrictTo(Role.MANAGER), wrapRequestHandler(getStaffsController))
+
+/*
+  description: get-con-app
+  path: /manager/get-con-app
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-con-app', restrictTo(Role.MANAGER), wrapRequestHandler(getConAppController))
+
+/*
+  description: get-lab-app
+  path: /manager/get-lab-app
+  method: GET
+  access: private
 */
 managerRoute.get(
-  '/get-consultant-pattern',
-  restrictTo(Role.MANAGER),
-  validateId,
-  wrapRequestHandler(getConsultantPatternController)
+  '/get-lab-app', 
+  // restrictTo(Role.MANAGER), 
+  wrapRequestHandler(getLabAppController)
 )
 
+// thống kê người đăng kí quản lý chu kì kinh nguyệt
 /*
-  description: get-customers
-  path: /manager/get-customers
+  description: get-mens-overall
+  path: /manager/get-mens-overall
   method: GET
   access: private
-  query: {
-    limit: number
-    page: number
-  }
 */
-managerRoute.get('/get-customers', restrictTo(Role.MANAGER), wrapRequestHandler(getCustomersController))
+managerRoute.get('/get-mens-overall', restrictTo(Role.MANAGER), wrapRequestHandler(getMensOverallController))
 
 /*
-  description: create-staff-pattern 
-  path: /manager/create-staff-pattern
-  method: POST
+  description: get-mens-age-percent
+  path: /manager/get-mens-age-percent
+  method: GET
   access: private
 */
-managerRoute.post(
-  '/create-staff-pattern',
+managerRoute.get('/get-mens-age-percent', restrictTo(Role.MANAGER), wrapRequestHandler(getMensAgePercentController))
+
+/*
+  description: get-mens-period-percent
+  path: /manager/get-mens-period-percent
+  method: GET
+  access: private
+*/
+managerRoute.get(
+  '/get-mens-period-percent',
   restrictTo(Role.MANAGER),
-  validateAddStaffPattern,
-  wrapRequestHandler(createStaffPatternController)
+  wrapRequestHandler(getMensPeriodPercentController)
 )
 
 /*
-  description: create-consultant-pattern
-  path: /manager/create-consultant-pattern
-  method: POST
+  description: get-blogs
+  path: /manager/get-blogs
+  method: GET
   access: private
 */
-managerRoute.post(
-  '/create-consultant-pattern',
-  restrictTo(Role.MANAGER),
-  validateAddConsultantPattern,
-  wrapRequestHandler(createConsultantPatternController)
+managerRoute.get('/get-blogs', restrictTo(Role.MANAGER), wrapRequestHandler(getBlogsController))
+
+/*
+  description: get-questions
+  path: /manager/get-questions
+  method: GET
+  access: private
+*/
+managerRoute.get('/get-questions', restrictTo(Role.MANAGER), wrapRequestHandler(getQuestionsController))
+
+managerRoute.get(
+  '/get-refund-info/:app_id',
+  restrictTo(Role.CUSTOMER, Role.ADMIN, Role.MANAGER),
+  wrapRequestHandler(getRefundInfoByAppId)
+)
+
+managerRoute.put(
+  '/refund/:app_id',
+  restrictTo(Role.CUSTOMER, Role.ADMIN, Role.MANAGER),
+  wrapRequestHandler(refundLabAppointment)
 )
 
 export default managerRoute

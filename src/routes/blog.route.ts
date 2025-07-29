@@ -5,7 +5,8 @@ import {
   getBlogById,
   getBlogsByAccountId,
   updateBlog,
-  deleteBlog
+  deleteBlog,
+  getMajor
 } from '../controllers/blog.controller.js'
 import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
 import { uploadBlogImages as uploadBlogImagesMiddleware } from '../config/multer.js'
@@ -29,7 +30,7 @@ const blogRoute = Router()
 */
 blogRoute.post(
   '/create-blog',
-  restrictTo(Role.CONSULTANT, Role.ADMIN),
+  restrictTo(Role.CONSULTANT, Role.ADMIN, Role.STAFF),
   uploadBlogImagesMiddleware.array('images', 10),
   wrapRequestHandler(createBlog)
 )
@@ -65,7 +66,7 @@ blogRoute.get(
 blogRoute.get(
   '/get-blog-by-account/:account_id',
   // validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.STAFF),
   wrapRequestHandler(getBlogsByAccountId)
 )
 
@@ -86,7 +87,7 @@ blogRoute.get(
 blogRoute.put(
   '/update-blog/:blog_id',
   // validateAccessToken,
-  restrictTo(Role.CONSULTANT),
+  restrictTo(Role.CONSULTANT,Role.STAFF, Role.ADMIN),
   uploadBlogImagesMiddleware.array('images', 10),
   wrapRequestHandler(updateBlog)
 )
@@ -100,8 +101,16 @@ blogRoute.put(
 blogRoute.delete(
   '/delete-blog/:blog_id',
   // validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  restrictTo(Role.ADMIN, Role.CONSULTANT, Role.STAFF),
   wrapRequestHandler(deleteBlog)
 )
 
+blogRoute.get(
+  '/get-major',
+  // validateAccessToken,
+  // restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  wrapRequestHandler(getMajor)
+)
+
 export default blogRoute
+

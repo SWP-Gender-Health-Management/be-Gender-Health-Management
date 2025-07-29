@@ -1,8 +1,12 @@
 import { Router } from 'express'
 import {
+  cancelLaborarityAppointment,
+  createLabAppointmentRefund,
   createLaborarityAppointmentController,
   createNotificationController,
   getCustomersController,
+  getLaborarityAppointmentsController,
+  getMenstrualCycleController,
   predictPeriodController,
   trackPeriodController,
   updateMenstrualCycleController
@@ -20,6 +24,9 @@ const customerRoute = Router()
 //customer
 customerRoute.get('/get-customers', wrapRequestHandler(getCustomersController))
 // theo dõi chu kì kinh nguyệt
+
+customerRoute.get('/get-menstrual-cycle', restrictTo(Role.CUSTOMER), wrapRequestHandler(getMenstrualCycleController))
+
 /*
   Description: nhập thông tin chu kì kinh nguyệt
   Path: /customer/track-period
@@ -101,11 +108,38 @@ customerRoute.post('/create-notification', restrictTo(Role.CUSTOMER), wrapReques
     date: string
   }
 */
-
 customerRoute.post(
   '/create-laborarity-appointment',
   restrictTo(Role.CUSTOMER),
-  validateCreateLaborarityAppointment,
+  // validateCreateLaborarityAppointment,
   wrapRequestHandler(createLaborarityAppointmentController)
 )
+
+/*
+  description: lấy danh sách lịch xét nghiệm
+  Path: /customer/get-laborarity-appointments
+  Method: GET
+  Header: {
+    access_token: string
+  }
+*/
+customerRoute.get(
+  '/get-laborarity-appointments',
+  restrictTo(Role.CUSTOMER),
+  wrapRequestHandler(getLaborarityAppointmentsController)
+)
+
+customerRoute.put(
+  '/cancel-lab-appointment/:app_id',
+  restrictTo(Role.CUSTOMER),
+  wrapRequestHandler(cancelLaborarityAppointment)
+)
+
+customerRoute.post(
+  '/create-lab-appointment-refund',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER, Role.ADMIN),
+  wrapRequestHandler(createLabAppointmentRefund)
+)
+
 export default customerRoute

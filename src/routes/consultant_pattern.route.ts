@@ -7,7 +7,8 @@ import {
   getConsultantPatternByConsultantId, // Thêm import
   getConsultantPatternBySlotId, // Thêm import
   updateConsultantPattern,
-  getAllConsultantPatternsInWeek
+  getAllConsultantPatternsInWeek,
+  getConsultantPatternsByWeek
 } from '../controllers/consultant_pattern.controller.js'
 import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
 import { Role } from '../enum/role.enum.js'
@@ -52,8 +53,14 @@ consultantPatternRoute.get(
 */
 consultantPatternRoute.get(
   '/get-all-consultant-patterns-in-week',
-  restrictTo(Role.ADMIN),
+  restrictTo(Role.ADMIN, Role.CUSTOMER),
   wrapRequestHandler(getAllConsultantPatternsInWeek)
+)
+
+consultantPatternRoute.get(
+  '/get-all-consultant-patterns-by-week',
+  // restrictTo(Role.ADMIN, Role.CONSULTANT, Role.CUSTOMER),
+  wrapRequestHandler(getConsultantPatternsByWeek)
 )
 
 /*
@@ -122,7 +129,7 @@ consultantPatternRoute.put(
 */
 consultantPatternRoute.delete(
   '/delete-consultant-pattern/:pattern_id',
-  restrictTo(Role.ADMIN),
+  // restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteConsultantPattern)
 )
 

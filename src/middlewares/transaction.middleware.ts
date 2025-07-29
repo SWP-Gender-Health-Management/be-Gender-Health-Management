@@ -17,6 +17,11 @@ export const validateCreateTransaction = validate(
     description: {
       notEmpty: false,
       errorMessage: TRANSACTION_MESSAGES.DESCRIPTION_INVALID
+    },
+    date: {
+      isDate: true,
+      notEmpty: true,
+      errorMessage: TRANSACTION_MESSAGES.DATE_INVALID
     }
   })
 )

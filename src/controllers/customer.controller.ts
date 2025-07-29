@@ -12,6 +12,16 @@ export const getCustomersController = async (req: Request, res: Response, next: 
   })
 }
 
+export const getMenstrualCycleController = async (req: Request, res: Response, next: NextFunction) => {
+  const { account_id } = req.body
+  const result = await customerService.getMenstrualCycle(account_id)
+  console.log('result', result)
+  res.status(HTTP_STATUS.OK).json({
+    message: CUSTOMER_MESSAGES.GET_MENSTRUAL_CYCLE_SUCCESS,
+    result: result
+  })
+}
+
 /**
  * @swagger
  * /customer/track-period:
@@ -78,7 +88,7 @@ export const trackPeriodController = async (req: Request, res: Response, next: N
   const result = await customerService.createMenstrualCycle(account_id, start_date, end_date, period, note)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.CREATE_MENSTRUAL_CYCLE_SUCCESS,
-    data: result
+    data1: result
   })
 }
 
@@ -144,7 +154,7 @@ export const predictPeriodController = async (req: Request, res: Response, next:
   const result = await customerService.predictPeriod(account_id)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.PREDICT_PERIOD_SUCCESS,
-    data: result
+    result: result
   })
 }
 
@@ -339,9 +349,45 @@ export const createNotificationController = async (req: Request, res: Response, 
 // Create laboratory appointment
 export const createLaborarityAppointmentController = async (req: Request, res: Response, next: NextFunction) => {
   const { account_id, laborarity_id, slot_id, date } = req.body
+  console.log('req.body', req.body)
   const result = await customerService.createLaborarityAppointment(account_id, laborarity_id, slot_id, date)
+  console.log('result', result)
   res.status(HTTP_STATUS.OK).json({
     message: CUSTOMER_MESSAGES.LABORARITY_APPOINTMENT_CREATED_SUCCESS,
-    data: result
+    result: result
   })
+}
+
+export const getLaborarityAppointmentsController = async (req: Request, res: Response, next: NextFunction) => {
+  const { account_id } = req.body
+  const { limit, page } = req.query
+  const result = await customerService.getLaborarityAppointments(limit as string, page as string, account_id)
+  res.status(HTTP_STATUS.OK).json({
+    message: CUSTOMER_MESSAGES.GET_LABORARITY_APPOINTMENTS_SUCCESS,
+    result: result
+  })
+}
+
+export const cancelLaborarityAppointment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    console.log('Canceling laboratory appointment with ID:', req.params.app_id);
+    await customerService.cancelLaborarityAppointment(req.params.app_id)
+    res.status(HTTP_STATUS.OK).json({
+      message: CUSTOMER_MESSAGES.LABORARITY_APPOINTMENT_CANCELLED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const createLabAppointmentRefund = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { app_id, description, accountNumber, bankName } = req.body
+    await customerService.createLabAppointmentRefund(app_id, description, bankName, accountNumber)
+    res.status(HTTP_STATUS.OK).json({
+      message: CUSTOMER_MESSAGES.LAB_APPOINTMENT_REFUND_CREATED_SUCCESS
+    })
+  } catch (error) {
+    next(error)
+  }
 }

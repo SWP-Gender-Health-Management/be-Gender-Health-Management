@@ -3,8 +3,12 @@ import { AppDataSource } from '../config/database.config.js'
 import { TypeAppointment } from '../enum/type_appointment.enum.js'
 import WorkingSlot from '../models/Entity/working_slot.entity.js'
 import { UpdateResult } from 'typeorm'
+import LaboratoryAppointment from '~/models/Entity/laborarity_appointment.entity.js'
+import StaffPattern from '~/models/Entity/staff_pattern.entity.js'
+import { FindManyOptions } from 'typeorm'
 
 const slotRepository = AppDataSource.getRepository(WorkingSlot)
+const staffPatternRepository = AppDataSource.getRepository(StaffPattern)
 
 class WorkingSlotService {
   /**
@@ -34,8 +38,8 @@ class WorkingSlotService {
    */
   // Get a slot by type
   async getSlotByType(type: string, pageVar: { limit: string; page: string }): Promise<WorkingSlot[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
-    let page = parseInt(pageVar.page) || 1;
+    const limit = parseInt(pageVar.limit) || LIMIT.default
+    const page = parseInt(pageVar.page) || 1
     const skip = (page - 1) * limit
 
     return await slotRepository.find({
@@ -54,8 +58,8 @@ class WorkingSlotService {
    */
   // Get all slots
   async getSlot(pageVar: { limit: string; page: string }): Promise<WorkingSlot[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
-    let page = parseInt(pageVar.page) || 1;
+    let limit = parseInt(pageVar.limit) || LIMIT.default
+    let page = parseInt(pageVar.page) || 1
     const skip = (page - 1) * limit
     return await slotRepository.find({
       skip,
@@ -95,6 +99,55 @@ class WorkingSlotService {
   // Delete a slot
   async deleteSlot(id: string) {
     return await slotRepository.delete(id)
+  }
+
+  async getLabWorkingSlot(date: string) {
+    const slots = await slotRepository.find({
+      where: {
+        type: TypeAppointment.LABORATORY
+      },
+      order: {
+        name: 'ASC'
+      }
+    })
+    const [amountMorning, amountAfternoon] = await Promise.all([
+      AppDataSource.createQueryBuilder(LaboratoryAppointment, 'laboratory_appointment')
+        .where('laboratory_appointment.date = :date', { date })
+        .andWhere('laboratory_appointment.slot_id = :slot_id', { slot_id: slots[0].slot_id })
+        .getCount(),
+      AppDataSource.createQueryBuilder(LaboratoryAppointment, 'laboratory_appointment')
+        .where('laboratory_appointment.date = :date', { date })
+        .andWhere('laboratory_appointment.slot_id = :slot_id', { slot_id: slots[1].slot_id })
+        .getCount()
+    ])
+    const morning = await staffPatternRepository.findAndCount({
+      where: {
+        date: new Date(date),
+        working_slot: { slot_id: slots[0].slot_id }
+      },
+      relations: {
+        working_slot: true
+      }
+    })
+    const afternoon = await staffPatternRepository.findAndCount({
+      where: {
+        date: new Date(date),
+        working_slot: { slot_id: slots[1].slot_id }
+      },
+      relations: {
+        working_slot: true
+      }
+    })
+    return {
+      morning: {
+        isFull: amountMorning >= morning[1] * 10,
+        slot: slots[0]
+      },
+      afternoon: {
+        isFull: amountAfternoon >= afternoon[1] * 10,
+        slot: slots[1]
+      }
+    }
   }
 }
 

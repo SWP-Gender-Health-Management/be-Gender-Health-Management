@@ -14,6 +14,7 @@ export const HTTP_MESSAGE = {
 }
 
 export const USERS_MESSAGES = {
+  ACCOUNT_ID_INVALID: 'Account id is invalid',
   USER_GET_ACCOUNT_ID_SUCCESS: 'Get account ID success',
   VALIDATION_ERROR: 'Validation error',
   USER_NOT_FOUND: 'User not found',
@@ -42,6 +43,8 @@ export const USERS_MESSAGES = {
   PHONE_INVALID: 'Phone is invalid',
   DOB_INVALID: 'Date of birth is invalid',
   GENDER_INVALID: 'Gender is invalid',
+  ADDRESS_INVALID: 'Address is invalid',
+  DESCRIPTION_INVALID: 'Description is invalid',
   USER_VIEWED_SUCCESS: 'User viewed successfully',
   EMAIL_NOT_VERIFIED: 'Email not verified',
   EMAIL_VERIFIED_TOKEN_EXPIRED: 'Email verified token expired',
@@ -58,7 +61,11 @@ export const USERS_MESSAGES = {
   GOOGLE_ACCOUNT_NOT_FOUND: 'Google account not found',
   GOOGLE_VERIFY_SUCCESS: 'Google verify successfully',
   GOOGLE_VERIFY_FAILED: 'Google verify failed',
-  RESET_PASSWORD_SUCCESS: 'Reset password successfully'
+  RESET_PASSWORD_SUCCESS: 'Reset password successfully',
+  GOOGLE_ACCOUNT_NO_PASSWORD: 'Không thể thay đổi mật khẩu cho tài khoản Google',
+  GOOGLE_ACCOUNT_NO_RESET: 'Không thể đặt lại mật khẩu cho tài khoản Google',
+  GOOGLE_ACCOUNT_NO_RESET_EMAIL: 'Không thể gửi email đặt lại mật khẩu cho tài khoản Google',
+  GG_MEET_INVALID: 'GG meet is invalid'
 }
 
 export const REFRESH_TOKEN_MESSAGES = {
@@ -67,6 +74,10 @@ export const REFRESH_TOKEN_MESSAGES = {
 }
 
 export const CUSTOMER_MESSAGES = {
+  LAB_APPOINTMENT_REFUND_ALREADY_EXISTS: 'Lab appointment refund already exists',
+  LAB_APPOINTMENT_REFUND_CREATED_SUCCESS: 'Lab appointment refund created successfully',
+  TRANSACTION_NOT_FOUND: 'Transaction not found',
+  LABORARITY_APPOINTMENT_CANCELLED_SUCCESS: 'Laboratory appointment cancelled successfully',
   CREATE_MENSTRUAL_CYCLE_SUCCESS: 'Menstrual cycle created successfully',
   PREDICT_PERIOD_SUCCESS: 'Period predicted successfully',
   START_DATE_GREATER_THAN_END_DATE: 'Start date must be before end date',
@@ -88,7 +99,10 @@ export const CUSTOMER_MESSAGES = {
   LABORARITY_NOT_ENOUGH_STAFF_FOR_SLOT: 'Laborarity not enough staff for slot',
   WORKING_SLOT_INVALID: 'Working slot is invalid',
   GET_CUSTOMER_SUCCESS: 'Get customer successfully',
-  AMOUNT_INVALID: 'Amount is invalid'
+  AMOUNT_INVALID: 'Amount is invalid',
+  LABORARITY_APPOINTMENT_NOT_FOUND: 'Laborarity appointment not found',
+  GET_LABORARITY_APPOINTMENTS_SUCCESS: 'Get laborarity appointments successfully',
+  GET_MENSTRUAL_CYCLE_SUCCESS: 'Get menstrual cycle successfully'
 }
 
 export const WORKING_SLOT_MESSAGES = {
@@ -100,7 +114,9 @@ export const WORKING_SLOT_MESSAGES = {
   WORKING_SLOT_UPDATED_SUCCESS: 'Working slot updated successfully',
   WORKING_SLOT_DELETED_SUCCESS: 'Working slot deleted successfully',
   WORKING_SLOT_NOT_FOUND: 'Working slot not found',
-  GET_SLOT_SUCCESS: 'Get slot successfully'
+  GET_SLOT_SUCCESS: 'Get slot successfully',
+  DATE_INVALID: 'Date is invalid',
+  GET_LAB_WORKING_SLOT_SUCCESS: 'Get lab working slot successfully'
 }
 
 export const STAFF_PATTERN_MESSAGES = {
@@ -116,11 +132,7 @@ export const STAFF_PATTERN_MESSAGES = {
 }
 
 export const ADMIN_MESSAGES = {
-  ADMIN_CREATED_SUCCESS: 'Admin created successfully',
-  MANAGER_CREATED_SUCCESS: 'Manager created successfully',
-  STAFF_CREATED_SUCCESS: 'Staff created successfully',
-  CONSULTANT_CREATED_SUCCESS: 'Consultant created successfully',
-  CUSTOMER_CREATED_SUCCESS: 'Customer created successfully',
+  ACCOUNT_CREATED_SUCCESS: 'Account created successfully',
   FULL_NAME_REQUIRED: 'Full name is required',
   EMAIL_REQUIRED: 'Email is required',
   PASSWORD_REQUIRED: 'Password is required',
@@ -132,17 +144,49 @@ export const ADMIN_MESSAGES = {
   SUMMARY_SUCCESS: 'Summary success',
   PERFORMANCE_SUCCESS: 'Performance success',
   ACCOUNT_UNBANNED_SUCCESS: 'Account unbanned successfully',
-  GET_CUSTOMERS_SUCCESS: 'Get customers successfully'
+  GET_CUSTOMERS_SUCCESS: 'Get customers successfully',
+  RECENT_NEWS_SUCCESS: 'Get recent news successfully',
+  PERCENT_CUSTOMER_SUCCESS: 'Get percent customer successfully',
+  ROLE_REQUIRED: 'Role is required',
+  ACCOUNT_DELETED_SUCCESS: 'Account deleted successfully',
+  REPORT_OVERALL_SUCCESS: 'Report overall success',
+  PERCENT_REVENUE_SUCCESS: 'Percent revenue success',
+  PERCENT_ACCOUNT_SUCCESS: 'Percent account success',
+  PERCENT_REVENUE_SERVICE_SUCCESS: 'Percent revenue service success',
+  PERCENT_FEEDBACK_SUCCESS: 'Percent feedback success',
+  NOTIFICATION_SUCCESS: 'Notification success',
+  SPECIALTY_REQUIRED: 'Specialty is required',
+  RATING_REQUIRED: 'Rating is required',
+  DESCRIPTION_REQUIRED: 'Description is required',
+  GG_MEET_REQUIRED: 'GG meet is required'
 }
 
 export const MANAGER_MESSAGES = {
+  CONSULT_APPOINTMENT_REFUND_RETRIEVED_SUCCESS: 'Consult appointment refund retrieved successfully',
+  CONSULT_APPOINTMENT_REFUND_SUCCESS: 'Consult appointment refund created successfully',
+  REFUND_NOT_FOUND: 'REFUND_NOT_FOUND',
+  LAB_APP_NOT_FOUND: 'LAB_APP_NOT_FOUND',
   PERFORMANCE_REPORT_SUCCESS: 'Performance report successfully',
   REPORT_SUCCESS: 'Report successfully',
   CREATE_STAFF_PATTERN_SUCCESS: 'Create staff pattern successfully',
   CREATE_CONSULTANT_PATTERN_SUCCESS: 'Create consultant pattern successfully',
   GET_STAFF_PATTERN_SUCCESS: 'Get staff pattern successfully',
   GET_CONSULTANT_PATTERN_SUCCESS: 'Get consultant pattern successfully',
-  GET_CUSTOMER_SUCCESS: 'Get customer successfully'
+  GET_CUSTOMER_SUCCESS: 'Get customer successfully',
+  GET_OVERALL_SUCCESS: 'Get overall successfully',
+  GET_OVERALL_WEEKLY_SUCCESS: 'Get overall weekly successfully',
+  GET_APP_PERCENT_SUCCESS: 'Get app percent successfully',
+  GET_RECENT_APP_SUCCESS: 'Get recent app successfully',
+  GET_CONSULTANTS_SUCCESS: 'Get consultants successfully',
+  GET_STAFFS_SUCCESS: 'Get staffs successfully',
+  GET_CON_APP_SUCCESS: 'Get con app successfully',
+  GET_LAB_APP_SUCCESS: 'Get lab app successfully',
+  GET_MENS_OVERALL_SUCCESS: 'Get mens overall successfully',
+  GET_MENS_PERCENT_SUCCESS: 'Get mens percent successfully',
+  GET_MENS_AGE_PERCENT_SUCCESS: 'Get mens age percent successfully',
+  GET_MENS_PERIOD_PERCENT_SUCCESS: 'Get mens period percent successfully',
+  GET_BLOGS_SUCCESS: 'Get blogs successfully',
+  GET_QUESTIONS_SUCCESS: 'Get questions successfully'
 }
 
 export const LABORARITY_MESSAGES = {
@@ -197,7 +241,10 @@ export const RESULT_MESSAGES = {
 }
 
 export const STAFF_MESSAGES = {
-  STAFF_ID_INVALID: 'Staff id is invalid'
+  STAFF_ID_INVALID: 'Staff id is invalid',
+  STAFF_NOT_FOUND: 'STAFF_NOT_FOUND',
+  APPOINTMENT_NOT_FOUND: 'APPOINTMENT_NOT_FOUND',
+  APPOINTMENT_OWNED_BY_OTHER: 'Appointment belong to an other staff'
 }
 
 export const CONSULTANT_PATTERNS_MESSAGES = {
@@ -221,16 +268,25 @@ export const CONSULTANT_PATTERNS_MESSAGES = {
 }
 
 export const CONSULTANT_APPOINTMENTS_MESSAGES = {
+  REFUND_REQUESTED_ALREADY: 'Refund already requested for this consult appointment',
+  CONSULT_APPOINTMENT_REFUND_SUCCESS: 'Consult appointment refund created successfully',
+  REFUND_NOT_FOUND: 'Refund not found',
+  CONSULTANT_NOT_FOUND: 'Consultant not found',
   CONSULT_APPOINTMENT_CREATED_SUCCESS: 'Consult appointment created successfully',
+  CONSULT_APPOINTMENT_REFUND_CREATED_SUCCESS: 'Consult appointment refund created successfully',
+  CONSULT_APPOINTMENT_REFUND_RETRIEVED_SUCCESS: 'Consult appointment refund retrieved successfully',
   CONSULT_APPOINTMENTS_RETRIEVED_SUCCESS: 'Consult appointments retrieved successfully',
   CONSULT_APPOINTMENT_RETRIEVED_SUCCESS: 'Consult appointment retrieved successfully',
   CONSULT_APPOINTMENT_UPDATED_SUCCESS: 'Consult appointment updated successfully',
   CONSULT_APPOINTMENT_DELETED_SUCCESS: 'Consult appointment deleted successfully',
+  CONSULT_APPOINTMENT_CANCELLED_SUCCESS: 'Consult appointment cancelled successfully',
   CONSULT_APPOINTMENT_NOT_FOUND: 'Consult appointment not found',
   CONSULTANT_PATTERN_NOT_FOUND: 'Consultant pattern not found',
+  TRANSACTION_NOT_FOUND: 'Transaction not found',
   CONSULTANT_PATTERN_ALREADY_BOOKED: 'Consultant pattern is already booked',
   CUSTOMER_NOT_FOUND: 'Customer not found',
-  CONSULT_APPOINTMENT_CANNOT_DELETE: 'Cannot delete consult appointment with associated feedback'
+  CONSULT_APPOINTMENT_CANNOT_DELETE: 'Cannot delete consult appointment with associated feedback',
+  CONSULTANTS_RETRIEVED_SUCCESS: 'Consultants retrieved successfully'
 }
 
 export const QUESTION_MESSAGES = {
@@ -273,6 +329,9 @@ export const CONSULT_REPORT_MESSAGES = {
 }
 
 export const FEEDBACK_MESSAGES = {
+  STAFF_NOT_FOUND: 'Staff not found',
+  APPOINTMENT_ALREADY_HAVE_FEEDBACK: 'APPOINTMENT_ALREADY_HAVE_FEEDBACK',
+  CONSULTANT_NOT_FOUND: 'Consultant not found',
   CUSTOMER_NOT_FOUND: 'Customer not found',
   CUSTOMER_NOT_PROVIDED: 'Customer must be provided',
   FEEDBACK_CREATED_SUCCESS: 'Feedback created successfully',
@@ -299,5 +358,6 @@ export const BLOG_MESSAGES = {
   BLOG_NOT_FOUND: 'Blog not found',
   TITLE_REQUIRED: 'Blog title is required',
   CONTENT_REQUIRED: 'Blog content is required',
-  MAJOR_REQUIRED: 'Blog major is required'
+  MAJOR_REQUIRED: 'Blog major is required',
+  MAJOR_RETRIEVED_SUCCESS: 'Blog majors retrieved successfully'
 }

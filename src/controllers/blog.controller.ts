@@ -68,7 +68,7 @@ export const createBlog = async (req: Request, res: Response, next: NextFunction
     const result = await blogService.createBlog(req.body, req.files as Express.Multer.File[])
     await notificationService.createNotification(
       {
-        type: TypeNoti.BLOG_CREATED_SUCCESS,
+        type: TypeNoti.BLOG,
         title: 'Blog created successfully',
         message: 'Your blog has been created successfully'
       },
@@ -112,11 +112,11 @@ export const createBlog = async (req: Request, res: Response, next: NextFunction
  */
 export const getAllBlogs = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {limit, page} = req.query;
+    const { limit, page } = req.query
     const pageVar = {
-      limit: limit as string, 
+      limit: limit as string,
       page: page as string
-    };
+    }
     const result = await blogService.getAllBlogs(pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: BLOG_MESSAGES.BLOGS_RETRIEVED_SUCCESS,
@@ -211,11 +211,11 @@ export const getBlogById = async (req: Request, res: Response, next: NextFunctio
  */
 export const getBlogsByAccountId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {limit, page} = req.query;
+    const { limit, page } = req.query
     const pageVar = {
-      limit: limit as string, 
+      limit: limit as string,
       page: page as string
-    };
+    }
     const result = await blogService.getBlogsByAccountId(req.params.account_id, pageVar)
     res.status(HTTP_STATUS.OK).json({
       message: BLOG_MESSAGES.BLOGS_RETRIEVED_SUCCESS,
@@ -348,3 +348,16 @@ export const deleteBlog = async (req: Request, res: Response, next: NextFunction
     next(error)
   }
 }
+
+export const getMajor = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await blogService.getMajor()
+    res.status(HTTP_STATUS.OK).json({
+      message: BLOG_MESSAGES.MAJOR_RETRIEVED_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+

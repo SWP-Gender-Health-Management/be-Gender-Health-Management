@@ -6,13 +6,32 @@ import {
   getConsultAppointmentsByCustomerId,
   getConsultAppointmentsByPatternId,
   updateConsultAppointment,
-  deleteConsultAppointment
+  deleteConsultAppointment,
+  getConsultants,
+  getConsultAppointmentsByWeek,
+  getConsultAppointmentByConsultantId,
+  getConsultAppointmentStatByConsultantId,
+  cancelConsultAppointment,
+  createConsultAppointmentRefund,
+  getRefundInfoByAppId,
+  refundConsultAppointment
 } from '../controllers/consult_appointment.controller.js'
 import { validateAccessToken, restrictTo } from '../middlewares/account.middleware.js'
 import { Role } from '../enum/role.enum.js'
 import wrapRequestHandler from '../utils/handle.js'
 
 const consultAppointmentRoute = Router()
+
+/*
+  description: get consultants
+  method: get
+  path: /consultants
+  query: {
+    page: number
+    limit: number
+  }
+*/
+consultAppointmentRoute.get('/get-consultants', restrictTo(Role.CUSTOMER), wrapRequestHandler(getConsultants))
 
 /*
   Description: Create a new consult appointment (customer only)
@@ -25,7 +44,7 @@ const consultAppointmentRoute = Router()
 consultAppointmentRoute.post(
   '/create-consult-appointment',
   // validateAccessToken,
-  // restrictTo(Role.CUSTOMER),
+  restrictTo(Role.CUSTOMER),
   wrapRequestHandler(createConsultAppointment)
 )
 
@@ -62,15 +81,15 @@ consultAppointmentRoute.get(
 /*
   Description: Get consult appointments by customer ID (admin or customer)
   Method: GET
-  Path: /get-consult-appointment-by-id/customer/:customer_id
+  Path: /customer/get-consult-appointment-by-id
   Body: {
     
   }
 */
 consultAppointmentRoute.get(
-  '/get-consult-appointment-by-id/customer/:customer_id',
-  validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CUSTOMER),
+  '/customer/get-con-apps-by-id',
+  // validateAccessToken,
+  restrictTo(Role.CUSTOMER),
   wrapRequestHandler(getConsultAppointmentsByCustomerId)
 )
 
@@ -90,6 +109,32 @@ consultAppointmentRoute.get(
 )
 
 /*
+  Description: Get consult appointment by week of a consultant
+  Method: GET
+  Path: /get-consult-appointment-by-week/:consultant_id
+  Body: {
+    weekStartDate: string
+  }
+*/
+consultAppointmentRoute.get(
+  '/get-consult-appointment-by-week/:consultant_id',
+  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  wrapRequestHandler(getConsultAppointmentsByWeek)
+)
+
+consultAppointmentRoute.get(
+  '/get-consult-appointment-stats',
+  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  wrapRequestHandler(getConsultAppointmentStatByConsultantId)
+)
+
+consultAppointmentRoute.get(
+  '/get-consult-appointment-by-id/consultant/:consultant_id',
+  restrictTo(Role.ADMIN, Role.CONSULTANT),
+  wrapRequestHandler(getConsultAppointmentByConsultantId)
+)
+
+/*
   Description: Update a consult appointment (admin or customer)
   Method: PUT
   Path: /update-consult-appointment/:app_id
@@ -98,9 +143,9 @@ consultAppointmentRoute.get(
   }
 */
 consultAppointmentRoute.put(
-  'update-consult-appointment/:app_id',
+  '/update-consult-appointment/:app_id',
   validateAccessToken,
-  restrictTo(Role.ADMIN, Role.CUSTOMER),
+  restrictTo(Role.ADMIN, Role.CUSTOMER, Role.CONSULTANT),
   wrapRequestHandler(updateConsultAppointment)
 )
 
@@ -117,6 +162,34 @@ consultAppointmentRoute.delete(
   // validateAccessToken,
   // restrictTo(Role.ADMIN),
   wrapRequestHandler(deleteConsultAppointment)
+)
+
+consultAppointmentRoute.put(
+  '/cancel-appointment/:app_id',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER, Role.ADMIN),
+  wrapRequestHandler(cancelConsultAppointment)
+)
+
+consultAppointmentRoute.post(
+  '/create-appointment-refund',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER, Role.ADMIN),
+  wrapRequestHandler(createConsultAppointmentRefund)
+)
+
+consultAppointmentRoute.get(
+  '/get-refund-info/:app_id',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER, Role.ADMIN, Role.MANAGER),
+  wrapRequestHandler(getRefundInfoByAppId)
+)
+
+consultAppointmentRoute.put(
+  '/refund/:app_id',
+  validateAccessToken,
+  restrictTo(Role.CUSTOMER, Role.ADMIN, Role.MANAGER),
+  wrapRequestHandler(refundConsultAppointment)
 )
 
 export default consultAppointmentRoute

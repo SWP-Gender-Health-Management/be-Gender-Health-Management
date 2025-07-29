@@ -284,6 +284,12 @@ export const validateResetPassword = validate(
 
 export const validateUpdateAccount = validate(
   checkSchema({
+    account_id: {
+      isUUID: true,
+      trim: true,
+      notEmpty: true,
+      errorMessage: USERS_MESSAGES.ACCOUNT_ID_INVALID
+    },
     full_name: {
       notEmpty: false,
       isString: true,
@@ -323,6 +329,18 @@ export const validateUpdateAccount = validate(
       isString: true,
       trim: true,
       errorMessage: USERS_MESSAGES.GENDER_INVALID
+    },
+    address: {
+      notEmpty: false,
+      isString: true,
+      trim: true,
+      errorMessage: USERS_MESSAGES.ADDRESS_INVALID
+    },
+    description: {
+      notEmpty: false,
+      isString: true,
+      trim: true,
+      errorMessage: USERS_MESSAGES.DESCRIPTION_INVALID
     }
   })
 )
@@ -337,6 +355,7 @@ export const restrictTo = (...allowedRoles: Role[]) => {
           options: async (value: string, { req }) => {
             // Extract token from Authorization header
             const token = value.split(' ')[1]
+            console.log('Token:', token)
             if (!token) {
               throw new ErrorWithStatus({
                 message: USERS_MESSAGES.ACCESS_TOKEN_REQUIRED,
@@ -353,7 +372,7 @@ export const restrictTo = (...allowedRoles: Role[]) => {
             // req.body.account_id = decoded.account_id
             req.body = {
               ...req.body,
-              email: decoded.email,
+              // email: decoded.email,
               account_id: decoded.account_id
             }
 

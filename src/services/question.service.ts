@@ -6,8 +6,9 @@ import Question from '../models/Entity/question.entity.js'
 import Account from '../models/Entity/account.entity.js'
 import Reply from '../models/Entity/reply.entity.js'
 import { Role } from '../enum/role.enum.js'
-import { DeleteResult } from 'typeorm'
+import { DeleteResult, IsNull } from 'typeorm'
 import LIMIT from '~/constants/limit.js'
+import { isNull } from 'lodash'
 
 const questionRepository = AppDataSource.getRepository(Question)
 const accountRepository = AppDataSource.getRepository(Account)
@@ -49,14 +50,14 @@ export class QuestionService {
    */
   // Get all questions
   async getAllQuestions(pageVar: { limit: string, page: string }): Promise<Question[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
     let page = parseInt(pageVar.page) || 1;
     const skip = (page - 1) * limit
 
     return await questionRepository.find({
       skip,
       take: limit,
-      relations: ['customer', 'reply']
+      relations: ['customer', 'reply', 'reply.consultant']
     })
   }
 
@@ -69,7 +70,7 @@ export class QuestionService {
   async getQuestionById(ques_id: string): Promise<Question> {
     const question = await questionRepository.findOne({
       where: { ques_id },
-      relations: ['customer', 'reply']
+      relations: ['customer', 'reply', 'reply.consultant']
     })
 
     if (!question) {
@@ -82,6 +83,40 @@ export class QuestionService {
     return question
   }
 
+  // Get Unreplied questions
+  async getUnrepliedQuestions(pageVar: { limit: string, page: string }): Promise<Question[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
+    let page = parseInt(pageVar.page) || 1;
+    const skip = (page - 1) * limit
+
+    return await questionRepository.find({
+      where: {
+        reply: IsNull(),
+        status: false
+      },
+      skip,
+      take: limit,
+      relations: ['customer', 'reply', 'reply.consultant']
+    })
+  }
+
+  // Get replied questions by Consultant ID
+  async getRepliedQuestionsByConsultantId(consultant_id: string, pageVar: { limit: string, page: string }): Promise<Question[]> {
+    let limit = parseInt(pageVar.limit) || LIMIT.all;
+    let page = parseInt(pageVar.page) || 1;
+    const skip = (page - 1) * limit
+
+    return await questionRepository.find({
+      where: {
+        reply: { consultant: { account_id: consultant_id } },
+        status: true
+      },
+      skip,
+      take: limit,
+      relations: ['customer', 'reply', 'reply.consultant']
+    })
+  }
+
   /**
    * @description Get questions by Customer ID
    * @param customer_id - The ID of the customer
@@ -90,7 +125,10 @@ export class QuestionService {
    * @returns The questions
    */
   // Get questions by Customer ID
-  async getQuestionsByCustomerId(customer_id: string, pageVar: { limit: string, page: string }): Promise<Question[]> {
+  async getQuestionsByCustomerId(
+    customer_id: string,
+    pageVar: { limit: string; page: string }
+  ): Promise<{ questions: Question[]; total: number; totalPages: number }> {
     const customer = await accountRepository.findOne({ where: { account_id: customer_id } })
     if (!customer || customer.role !== Role.CUSTOMER) {
       throw new ErrorWithStatus({
@@ -99,15 +137,18 @@ export class QuestionService {
       })
     }
 
-    let limit = parseInt(pageVar.limit) || LIMIT.default;
-    let page = parseInt(pageVar.page) || 1;
+    let limit = parseInt(pageVar.limit) || LIMIT.all
+    console.log(limit)
+    let page = parseInt(pageVar.page) || 1
+    console.log(page)
     const skip = (page - 1) * limit
 
-    const questions = await questionRepository.find({
-      where: { customer: {account_id: customer.account_id}},
+    const [questions, total] = await questionRepository.findAndCount({
+      where: { customer: { account_id: customer.account_id } },
+      order: { created_at: 'DESC' },
       skip,
       take: limit,
-      relations: ['customer', 'reply']
+      relations: ['customer', 'reply', 'reply.consultant']
     })
 
     if (!questions || questions.length === 0) {
@@ -117,7 +158,26 @@ export class QuestionService {
       })
     }
 
-    return questions
+    const ques: any[] = []
+    for (const question of questions) {
+      const item = {
+        ques_id: question.ques_id,
+        content: question.content,
+        status: question.status,
+        is_replied: question.is_replied,
+        reply: question.reply?.content,
+        consultant: question.reply?.consultant?.full_name,
+        created_at: question.created_at
+      }
+      ques.push(item)
+    }
+
+    return {
+      // questions: ques,
+      questions,
+      total,
+      totalPages: Math.ceil(total / limit)
+    }
   }
 
   /**

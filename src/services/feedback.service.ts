@@ -10,11 +10,14 @@ import { TypeAppointment } from '~/enum/type_appointment.enum.js'
 import LIMIT from '~/constants/limit.js'
 import Account from '~/models/Entity/account.entity.js'
 import { Role } from '~/enum/role.enum.js'
+import { ConsultAppointmentService } from './consult_appointment.service.js'
+import staffService from './staff.service.js'
 
 const feedbackRepository = AppDataSource.getRepository(Feedback)
 const consultAppointmentRepository = AppDataSource.getRepository(ConsultAppointment)
 const laboratoryAppointmentRepository = AppDataSource.getRepository(LaboratoryAppointment)
 const accountRepository = AppDataSource.getRepository(Account)
+const consultAppointmentService = new ConsultAppointmentService()
 
 export class FeedbackService {
   /**
@@ -32,6 +35,14 @@ export class FeedbackService {
     if (!app_id) {
       throw new ErrorWithStatus({
         message: FEEDBACK_MESSAGES.APPOINTMENT_NOT_PROVIDED,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+
+    const existedFeedback = await feedbackRepository.findOne({ where: { app_id } });
+    if (existedFeedback) {
+      throw new ErrorWithStatus({
+        message: FEEDBACK_MESSAGES.APPOINTMENT_ALREADY_HAVE_FEEDBACK,
         status: HTTP_STATUS.BAD_REQUEST
       })
     }
@@ -75,8 +86,14 @@ export class FeedbackService {
       account: customer
     })
 
+
+
     // Save the feedback
-    const savedFeedback = await feedbackRepository.save(feedback)
+    const savedFeedback = await feedbackRepository.save(feedback);
+    if (savedFeedback.type === TypeAppointment.CONSULT)
+      await consultAppointmentRepository.update(app_id, { feed_id: savedFeedback.feed_id });
+    if (savedFeedback.type === TypeAppointment.LABORATORY)
+      await laboratoryAppointmentRepository.update(app_id, { feed_id: savedFeedback.feed_id });
 
     return savedFeedback
   }
@@ -96,7 +113,6 @@ export class FeedbackService {
     return await feedbackRepository.find({
       skip,
       take: limit,
-      relations: ['consult_appointment', 'laboratoryAppointment']
     })
   }
 
@@ -109,7 +125,6 @@ export class FeedbackService {
   async getFeedbackById(feed_id: string): Promise<Feedback> {
     const feedback = await feedbackRepository.findOne({
       where: { feed_id },
-      relations: ['consult_appointment', 'laboratoryAppointment']
     })
 
     if (!feedback) {
@@ -255,6 +270,89 @@ export class FeedbackService {
   // Delete a feedback
   async deleteFeedback(feed_id: string): Promise<DeleteResult> {
     return await feedbackRepository.delete(feed_id)
+  }
+
+  async getAverageRatingAndTotalFeedbackOfStaff(staff_id: string): Promise<Object> {
+    const staff = await accountRepository.findOne({ where: { account_id: staff_id } });
+    if (!staff || staff.role !== Role.STAFF) {
+      throw new ErrorWithStatus({
+        message: FEEDBACK_MESSAGES.STAFF_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      });
+    }
+
+    const appointmentsOfStaff = await staffService.getAppointmentOfStaff(staff_id);
+
+    if (!appointmentsOfStaff.length) {
+      return {
+        totalFeedBack: 0,
+        averageFeedBackRating: 0
+      };
+    }
+
+    let totalFeedBack = 0;
+    let totalFeedBackRating = 0;
+
+    await Promise.all(
+      appointmentsOfStaff.map(async (app) => {
+        try {
+          const feedback = await this.getFeedbackByConsultAppointmentId(app.app_id);
+          if (feedback) {
+            totalFeedBack += 1;
+            totalFeedBackRating += feedback.rating;
+          }
+        } catch (error) {
+          // Bỏ qua lỗi cho từng feedback để không làm hỏng toàn bộ yêu cầu
+          console.error(`Lỗi khi lấy feedback cho app_id ${app.app_id}:`, error);
+        }
+      })
+    );
+
+    return {
+      totalFeedBack,
+      averageFeedBackRating: totalFeedBack > 0 ? totalFeedBackRating / totalFeedBack : 0
+    };
+  }
+
+  async getAverageRatingAndTotalFeedbackOfConsultant(consultant_id: string): Promise<Object> {
+    const consultant = await accountRepository.findOne({ where: { account_id: consultant_id } });
+    if (!consultant || consultant.role !== Role.CONSULTANT) {
+      throw new ErrorWithStatus({
+        message: FEEDBACK_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      });
+    }
+    const appointmentsOfConsultant = await consultAppointmentService.getConsultAppointmentByConsultantId(consultant_id);
+
+    if (!appointmentsOfConsultant.length) {
+      return {
+        totalFeedBack: 0,
+        averageFeedBackRating: 0
+      };
+    }
+
+    let totalFeedBack = 0;
+    let totalFeedBackRating = 0;
+
+    await Promise.all(
+      appointmentsOfConsultant.map(async (app) => {
+        try {
+          const feedback = await this.getFeedbackByConsultAppointmentId(app.app_id);
+          if (feedback) {
+            totalFeedBack += 1;
+            totalFeedBackRating += feedback.rating;
+          }
+        } catch (error) {
+          // Bỏ qua lỗi cho từng feedback để không làm hỏng toàn bộ yêu cầu
+          console.error(`Lỗi khi lấy feedback cho app_id ${app.app_id}:`, error);
+        }
+      })
+    );
+
+    return {
+      totalFeedBack,
+      averageFeedBackRating: totalFeedBack > 0 ? totalFeedBackRating / totalFeedBack : 0
+    };
   }
 }
 
