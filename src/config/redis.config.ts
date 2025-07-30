@@ -1,5 +1,5 @@
 import { config } from 'dotenv'
-import IORedis from 'ioredis'
+import { Redis } from 'ioredis'
 
 config()
 // Lấy URL từ biến môi trường để linh hoạt hơn
@@ -8,7 +8,7 @@ const port = process.env.REDIS_PORT as string
 const url = `redis://${host}:${port}`
 
 console.log('Đang kết nối đến Redis...')
-const redisClient = new IORedis(url, {
+const redisClient = new Redis(url, {
   maxRetriesPerRequest: 3,
   enableReadyCheck: true
 })
