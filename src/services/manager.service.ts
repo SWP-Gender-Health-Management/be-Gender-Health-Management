@@ -19,6 +19,7 @@ import Refund from '~/models/Entity/refund.entity.js'
 import { ErrorWithStatus } from '~/models/Error.js'
 import { MANAGER_MESSAGES } from '~/constants/message.js'
 import HTTP_STATUS from '~/constants/httpStatus.js'
+import WorkingSlot from '~/models/Entity/working_slot.entity.js'
 
 const accountRepo = AppDataSource.getRepository(Account)
 const conAppRepo = AppDataSource.getRepository(ConsultAppointment)
@@ -32,6 +33,7 @@ const blogRepo = AppDataSource.getRepository(Blog)
 const questionRepo = AppDataSource.getRepository(Question)
 const transactionRepository = AppDataSource.getRepository(Transaction)
 const refundRepository = AppDataSource.getRepository(Refund)
+const workingSlotRepo = AppDataSource.getRepository(WorkingSlot)
 
 class ManagerService {
   async getOverall() {
@@ -229,14 +231,15 @@ class ManagerService {
     }
   }
 
-  async getStaffs(page: string, limit: string, isBan: boolean) {
+  async getStaffs(page: string, limit: string, isBan: boolean | undefined, full_name: string) {
     const pageNumber = parseInt(page) || 1
     const limitNumber = parseInt(limit) || 10
     const skip = (pageNumber - 1) * limitNumber
     const [staffs, total] = await accountRepo.findAndCount({
       where: {
         role: Role.STAFF,
-        is_banned: isBan
+        ...(isBan !== undefined && { is_banned: isBan }),
+        ...(full_name && { full_name: Like(`%${full_name}%`) })
       },
       skip,
       take: limitNumber
@@ -500,7 +503,7 @@ class ManagerService {
   async getQuestions(pageVar: { limit: number; page: number }, status: string | undefined, isReplied: string | undefined) {
     const { limit, page } = pageVar
     const skip = (page - 1) * limit
-    console.log("status",status, "isReplied", isReplied)
+    console.log("status", status, "isReplied", isReplied)
     const [result, total] = await questionRepo.findAndCount({
       order: {
         created_at: 'DESC'
@@ -611,12 +614,168 @@ class ManagerService {
       })
     }
     question.status = status === 'true' ? true : false
-    await questionRepo.save(question)
-    return {
-      message: MANAGER_MESSAGES.QUESTION_STATUS_UPDATED,
-      status: HTTP_STATUS.OK
-    }
+    const result = await questionRepo.save(question)
+    return result;
+
   }
+
+  async getConsultantPatternByWeek(consultant_id: string, start_date: string) {
+    const startDate = new Date(start_date) //start from Monday
+    const endDate = addDays(startDate, 7)
+    const patterns = await conPatternRepo.find({
+      where: {
+        account_id: consultant_id,
+        date: Between(startDate, endDate)
+      },
+      relations: {
+        working_slot: true
+      }
+    })
+
+    let result: any = {
+      monday: [],
+      tuesday: [],
+      wednesday: [],
+      thursday: [],
+      friday: [],
+      saturday: [],
+      sunday: []
+    }
+
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']//start from Monday
+    for (const pattern of patterns) {
+      const day = days[new Date(pattern.date).getDay()]
+      result[day].push(pattern.working_slot.name.split('-')[0].trim());
+    }
+    return result;
+  }
+
+  async createConsultantPattern(consultant_id: string, date: string, working_slot_ids: string[]) {
+    const consultant = await accountRepo.findOne({
+      where: {
+        account_id: consultant_id
+      }
+    })
+    if (!consultant) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    let result: any = []
+    await Promise.all(working_slot_ids.map(async (working_slot_id) => {
+      console.log("working_slot_id", working_slot_id);
+      const working_slot = await workingSlotRepo.findOne({
+        where: {
+          slot_id: working_slot_id
+        }
+      })
+      if (!working_slot) {
+        console.log("working_slot not found");
+        return;
+      }
+      const existingPattern = await conPatternRepo.findOne({
+        where: {
+          account_id: consultant_id,
+          date: new Date(date),
+          working_slot: {
+            slot_id: working_slot_id
+          }
+        },
+        relations: {
+          working_slot: true
+        }
+      })
+      if (existingPattern) {
+        console.log("pattern already exists");
+        return;
+      }
+      const newPattern = new ConsultantPattern()
+      newPattern.account_id = consultant_id
+      newPattern.date = new Date(date)
+      newPattern.working_slot = working_slot
+      const resultPattern = await conPatternRepo.save(newPattern)
+      result.push(resultPattern)
+    }))
+    return result;
+  }
+
+  async getStaffPatternByWeek(staff_id: string, start_date: string) {
+    const startDate = new Date(start_date) //start from Monday
+    const endDate = addDays(startDate, 7)
+    const patterns = await staffPatternRepo.find({
+      where: {
+        account_id: staff_id,
+        date: Between(startDate, endDate)
+      },
+      relations: {
+        working_slot: true
+      }
+    })
+    let result: any = {
+      monday: [],
+      tuesday: [],
+      wednesday: [],
+      thursday: [],
+      friday: [],
+      saturday: [],
+      sunday: []
+    }
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']//start from Monday
+    for (const pattern of patterns) {
+      const day = days[new Date(pattern.date).getDay()]
+      result[day].push(pattern.working_slot.name.split('-')[0].trim());
+    }
+    return result;
+  }
+
+
+  async createStaffPattern(staff_id: string, date: string, working_slot_id: string) {
+    const staff = await accountRepo.findOne({
+      where: {
+        account_id: staff_id
+      }
+    })
+    if (!staff) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.STAFF_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    const working_slot = await workingSlotRepo.findOne({
+      where: {
+        slot_id: working_slot_id
+      }
+    })
+    if (!working_slot) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.WORKING_SLOT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    const existingPattern = await staffPatternRepo.findOne({
+      where: {
+        account_id: staff_id,
+        date: new Date(date),
+        working_slot: {
+          slot_id: working_slot_id
+        }
+      }
+    })
+    if (existingPattern) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.PATTERN_ALREADY_EXISTS,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+    const newPattern = new StaffPattern()
+    newPattern.account_id = staff_id
+    newPattern.date = new Date(date)
+    newPattern.working_slot = working_slot
+    const resultPattern = await staffPatternRepo.save(newPattern)
+    return resultPattern;
+  }
+
 }
 const managerService = new ManagerService()
 export default managerService

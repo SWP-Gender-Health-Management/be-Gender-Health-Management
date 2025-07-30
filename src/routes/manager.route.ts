@@ -19,7 +19,11 @@ import {
   getRefundInfoByAppId,
   refundLabAppointment,
   setBlogStatusController,
-  setQuestionStatusController
+  setQuestionStatusController,
+  getConsultantPatternByWeekController,
+  createConsultantPatternController,
+  getStaffPatternByWeekController,
+  createStaffPatternController
 } from '~/controllers/manager.controller.js'
 
 
@@ -153,5 +157,13 @@ managerRoute.put(
 managerRoute.put('/set-blog-status', restrictTo(Role.MANAGER), wrapRequestHandler(setBlogStatusController))
 
 managerRoute.put('/set-question-status', restrictTo(Role.MANAGER), wrapRequestHandler(setQuestionStatusController))
+
+managerRoute.get('/get-consultant-pattern-by-week', restrictTo(Role.MANAGER), wrapRequestHandler(getConsultantPatternByWeekController))
+
+managerRoute.post('/create-consultant-pattern', restrictTo(Role.MANAGER), wrapRequestHandler(createConsultantPatternController))
+
+managerRoute.get('/get-staff-pattern-by-week', restrictTo(Role.MANAGER), wrapRequestHandler(getStaffPatternByWeekController))
+
+managerRoute.post('/create-staff-pattern', restrictTo(Role.MANAGER), wrapRequestHandler(createStaffPatternController))
 
 export default managerRoute

@@ -38,7 +38,7 @@ class WorkingSlotService {
    */
   // Get a slot by type
   async getSlotByType(type: string, pageVar: { limit: string; page: string }): Promise<WorkingSlot[]> {
-    const limit = parseInt(pageVar.limit) || LIMIT.default
+    const limit = parseInt(pageVar.limit) || LIMIT.all
     const page = parseInt(pageVar.page) || 1
     const skip = (page - 1) * limit
 
