@@ -66,7 +66,7 @@ export class ReplyService {
     const savedReply = await replyRepository.save(reply)
 
     // Assign the reply to the question and save the question
-    await questionRepository.update(ques_id, {reply: savedReply, status: true})
+    await questionRepository.update(ques_id, {reply: savedReply, is_replied: true})
 
     return savedReply
   }

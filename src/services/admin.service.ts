@@ -204,7 +204,10 @@ class AdminService {
       },
       order: { created_at: 'DESC' },
       skip: skip,
-      take: limitNumber
+      take: limitNumber,
+      relations: {
+        staff_profile: true
+      }
     })
 
     const proccessedRoleAccount = await accounts.map(acc => ({

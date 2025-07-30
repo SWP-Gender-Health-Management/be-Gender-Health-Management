@@ -355,7 +355,7 @@ export const restrictTo = (...allowedRoles: Role[]) => {
           options: async (value: string, { req }) => {
             // Extract token from Authorization header
             const token = value.split(' ')[1]
-            console.log('Token:', token)
+            console.log('Token', token.trim())
             if (!token) {
               throw new ErrorWithStatus({
                 message: USERS_MESSAGES.ACCESS_TOKEN_REQUIRED,
@@ -364,7 +364,7 @@ export const restrictTo = (...allowedRoles: Role[]) => {
             }
 
             // Verify token and decode payload
-            const decoded = await verifyToken({ token, secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string })
+            const decoded = await verifyToken({ token: token.trim(), secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string })
             console.log(decoded)
 
             // Store user info in request body

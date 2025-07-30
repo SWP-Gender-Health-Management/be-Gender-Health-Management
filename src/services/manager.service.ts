@@ -19,6 +19,7 @@ import Refund from '~/models/Entity/refund.entity.js'
 import { ErrorWithStatus } from '~/models/Error.js'
 import { MANAGER_MESSAGES } from '~/constants/message.js'
 import HTTP_STATUS from '~/constants/httpStatus.js'
+import WorkingSlot from '~/models/Entity/working_slot.entity.js'
 
 const accountRepo = AppDataSource.getRepository(Account)
 const conAppRepo = AppDataSource.getRepository(ConsultAppointment)
@@ -32,6 +33,7 @@ const blogRepo = AppDataSource.getRepository(Blog)
 const questionRepo = AppDataSource.getRepository(Question)
 const transactionRepository = AppDataSource.getRepository(Transaction)
 const refundRepository = AppDataSource.getRepository(Refund)
+const workingSlotRepo = AppDataSource.getRepository(WorkingSlot)
 
 class ManagerService {
   async getOverall() {
@@ -210,14 +212,15 @@ class ManagerService {
     }
   }
 
-  async getConsultants(page: string, limit: string, isBan: boolean) {
+  async getConsultants(page: string, limit: string, isBan: boolean | undefined, full_name: string) {
     const pageNumber = parseInt(page) || 1
     const limitNumber = parseInt(limit) || 10
     const skip = (pageNumber - 1) * limitNumber
     const [consultants, total] = await accountRepo.findAndCount({
       where: {
         role: Role.CONSULTANT,
-        is_banned: isBan
+        ...(isBan !== undefined && { is_banned: isBan }),
+        ...(full_name && { full_name: Like(`%${full_name}%`) })
       },
       skip,
       take: limitNumber
@@ -228,14 +231,15 @@ class ManagerService {
     }
   }
 
-  async getStaffs(page: string, limit: string, isBan: boolean) {
+  async getStaffs(page: string, limit: string, isBan: boolean | undefined, full_name: string) {
     const pageNumber = parseInt(page) || 1
     const limitNumber = parseInt(limit) || 10
     const skip = (pageNumber - 1) * limitNumber
     const [staffs, total] = await accountRepo.findAndCount({
       where: {
         role: Role.STAFF,
-        is_banned: isBan
+        ...(isBan !== undefined && { is_banned: isBan }),
+        ...(full_name && { full_name: Like(`%${full_name}%`) })
       },
       skip,
       take: limitNumber
@@ -294,11 +298,11 @@ class ManagerService {
         ...(statusFilter &&
           (statusFilter === 'cancelled'
             ? {
-                status: In([StatusAppointment.PENDING_CANCELLED, StatusAppointment.CONFIRMED_CANCELLED])
-              }
+              status: In([StatusAppointment.PENDING_CANCELLED, StatusAppointment.CONFIRMED_CANCELLED])
+            }
             : {
-                status: statusFilter as StatusAppointment
-              })),
+              status: statusFilter as StatusAppointment
+            })),
         ...(dateFilter && {
           date: dateFilter
         })
@@ -433,7 +437,7 @@ class ManagerService {
 
   async getBlogs(
     pageVar: { limit: number; page: number },
-    filter: { title: string; content: string; author: string; status: boolean }
+    filter: { title: string; content: string; author: string; status: string }
   ) {
     const { limit, page } = pageVar
     const skip = (page - 1) * limit
@@ -450,7 +454,12 @@ class ManagerService {
         account: {
           full_name: author ? Like(`%${author}%`) : undefined
         },
-        status: status
+        ...(status && status !== 'all' && {
+          status: status === 'true' ? true : false
+        })
+      },
+      relations: {
+        account: true
       }
     })
     const resultNew: any[] = []
@@ -461,7 +470,9 @@ class ManagerService {
         author: element.account.full_name,
         image: element.images,
         status: element.status,
-        created_at: element.created_at
+        created_at: element.created_at,
+        blog_id: element.blog_id,
+        major: element.major
       }
       resultNew.push(blog)
     })
@@ -471,43 +482,71 @@ class ManagerService {
     }
   }
 
-  async getQuestions(pageVar: { limit: number; page: number }, status: boolean) {
+  async setBlogStatus(blog_id: string, status: string) {
+    const blog = await blogRepo.findOne({
+      where: { blog_id }
+    })
+    if (!blog) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.BLOG_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    blog.status = status === 'true' ? true : false
+    await blogRepo.save(blog)
+    return {
+      message: MANAGER_MESSAGES.BLOG_STATUS_UPDATED,
+      status: HTTP_STATUS.OK
+    }
+  }
+
+  async getQuestions(pageVar: { limit: number; page: number }, status: string | undefined, isReplied: string | undefined) {
     const { limit, page } = pageVar
     const skip = (page - 1) * limit
+    console.log("status", status, "isReplied", isReplied)
     const [result, total] = await questionRepo.findAndCount({
       order: {
         created_at: 'DESC'
       },
       where: {
-        status: status ? status : undefined
+        ...(status && { status: status === 'true' ? true : false }),
+        ...(isReplied && { is_replied: isReplied === 'true' ? true : false })
       },
       skip,
       take: limit,
       relations: {
-        reply: true,
-        customer: true
+        reply: {
+          consultant: true
+        },
+        customer: true,
       }
     })
     const resultNew: any[] = []
     result.forEach((element: Question) => {
       const question = {
-        customer: element.customer.full_name,
+        ques_id: element.ques_id,
+        customer_name: element.customer.full_name,
+        customer_email: element.customer.email,
         content: element.content,
+        status: element.status,
         created_at: element.created_at,
+        is_replied: element.is_replied,
         reply: element.reply
           ? {
-              content: element.reply.content,
-              created_at: element.reply.created_at
-            }
+            content: element.reply.content,
+            created_at: element.reply.created_at,
+            created_by: element.reply.consultant.full_name
+          }
           : {
-              content: null,
-              created_at: null
-            }
+            content: null,
+            created_at: null,
+            created_by: null
+          }
       }
       resultNew.push(question)
     })
     return {
-      result: resultNew,
+      questions: resultNew,
       totalPage: Math.ceil(total / limit)
     }
   }
@@ -563,6 +602,180 @@ class ManagerService {
     transaction.refund.is_refunded = true
     await refundRepository.save(transaction.refund)
   }
+
+  async setQuestionStatus(ques_id: string, status: string) {
+    const question = await questionRepo.findOne({
+      where: { ques_id }
+    })
+    if (!question) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.QUESTION_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    question.status = status === 'true' ? true : false
+    const result = await questionRepo.save(question)
+    return result;
+
+  }
+
+  async getConsultantPatternByWeek(consultant_id: string, start_date: string) {
+    const startDate = new Date(start_date) //start from Monday
+    const endDate = addDays(startDate, 7)
+    const patterns = await conPatternRepo.find({
+      where: {
+        account_id: consultant_id,
+        date: Between(startDate, endDate)
+      },
+      relations: {
+        working_slot: true
+      }
+    })
+
+    let result: any = {
+      monday: [],
+      tuesday: [],
+      wednesday: [],
+      thursday: [],
+      friday: [],
+      saturday: [],
+      sunday: []
+    }
+
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']//start from Monday
+    for (const pattern of patterns) {
+      const day = days[new Date(pattern.date).getDay()]
+      result[day].push(pattern.working_slot.name.split('-')[0].trim());
+    }
+    return result;
+  }
+
+  async createConsultantPattern(consultant_id: string, date: string, working_slot_ids: string[]) {
+    const consultant = await accountRepo.findOne({
+      where: {
+        account_id: consultant_id
+      }
+    })
+    if (!consultant) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.CONSULTANT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    let result: any = []
+    await Promise.all(working_slot_ids.map(async (working_slot_id) => {
+      console.log("working_slot_id", working_slot_id);
+      const working_slot = await workingSlotRepo.findOne({
+        where: {
+          slot_id: working_slot_id
+        }
+      })
+      if (!working_slot) {
+        console.log("working_slot not found");
+        return;
+      }
+      const existingPattern = await conPatternRepo.findOne({
+        where: {
+          account_id: consultant_id,
+          date: new Date(date),
+          working_slot: {
+            slot_id: working_slot_id
+          }
+        },
+        relations: {
+          working_slot: true
+        }
+      })
+      if (existingPattern) {
+        console.log("pattern already exists");
+        return;
+      }
+      const newPattern = new ConsultantPattern()
+      newPattern.account_id = consultant_id
+      newPattern.date = new Date(date)
+      newPattern.working_slot = working_slot
+      const resultPattern = await conPatternRepo.save(newPattern)
+      result.push(resultPattern)
+    }))
+    return result;
+  }
+
+  async getStaffPatternByWeek(staff_id: string, start_date: string) {
+    const startDate = new Date(start_date) //start from Monday
+    const endDate = addDays(startDate, 7)
+    const patterns = await staffPatternRepo.find({
+      where: {
+        account_id: staff_id,
+        date: Between(startDate, endDate)
+      },
+      relations: {
+        working_slot: true
+      }
+    })
+    let result: any = {
+      monday: [],
+      tuesday: [],
+      wednesday: [],
+      thursday: [],
+      friday: [],
+      saturday: [],
+      sunday: []
+    }
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']//start from Monday
+    for (const pattern of patterns) {
+      const day = days[new Date(pattern.date).getDay()]
+      result[day].push(pattern.working_slot.name.split('-')[0].trim());
+    }
+    return result;
+  }
+
+
+  async createStaffPattern(staff_id: string, date: string, working_slot_id: string) {
+    const staff = await accountRepo.findOne({
+      where: {
+        account_id: staff_id
+      }
+    })
+    if (!staff) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.STAFF_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    const working_slot = await workingSlotRepo.findOne({
+      where: {
+        slot_id: working_slot_id
+      }
+    })
+    if (!working_slot) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.WORKING_SLOT_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    const existingPattern = await staffPatternRepo.findOne({
+      where: {
+        account_id: staff_id,
+        date: new Date(date),
+        working_slot: {
+          slot_id: working_slot_id
+        }
+      }
+    })
+    if (existingPattern) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.PATTERN_ALREADY_EXISTS,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+    const newPattern = new StaffPattern()
+    newPattern.account_id = staff_id
+    newPattern.date = new Date(date)
+    newPattern.working_slot = working_slot
+    const resultPattern = await staffPatternRepo.save(newPattern)
+    return resultPattern;
+  }
+
 }
 const managerService = new ManagerService()
 export default managerService

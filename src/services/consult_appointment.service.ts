@@ -288,6 +288,7 @@ export class ConsultAppointmentService {
         status: conApp.status,
         app_id: conApp.app_id,
         feed_id: conApp.feed_id,
+        gg_meet: conApp.gg_meet,
         isRequestedRefund,
         isRefunded
       }

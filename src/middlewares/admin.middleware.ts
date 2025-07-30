@@ -63,26 +63,26 @@ export const validateCreateAccount = validate(
 export const validateUpdateStaffProfile = validate(
   checkSchema({
     specialty: {
-      isString: true,
-      trim: true,
-      notEmpty: true,
+      // isString: true,
+      // trim: true,
+      notEmpty: false,
       errorMessage: ADMIN_MESSAGES.SPECIALTY_REQUIRED
     },
     rating: {
-      isString: true,
-      notEmpty: true,
+      // isString: true,
+      notEmpty: false,
       errorMessage: ADMIN_MESSAGES.RATING_REQUIRED
     },
     description: {
-      isString: true,
-      trim: true,
-      notEmpty: true,
+      // isString: true,
+      // trim: true,
+      notEmpty: false,
       errorMessage: ADMIN_MESSAGES.DESCRIPTION_REQUIRED
     },
     gg_meet: {
-      isString: true,
-      trim: true,
-      notEmpty: true,
+      // isString: true,
+      // trim: true,
+      notEmpty: false,
       errorMessage: ADMIN_MESSAGES.GG_MEET_REQUIRED
     }
   })

@@ -17,7 +17,13 @@ import {
   getBlogsController,
   getQuestionsController,
   getRefundInfoByAppId,
-  refundLabAppointment
+  refundLabAppointment,
+  setBlogStatusController,
+  setQuestionStatusController,
+  getConsultantPatternByWeekController,
+  createConsultantPatternController,
+  getStaffPatternByWeekController,
+  createStaffPatternController
 } from '~/controllers/manager.controller.js'
 
 
@@ -87,7 +93,7 @@ managerRoute.get('/get-con-app', restrictTo(Role.MANAGER), wrapRequestHandler(ge
 */
 managerRoute.get(
   '/get-lab-app', 
-  // restrictTo(Role.MANAGER), 
+  restrictTo(Role.MANAGER), 
   wrapRequestHandler(getLabAppController)
 )
 
@@ -147,5 +153,17 @@ managerRoute.put(
   restrictTo(Role.CUSTOMER, Role.ADMIN, Role.MANAGER),
   wrapRequestHandler(refundLabAppointment)
 )
+
+managerRoute.put('/set-blog-status', restrictTo(Role.MANAGER), wrapRequestHandler(setBlogStatusController))
+
+managerRoute.put('/set-question-status', restrictTo(Role.MANAGER), wrapRequestHandler(setQuestionStatusController))
+
+managerRoute.get('/get-consultant-pattern-by-week', restrictTo(Role.MANAGER), wrapRequestHandler(getConsultantPatternByWeekController))
+
+managerRoute.post('/create-consultant-pattern', restrictTo(Role.MANAGER), wrapRequestHandler(createConsultantPatternController))
+
+managerRoute.get('/get-staff-pattern-by-week', restrictTo(Role.MANAGER), wrapRequestHandler(getStaffPatternByWeekController))
+
+managerRoute.post('/create-staff-pattern', restrictTo(Role.MANAGER), wrapRequestHandler(createStaffPatternController))
 
 export default managerRoute
