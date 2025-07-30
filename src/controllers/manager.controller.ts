@@ -198,7 +198,7 @@ export const getQuestionsController = async (req: Request, res: Response, next: 
       page: parseInt(page as string) || 1
     }
     const { status } = req.body
-    const statusQuestion = status === 'undefined' ? undefined : status.boolean()
+    const statusQuestion = status === undefined ? undefined : status.boolean()
     const result = await managerService.getQuestions(pageVar, statusQuestion)
     res.status(HTTP_STATUS.OK).json({
       message: MANAGER_MESSAGES.GET_QUESTIONS_SUCCESS,

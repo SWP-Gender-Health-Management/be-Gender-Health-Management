@@ -37,12 +37,7 @@ customerRoute.get('/get-menstrual-cycle', restrictTo(Role.CUSTOMER), wrapRequest
     end_date: string
   }
 */
-customerRoute.post(
-  '/track-period',
-  restrictTo(Role.CUSTOMER),
-  validateTrackPeriod,
-  wrapRequestHandler(trackPeriodController)
-)
+customerRoute.post('/track-period', validateAccessToken, validateTrackPeriod, wrapRequestHandler(trackPeriodController))
 
 /*
   Description: xem dự đoán chu kì kinh nguyệt

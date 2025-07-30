@@ -320,7 +320,7 @@ class ManagerService {
         })
         if (transaction && transaction.refund) {
           isRequestedRefund = true
-          if( transaction.refund.is_refunded) {
+          if (transaction.refund.is_refunded) {
             isRefunded = true
           }
         }
@@ -479,7 +479,7 @@ class ManagerService {
         created_at: 'DESC'
       },
       where: {
-        status: status
+        status: status ? status : undefined
       },
       skip,
       take: limit,
