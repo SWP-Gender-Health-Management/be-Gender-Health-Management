@@ -1,5 +1,5 @@
-import HTTP_STATUS from '~/constants/httpStatus'
-import { USERS_MESSAGES } from '~/constants/message'
+import HTTP_STATUS from '~/constants/httpStatus.js'
+import { USERS_MESSAGES } from '~/constants/message.js'
 
 type ErrorType = Record<string, string>
 

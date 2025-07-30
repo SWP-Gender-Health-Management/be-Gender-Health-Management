@@ -13,6 +13,7 @@ export class SocketServer {
     this.io = new Server(server, {
       cors: {
         origin: process.env.FE_ADDRESS,
+        methods: ['GET', 'POST'],
         credentials: true
       }
     })
@@ -31,7 +32,7 @@ export class SocketServer {
    * Xử lý kết nối của client
    * @param socket - Socket được tạo khi client kết nối
    */
-  private handleConnection = (socket: Socket): void => {
+  public handleConnection = (socket: Socket): void => {
     console.log(`Một người dùng đã kết nối: ${socket.id}`)
 
     const account_id = socket.handshake.query.account_id as string

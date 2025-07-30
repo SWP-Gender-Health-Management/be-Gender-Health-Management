@@ -23,12 +23,13 @@ import consultReportRoute from './routes/consult_report.route.js'
 import feedbackRoute from './routes/feedback.route.js'
 import blogRoute from './routes/blog.route.js'
 import { SocketServer } from './config/websocket.config.js'
-import { SocketIOService } from './services/websocket.service.js'
+// import { SocketIOService } from './services/websocket.service.js'
 import managerRoute from './routes/manager.route.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import refreshTokenRoute from './routes/refresh_token.route.js'
 import notiRoute from './routes/notification.route.js'
+import { SocketIOService } from './services/websocket.service.js'
 
 dotenv.config()
 
@@ -47,24 +48,23 @@ app.use(
     credentials: true //for using cookie/token
   })
 )
-
+// Create HTTP server and initialize WebSocket
+const server = http.createServer(app)
+const socketServer = new SocketServer(server)
+export const websocketService = new SocketIOService(socketServer.io)
 // Add Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
-
-// create websocket server
-const server = http.createServer(app) //Tạo server HTTP từ app Express
-const socketServer = new SocketServer(server)
-const websocketService = new SocketIOService(socketServer.io)
-export { socketServer, websocketService }
 
 // Initialize app (database and passport)
 initializeApp()
   .then((success) => {
     if (success) {
       app.use(express.json())
+      app.use(express.urlencoded({ extended: true })) // Để parse URL-encoded body
+
       // Setup routes
       console.log(new Date().toISOString())
-      app.use(express.urlencoded({ extended: true })) // Để parse URL-encoded body
+
       // route account
       app.use('/account', accountRoute)
       // route admin
@@ -108,8 +108,10 @@ initializeApp()
       app.use(defaultErrorHandle)
 
       const port = process.env.PORT || 3000
-      app.listen(port, () => {
-        console.log(`Server is running on port: ${port}`)
+      server.listen(port, () => {
+        console.log(`🚀 Server is running on port: ${port}`)
+        console.log(`🔌 WebSocket server is ready for connections`)
+        console.log(`📚 API documentation available at: http://localhost:${port}/api-docs`)
       })
     } else {
       console.error('Failed to initialize app')
