@@ -162,6 +162,16 @@ export const ADMIN_MESSAGES = {
 }
 
 export const MANAGER_MESSAGES = {
+  STAFF_NOT_FOUND: 'Staff not found',
+  GET_STAFF_PATTERN_BY_WEEK_SUCCESS: 'Get staff pattern by week successfully',
+  CONSULTANT_NOT_FOUND: 'Consultant not found',
+  PATTERN_ALREADY_EXISTS: 'Pattern already exists',
+  WORKING_SLOT_NOT_FOUND: 'Working slot not found',
+  GET_CONSULTANT_PATTERN_BY_WEEK_SUCCESS: 'Get consultant pattern by week successfully',
+  QUESTION_NOT_FOUND: 'Question not found',
+  QUESTION_STATUS_UPDATED: 'Question status updated successfully',
+  BLOG_NOT_FOUND: 'BLOG_NOT_FOUND',
+  BLOG_STATUS_UPDATED: 'Blog status updated successfully',
   CONSULT_APPOINTMENT_REFUND_RETRIEVED_SUCCESS: 'Consult appointment refund retrieved successfully',
   CONSULT_APPOINTMENT_REFUND_SUCCESS: 'Consult appointment refund created successfully',
   REFUND_NOT_FOUND: 'REFUND_NOT_FOUND',

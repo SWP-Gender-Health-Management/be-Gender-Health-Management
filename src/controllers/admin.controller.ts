@@ -65,12 +65,12 @@ export const getAccountsController = async (req: Request, res: Response, next: N
 }
 
 export const updateAccountAdminController = async (req: Request, res: Response, next: NextFunction) => {
-  const { account_id, full_name, phone, dob, gender, address, description } = req.body
-  const result = await accountService.updateProfile(account_id, full_name, phone, dob, gender, address, description)
+  const { acc_id, full_name, phone, dob, gender, address, description } = req.body
+  const result = await accountService.updateProfile(acc_id, full_name, phone, dob, gender, address, description)
   let staffProfile: StaffProfile | null = null
   if (result.role === Role.CONSULTANT) {
     const { specialty, rating, description, gg_meet } = req.body
-    staffProfile = await adminService.updateStaffProfile(account_id, specialty, rating, description, gg_meet)
+    staffProfile = await adminService.updateStaffProfile(acc_id, specialty, rating, description, gg_meet)
   }
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.USER_UPDATED_SUCCESS,
@@ -150,7 +150,7 @@ export const getNotificationController = async (req: Request, res: Response, nex
 
 export const sendBulkEmailController = async (req: Request, res: Response, next: NextFunction) => {
   // Lấy thông tin từ request của admin
-  const { targetGroup, subject, body } = req.body
+  const { targetRoles, subject, body } = req.body
 
   // TODO: Validate dữ liệu đầu vào
 
@@ -158,7 +158,7 @@ export const sendBulkEmailController = async (req: Request, res: Response, next:
     // Thêm một job mới vào queue
     // 'send-campaign' là tên của job
     // { targetGroup, subject, body } là dữ liệu của job
-    await emailQueue.add('send-campaign', { targetGroup, subject, body })
+    await emailQueue.add('send-campaign', { targetRoles, subject, body })
 
     // Phản hồi ngay lập tức cho admin
     // HTTP 202 Accepted nghĩa là "Yêu cầu đã được chấp nhận để xử lý"

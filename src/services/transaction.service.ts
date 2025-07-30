@@ -235,6 +235,7 @@ export class createTransactionService {
           app!.status = StatusAppointment.CONFIRMED
           await consultAppointmentRepository.save(app as ConsultAppointment)
         }
+        console.log('transaction successfully')
         await transactionRepository.save(transaction)
       }
       // 5. Gửi email xác nhận, bắt đầu quá trình giao hàng, v.v. --> gửi trong controller

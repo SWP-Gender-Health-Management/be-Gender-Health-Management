@@ -112,7 +112,7 @@ adminRoute.post('/view-account', restrictTo(Role.ADMIN), wrapRequestHandler(view
   gender: string
   }
 */
-adminRoute.post(
+adminRoute.put(
   '/update-profile',
   restrictTo(Role.ADMIN),
   conditionalAdminCheck,
@@ -120,7 +120,7 @@ adminRoute.post(
   wrapRequestHandler(updateAccountController)
 )
 
-adminRoute.post(
+adminRoute.put(
   '/update-con-profile',
   restrictTo(Role.ADMIN),
   validateUpdateAccount,
