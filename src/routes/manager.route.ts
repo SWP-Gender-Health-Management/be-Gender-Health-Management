@@ -17,7 +17,9 @@ import {
   getBlogsController,
   getQuestionsController,
   getRefundInfoByAppId,
-  refundLabAppointment
+  refundLabAppointment,
+  setBlogStatusController,
+  setQuestionStatusController
 } from '~/controllers/manager.controller.js'
 
 
@@ -87,7 +89,7 @@ managerRoute.get('/get-con-app', restrictTo(Role.MANAGER), wrapRequestHandler(ge
 */
 managerRoute.get(
   '/get-lab-app', 
-  // restrictTo(Role.MANAGER), 
+  restrictTo(Role.MANAGER), 
   wrapRequestHandler(getLabAppController)
 )
 
@@ -147,5 +149,9 @@ managerRoute.put(
   restrictTo(Role.CUSTOMER, Role.ADMIN, Role.MANAGER),
   wrapRequestHandler(refundLabAppointment)
 )
+
+managerRoute.put('/set-blog-status', restrictTo(Role.MANAGER), wrapRequestHandler(setBlogStatusController))
+
+managerRoute.put('/set-question-status', restrictTo(Role.MANAGER), wrapRequestHandler(setQuestionStatusController))
 
 export default managerRoute

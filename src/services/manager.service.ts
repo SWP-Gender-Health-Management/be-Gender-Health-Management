@@ -210,14 +210,15 @@ class ManagerService {
     }
   }
 
-  async getConsultants(page: string, limit: string, isBan: boolean) {
+  async getConsultants(page: string, limit: string, isBan: boolean | undefined, full_name: string) {
     const pageNumber = parseInt(page) || 1
     const limitNumber = parseInt(limit) || 10
     const skip = (pageNumber - 1) * limitNumber
     const [consultants, total] = await accountRepo.findAndCount({
       where: {
         role: Role.CONSULTANT,
-        is_banned: isBan
+        ...(isBan !== undefined && { is_banned: isBan }),
+        ...(full_name && { full_name: Like(`%${full_name}%`) })
       },
       skip,
       take: limitNumber
@@ -294,11 +295,11 @@ class ManagerService {
         ...(statusFilter &&
           (statusFilter === 'cancelled'
             ? {
-                status: In([StatusAppointment.PENDING_CANCELLED, StatusAppointment.CONFIRMED_CANCELLED])
-              }
+              status: In([StatusAppointment.PENDING_CANCELLED, StatusAppointment.CONFIRMED_CANCELLED])
+            }
             : {
-                status: statusFilter as StatusAppointment
-              })),
+              status: statusFilter as StatusAppointment
+            })),
         ...(dateFilter && {
           date: dateFilter
         })
@@ -320,7 +321,7 @@ class ManagerService {
         })
         if (transaction && transaction.refund) {
           isRequestedRefund = true
-          if( transaction.refund.is_refunded) {
+          if (transaction.refund.is_refunded) {
             isRefunded = true
           }
         }
@@ -433,7 +434,7 @@ class ManagerService {
 
   async getBlogs(
     pageVar: { limit: number; page: number },
-    filter: { title: string; content: string; author: string; status: boolean }
+    filter: { title: string; content: string; author: string; status: string }
   ) {
     const { limit, page } = pageVar
     const skip = (page - 1) * limit
@@ -450,7 +451,12 @@ class ManagerService {
         account: {
           full_name: author ? Like(`%${author}%`) : undefined
         },
-        status: status
+        ...(status && status !== 'all' && {
+          status: status === 'true' ? true : false
+        })
+      },
+      relations: {
+        account: true
       }
     })
     const resultNew: any[] = []
@@ -461,7 +467,9 @@ class ManagerService {
         author: element.account.full_name,
         image: element.images,
         status: element.status,
-        created_at: element.created_at
+        created_at: element.created_at,
+        blog_id: element.blog_id,
+        major: element.major
       }
       resultNew.push(blog)
     })
@@ -471,43 +479,71 @@ class ManagerService {
     }
   }
 
-  async getQuestions(pageVar: { limit: number; page: number }, status: boolean) {
+  async setBlogStatus(blog_id: string, status: string) {
+    const blog = await blogRepo.findOne({
+      where: { blog_id }
+    })
+    if (!blog) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.BLOG_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    blog.status = status === 'true' ? true : false
+    await blogRepo.save(blog)
+    return {
+      message: MANAGER_MESSAGES.BLOG_STATUS_UPDATED,
+      status: HTTP_STATUS.OK
+    }
+  }
+
+  async getQuestions(pageVar: { limit: number; page: number }, status: string | undefined, isReplied: string | undefined) {
     const { limit, page } = pageVar
     const skip = (page - 1) * limit
+    console.log("status",status, "isReplied", isReplied)
     const [result, total] = await questionRepo.findAndCount({
       order: {
         created_at: 'DESC'
       },
       where: {
-        status: status
+        ...(status && { status: status === 'true' ? true : false }),
+        ...(isReplied && { is_replied: isReplied === 'true' ? true : false })
       },
       skip,
       take: limit,
       relations: {
-        reply: true,
-        customer: true
+        reply: {
+          consultant: true
+        },
+        customer: true,
       }
     })
     const resultNew: any[] = []
     result.forEach((element: Question) => {
       const question = {
-        customer: element.customer.full_name,
+        ques_id: element.ques_id,
+        customer_name: element.customer.full_name,
+        customer_email: element.customer.email,
         content: element.content,
+        status: element.status,
         created_at: element.created_at,
+        is_replied: element.is_replied,
         reply: element.reply
           ? {
-              content: element.reply.content,
-              created_at: element.reply.created_at
-            }
+            content: element.reply.content,
+            created_at: element.reply.created_at,
+            created_by: element.reply.consultant.full_name
+          }
           : {
-              content: null,
-              created_at: null
-            }
+            content: null,
+            created_at: null,
+            created_by: null
+          }
       }
       resultNew.push(question)
     })
     return {
-      result: resultNew,
+      questions: resultNew,
       totalPage: Math.ceil(total / limit)
     }
   }
@@ -562,6 +598,24 @@ class ManagerService {
 
     transaction.refund.is_refunded = true
     await refundRepository.save(transaction.refund)
+  }
+
+  async setQuestionStatus(ques_id: string, status: string) {
+    const question = await questionRepo.findOne({
+      where: { ques_id }
+    })
+    if (!question) {
+      throw new ErrorWithStatus({
+        message: MANAGER_MESSAGES.QUESTION_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    question.status = status === 'true' ? true : false
+    await questionRepo.save(question)
+    return {
+      message: MANAGER_MESSAGES.QUESTION_STATUS_UPDATED,
+      status: HTTP_STATUS.OK
+    }
   }
 }
 const managerService = new ManagerService()
