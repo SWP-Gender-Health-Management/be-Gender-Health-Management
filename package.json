@@ -31,7 +31,8 @@
     "seed:consult-reports": "tsx src/scripts/create-consult-reports.ts",
     "seed:create-9-questions-6-replies": "tsx src/scripts/create-9-questions-6-replies.ts",
     "seed:create-fake-consultant-profiles": "tsx src/scripts/create-fake-consultant-profiles.ts",
-    "seed:fake-notifications": "tsx src/scripts/create-fake-notifications.ts"
+    "seed:fake-notifications": "tsx src/scripts/create-fake-notifications.ts",
+    "seed:additional-notifications": "tsx src/scripts/create-additional-notifications.ts"
   },
   "keywords": [],
   "author": "",
