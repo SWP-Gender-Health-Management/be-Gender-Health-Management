@@ -56,9 +56,9 @@ export const getRecentAppController = async (req: Request, res: Response, next: 
 export const getConsultantsController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, limit } = req.query
-    let { isBan } = req.body
-    isBan = isBan === 'undefined' ? undefined : isBan.boolean()
-    const result = await managerService.getConsultants(page as string, limit as string, isBan)
+    const { is_banned, full_name } = req.query
+    let isBan = is_banned === 'undefined' ? undefined : (is_banned === 'true' ? true : false)
+    const result = await managerService.getConsultants(page as string, limit as string, isBan, full_name as string)
     res.status(HTTP_STATUS.OK).json({
       message: MANAGER_MESSAGES.GET_CONSULTANTS_SUCCESS,
       result
@@ -71,9 +71,9 @@ export const getConsultantsController = async (req: Request, res: Response, next
 export const getStaffsController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, limit } = req.query
-    let { isBan } = req.body
-    isBan = isBan === 'undefined' ? undefined : isBan.boolean()
-    const result = await managerService.getStaffs(page as string, limit as string, isBan)
+    const { is_banned, full_name } = req.query
+    let isBan = is_banned === 'undefined' ? undefined : (is_banned === 'true' ? true : false)
+    const result = await managerService.getStaffs(page as string, limit as string, isBan as boolean | undefined, full_name as string)
     res.status(HTTP_STATUS.OK).json({
       message: MANAGER_MESSAGES.GET_STAFFS_SUCCESS,
       result
@@ -172,13 +172,13 @@ export const getBlogsController = async (req: Request, res: Response, next: Next
       limit: parseInt(limit as string) || 10,
       page: parseInt(page as string) || 1
     }
-    const { title, content, author, status } = req.body
-    const statusBlog = status === 'undefined' ? undefined : status.boolean()
+    const { title, content, author, status } = req.query
+    const statusBlog = status === 'undefined' ? undefined : status
     const filter = {
       title: title as string,
       content: content as string,
       author: author as string,
-      status: statusBlog as boolean
+      status: statusBlog as string
     }
     const result = await managerService.getBlogs(pageVar, filter)
     res.status(HTTP_STATUS.OK).json({
@@ -194,12 +194,11 @@ export const getQuestionsController = async (req: Request, res: Response, next: 
   try {
     const { page, limit } = req.query
     const pageVar = {
-      limit: parseInt(limit as string) || 10,
+      limit: parseInt(limit as string) || 0,
       page: parseInt(page as string) || 1
     }
-    const { status } = req.body
-    const statusQuestion = status === 'undefined' ? undefined : status.boolean()
-    const result = await managerService.getQuestions(pageVar, statusQuestion)
+    const { status, is_replied } = req.query
+    const result = await managerService.getQuestions(pageVar, status as string | undefined, is_replied as string | undefined)
     res.status(HTTP_STATUS.OK).json({
       message: MANAGER_MESSAGES.GET_QUESTIONS_SUCCESS,
       result
@@ -228,6 +227,84 @@ export const refundLabAppointment = async (req: Request, res: Response, next: Ne
     const result = await managerService.refundLabAppointment(app_id as string)
     res.status(HTTP_STATUS.OK).json({
       message: MANAGER_MESSAGES.CONSULT_APPOINTMENT_REFUND_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const setBlogStatusController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { status, blog_id } = req.body
+    const result = await managerService.setBlogStatus(blog_id as string, status as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.BLOG_STATUS_UPDATED,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const setQuestionStatusController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { status, ques_id } = req.body
+    const result = await managerService.setQuestionStatus(ques_id as string, status as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.QUESTION_STATUS_UPDATED,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getConsultantPatternByWeekController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { consultant_id, start_date } = req.query
+    const result = await managerService.getConsultantPatternByWeek(consultant_id as string, start_date as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_CONSULTANT_PATTERN_BY_WEEK_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const createConsultantPatternController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { consultant_id, date, working_slot_ids } = req.body
+    const result = await managerService.createConsultantPattern(consultant_id as string, date as string, working_slot_ids as string[])
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.CREATE_CONSULTANT_PATTERN_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getStaffPatternByWeekController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { staff_id, start_date } = req.query
+    const result = await managerService.getStaffPatternByWeek(staff_id as string, start_date as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.GET_STAFF_PATTERN_BY_WEEK_SUCCESS,
+      result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const createStaffPatternController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { staff_id, date, working_slot_id } = req.body
+    const result = await managerService.createStaffPattern(staff_id as string, date as string, working_slot_id as string)
+    res.status(HTTP_STATUS.OK).json({
+      message: MANAGER_MESSAGES.CREATE_STAFF_PATTERN_SUCCESS,
       result
     })
   } catch (error) {

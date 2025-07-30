@@ -348,7 +348,7 @@ class CustomerService {
   }
 
   async getLaborarityAppointments(limit: string, page: string, account_id: string) {
-    const limitNumber = parseInt(limit) || 10
+    const limitNumber = parseInt(limit) || 0
     const pageNumber = parseInt(page) || 1
     const skip = (pageNumber - 1) * limitNumber
 
