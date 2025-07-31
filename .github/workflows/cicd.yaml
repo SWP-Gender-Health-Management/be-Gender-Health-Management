@@ -27,6 +27,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_PRODUCTION }}" > .env
+
       - name: Run production container from prebuilt image
         run: |
           docker stop swp-server || true
