@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import path from 'path'
 import fs from 'fs'
-import { fileURLToPath } from 'url'
+
 import sgMail from '@sendgrid/mail'
 
 dotenv.config()
@@ -17,8 +17,8 @@ if (!sendGridApiKey) {
   console.log('✅ SendGrid đã được cấu hình.')
 }
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+// In CommonJS, __filename and __dirname are already available
+// const __filename and __dirname are provided by Node.js in CommonJS
 
 export interface MailOptions {
   to: string // Địa chỉ người nhận

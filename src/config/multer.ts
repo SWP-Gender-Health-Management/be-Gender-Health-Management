@@ -1,12 +1,9 @@
 import multer from 'multer';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import {fileURLToPath} from 'url'; 
 import { ensureDir } from 'fs-extra';
 
-// Lấy __dirname trong ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// In CommonJS, __dirname is already available
 
 // Đường dẫn thư mục lưu trữ
 const uploadDir = path.join(__dirname, '../../uploads');

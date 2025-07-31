@@ -26,16 +26,14 @@ import { SocketServer } from './config/websocket.config.js'
 // import { SocketIOService } from './services/websocket.service.js'
 import managerRoute from './routes/manager.route.js'
 import path from 'path'
-import { fileURLToPath } from 'url'
+
 import refreshTokenRoute from './routes/refresh_token.route.js'
 import notiRoute from './routes/notification.route.js'
 import { SocketIOService } from './services/websocket.service.js'
 
 dotenv.config()
 
-// Lấy __dirname trong ES modules
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+// In CommonJS, __dirname is already available
 // Get the directory name of the current module
 const uploadsPath = path.join(__dirname, '../uploads')
 
