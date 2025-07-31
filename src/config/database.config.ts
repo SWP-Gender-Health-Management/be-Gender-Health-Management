@@ -22,7 +22,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: false,
   logging: true,
-  entities: ['src/models/Entity/*.entity.ts'],
-  migrations: ['src/migration/*.ts'],
-  subscribers: ['src/subscriber/*.ts']
+  entities: [process.env.NODE_ENV === 'production' ? 'dist/models/Entity/*.entity.js' : 'src/models/Entity/*.entity.ts'],
+  migrations: [process.env.NODE_ENV === 'production' ? 'dist/migration/*.js' : 'src/migration/*.ts'],
+  subscribers: [process.env.NODE_ENV === 'production' ? 'dist/subscriber/*.js' : 'src/subscriber/*.ts']
 })
