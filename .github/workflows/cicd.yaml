@@ -40,12 +40,12 @@ jobs:
             -p 3000:3000 \
             swp-server:latest
 
-  cleanup:
-    name: Cleanup
-    runs-on: [self-hosted]
-    needs: [build, deploy-production]
-    steps:
-      - name: Cleanup unused images
-        run: |
-          docker image prune -f
-          docker system prune -f
+  # cleanup:
+  #   name: Cleanup
+  #   runs-on: [self-hosted]
+  #   needs: [build, deploy-production]
+  #   steps:
+  #     - name: Cleanup unused images
+  #       run: |
+  #         docker image prune -f
+  #         docker system prune -f
