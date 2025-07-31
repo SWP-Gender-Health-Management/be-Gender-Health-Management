@@ -5,6 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx nodemon",
+    "dev:ts": "npx ts-node -r tsconfig-paths/register src/index.ts",
     "build": "rimraf ./dist && tsc && tsc-alias",
     "start": "node -r tsconfig-paths/register dist/index.js",
     "lint": "eslint .",
@@ -82,7 +83,7 @@
     "socket.io": "^4.8.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.20",
+    "typeorm": "^0.3.17",
     "uuid": "^11.1.0",
     "vnpay": "^2.3.0"
   }

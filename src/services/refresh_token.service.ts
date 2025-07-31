@@ -54,7 +54,7 @@ class RefreshTokenService {
    * @returns The deleted refresh token
    */
   async deleteRefreshToken({ account }: { account: Account }) {
-    return await refreshTokenRepository.delete({ account: account })
+    return await refreshTokenRepository.delete({ account: { account_id: account.account_id } })
   }
 }
 
