@@ -1,6 +1,6 @@
 import { Server } from 'socket.io'
-import Notification from 'src/models/Entity/notification.entity.js'
-import { AppDataSource } from '~/config/database.config.js'
+import Notification from '../models/Entity/notification.entity.js'
+import { AppDataSource } from '../config/database.config.js'
 
 const notificationRepository = AppDataSource.getRepository(Notification)
 
