@@ -1,0 +1,48 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: [self-hosted]
+    outputs:
+      image_tag: latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_PRODUCTION }}" > .env
+
+      - name: Build Docker image
+        run: docker build -t swp-server:latest .
+
+  deploy-production:
+    name: Deploy for Production
+    needs: build
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run production container from prebuilt image
+        run: |
+          docker stop swp-server || true
+          docker rm swp-server || true
+          docker run -d --name swp-server \
+            --env-file .env \
+            -e PORT=3000 \
+            -p 3000:3000 \
+            swp-server:latest
+
+  cleanup:
+    name: Cleanup
+    runs-on: [self-hosted]
+    needs: [build, deploy-production]
+    steps:
+      - name: Cleanup unused images
+        run: |
+          docker image prune -f
+          docker system prune -f
