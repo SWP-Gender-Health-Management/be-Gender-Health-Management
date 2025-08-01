@@ -53,29 +53,29 @@ class ManagerService {
       }),
       transactionRepo
         .createQueryBuilder('transaction')
-        .select('SUM(transaction.amount)', 'totalRevenue')
+        .select('COALESCE(SUM(transaction.amount), 0)', 'totalRevenue')
         .where('transaction.date = :date', { date: today })
         .andWhere('transaction.app_id LIKE :app_id', { app_id: 'Lab_%' })
         .getRawOne()
-        .then((result) => result.totalRevenue),
+        .then((result) => parseFloat(result.totalRevenue) || 0),
       transactionRepo
         .createQueryBuilder('transaction')
-        .select('SUM(transaction.amount)', 'totalRevenue')
+        .select('COALESCE(SUM(transaction.amount), 0)', 'totalRevenue')
         .where('transaction.date = :date', { date: today })
         .andWhere('transaction.app_id LIKE :app_id', { app_id: 'Con_%' })
         .getRawOne()
-        .then((result) => result.totalRevenue),
+        .then((result) => parseFloat(result.totalRevenue) || 0),
       mensRepo
         .createQueryBuilder('MenstrualCycle')
-        .select('COUNT(mens.id)', 'totalMenstrual')
+        .select('COUNT(MenstrualCycle.cycle_id)', 'totalMenstrual')
         .where("date_trunc('week', MenstrualCycle.created_at) = date_trunc('week', NOW())")
         .getRawOne()
-        .then((result) => result.totalMenstrual)
+        .then((result) => parseInt(result.totalMenstrual) || 0)
     ])
     return {
-      totalApp: labApp + conApp,
-      totalLabRevenue,
+      totalAppointments: labApp + conApp,
       totalConRevenue,
+      totalLabRevenue,
       totalMenstrual
     }
   }
@@ -134,26 +134,33 @@ class ManagerService {
           }
         }
       }),
-      feedbackRepo
-        .createQueryBuilder('feedback')
-        .select('SUM(feedback.rating)', 'totalRating')
-        .where('feedback.date BETWEEN :startOfWeek AND :endOfWeek', {
-          startOfWeek: startOfWeekDate,
-          endOfWeek: endOfWeekDate
-        })
-        .getRawOne()
-        .then((result) => result.totalRating),
+      feedbackRepo.count({
+        where: {
+          date: Between(startOfWeekDate, endOfWeekDate),
+          rating: MoreThanOrEqual(4) // Feedback tốt có rating >= 4
+        }
+      }),
       feedbackRepo.count({
         where: {
           date: Between(startOfWeekDate, endOfWeekDate)
         }
       })
     ])
+    
+    // Xử lý trường hợp chia cho 0
+    const completedPercent = (totalLabApp + totalConApp) > 0 
+      ? ((completedLabApp + completedConApp) / (totalLabApp + totalConApp)) * 100 
+      : 0
+    
+    const goodFeedPercent = totalFeedback > 0 
+      ? (goodFeedback / totalFeedback) * 100 
+      : 0
+    
     return {
       totalPendingApp: pendingLabApp + pendingConApp,
       totalCompletedApp: completedLabApp + completedConApp,
-      completedPercent: ((completedLabApp + completedConApp) / (totalLabApp + totalConApp)) * 100,
-      goodFeedPercent: goodFeedback / totalFeedback
+      completedPercent,
+      goodFeedPercent
     }
   }
 

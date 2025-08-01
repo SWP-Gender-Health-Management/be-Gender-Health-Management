@@ -108,7 +108,7 @@ export const getReportOverallController = async (req: Request, res: Response, ne
 
 export const getPercentRevenueController = async (req: Request, res: Response, next: NextFunction) => {
   const { day } = req.query
-  const result = await adminService.getPercentRevenue(day as string)
+  const result = await adminService.getPercentRevenue(parseInt(day as string))
   res.status(HTTP_STATUS.OK).json({
     message: ADMIN_MESSAGES.PERCENT_REVENUE_SUCCESS,
     data: result
