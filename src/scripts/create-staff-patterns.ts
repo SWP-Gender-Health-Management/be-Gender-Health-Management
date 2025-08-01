@@ -41,8 +41,8 @@ async function createStaffPatterns() {
     console.log(`Using ${existingWorkingSlots.length} working slot for staffs (slot 1 only)`)
 
     // Tạo pattern cho mỗi staff từ 16/6 đến 30/6/2025
-    const startDate = new Date('2025-07-24')
-    const endDate = new Date('2025-07-24')
+    const startDate = new Date('2025-07-28')
+    const endDate = new Date('2025-08-03')
     const patterns = []
 
     for (const staff of staffs) {
