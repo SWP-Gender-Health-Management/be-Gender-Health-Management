@@ -55,7 +55,7 @@ async function processDueNotifications(): Promise<void> {
         // gửi thông báo đến account
         await sendMail(options)
 
-        const removedCount = await redisClient.zRem(SCHEDULED_NOTIFICATIONS_KEY, notificationString)
+        const removedCount = await redisClient.zrem(SCHEDULED_NOTIFICATIONS_KEY, notificationString)
         if (removedCount < 0) {
           console.warn(`${notificationPayload.notificationId} is done, but cannot to delete worker`)
         }
