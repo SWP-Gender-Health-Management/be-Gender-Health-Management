@@ -144,12 +144,12 @@ export class ConsultAppointmentService {
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'customer', 'report']
     })
 
-    if (!consultAppointments.length) {
-      throw new ErrorWithStatus({
-        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
+    // if (!consultAppointments) {
+    //   throw new ErrorWithStatus({
+    //     message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
+    //     status: HTTP_STATUS.NOT_FOUND
+    //   })
+    // }
 
     const app: any[] = []
     for (const conApp of consultAppointments) {
@@ -249,12 +249,12 @@ export class ConsultAppointmentService {
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'customer', 'report']
     })
 
-    if (!consultAppointments.length) {
-      throw new ErrorWithStatus({
-        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
+    // if (!consultAppointments) {
+    //   throw new ErrorWithStatus({
+    //     message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
+    //     status: HTTP_STATUS.NOT_FOUND
+    //   })
+    // }
 
     const app: any[] = []
     for (const conApp of consultAppointments) {
@@ -487,12 +487,12 @@ export class ConsultAppointmentService {
       },
       relations: ['consultant_pattern', 'consultant_pattern.working_slot', 'customer', 'report']
     })
-    if (!consultAppointments.length) {
-      throw new ErrorWithStatus({
-        message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
+    // if (!consultAppointments) {
+    //   throw new ErrorWithStatus({
+    //     message: CONSULTANT_APPOINTMENTS_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
+    //     status: HTTP_STATUS.NOT_FOUND
+    //   })
+    // }
 
     return consultAppointments
   }

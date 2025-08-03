@@ -140,12 +140,12 @@ export class ReplyService {
       relations: ['consultant', 'question']
     })
 
-    if (!replies || replies.length === 0) {
-      throw new ErrorWithStatus({
-        message: REPLY_MESSAGES.REPLY_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
+    // if (!replies) {
+    //   throw new ErrorWithStatus({
+    //     message: REPLY_MESSAGES.REPLY_NOT_FOUND,
+    //     status: HTTP_STATUS.NOT_FOUND
+    //   })
+    // }
 
     return replies
   }

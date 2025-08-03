@@ -72,7 +72,8 @@ import feedbackService from '~/services/feedback.service.js'
 export const createFeedback = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { app_id, content, rating, type, customer_id } = req.body
-    const result = await feedbackService.createFeedback( app_id, content, rating, type, customer_id)
+    const ratingNumber = parseInt(rating) || 0;
+    const result = await feedbackService.createFeedback( app_id, content, ratingNumber, type, customer_id)
     res.status(HTTP_STATUS.CREATED).json({
       message: FEEDBACK_MESSAGES.FEEDBACK_CREATED_SUCCESS,
       result

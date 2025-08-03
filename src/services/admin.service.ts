@@ -105,7 +105,8 @@ class AdminService {
 
     // 3. Tạo 2 array riêng biệt
     const listDate: string[] = rawResult.map((item: { date: string; count: number }) =>
-      format(new Date(item.date), 'dd/MM')
+      // format(new Date(item.date), 'dd/MM')
+      new Date(item.date).toISOString()
     ) // Định dạng ngày: '26/06'
     const listCount: number[] = rawResult.map((item: { date: string; count: number }) => item.count) // Số lượng người tham gia theo index
 
@@ -324,10 +325,10 @@ class AdminService {
    *  listSumRevenue: number[]
    * }
    */
-  async getPercentRevenue(day: string) {
+  async getPercentRevenue(day: number) {
     // 1. Tính toán ngày bắt đầu
     let startDate = new Date()
-    startDate = subDays(startDate, parseInt(day as string))
+    startDate = subDays(startDate, day - 1)
     startDate.setHours(0, 0, 0, 0)
 
     const endDate = new Date()
@@ -350,7 +351,7 @@ class AdminService {
 
     // 3. Tạo 2 array riêng biệt
     const listDate: string[] = rawResult.map((item: { date: string; sum_revenue: number }) =>
-      format(new Date(item.date), 'dd/MM')
+      new Date(item.date).toISOString()
     ) // Định dạng ngày: '26/06'
     const listSumRevenue: number[] = rawResult.map((item: { date: string; sum_revenue: number }) => item.sum_revenue) // Số lượng người tham gia theo index
 
@@ -406,24 +407,20 @@ class AdminService {
     const today = new Date()
     const yesterday = subDays(today, 30)
     const [lab, con] = await Promise.all([
-      transactionRepo.count({
-        where: {
+      transactionRepo.createQueryBuilder('transaction').select('SUM(transaction.amount)', 'total_revenue').where({
           app_id: Like('Lab%'),
           status: TransactionStatus.PAID,
           updated_at: Between(yesterday, today)
-        }
-      }),
-      transactionRepo.count({
-        where: {
+      }).getRawOne(),
+      transactionRepo.createQueryBuilder('transaction').select('SUM(transaction.amount)', 'total_revenue').where({
           app_id: Like('Con%'),
           status: TransactionStatus.PAID,
           updated_at: Between(yesterday, today)
-        }
-      })
+      }).getRawOne()
     ])
     return {
-      lab,
-      con
+      lab: lab.total_revenue ?? 0,
+      con: con.total_revenue ?? 0
     }
   }
 
@@ -458,7 +455,7 @@ class AdminService {
       })
     ])
     return {
-      totalFeed: goodFeed + normalFeed + badFeed,
+      // totalFeed: goodFeed + normalFeed + badFeed,
       goodFeed,
       normalFeed,
       badFeed
