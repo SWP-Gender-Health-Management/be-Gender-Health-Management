@@ -151,12 +151,12 @@ export class QuestionService {
       relations: ['customer', 'reply', 'reply.consultant']
     })
 
-    if (!questions || questions.length === 0) {
-      throw new ErrorWithStatus({
-        message: QUESTION_MESSAGES.QUESTION_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
+    // if (!questions) {
+    //   throw new ErrorWithStatus({
+    //     message: QUESTION_MESSAGES.QUESTION_NOT_FOUND,
+    //     status: HTTP_STATUS.NOT_FOUND
+    //   })
+    // }
 
     const ques: any[] = []
     for (const question of questions) {

@@ -208,12 +208,12 @@ export class FeedbackService {
       take: limit
     })
 
-    if (!feedbacks.length) {
-      throw new ErrorWithStatus({
-        message: FEEDBACK_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
+    // if (!feedbacks) {
+    //   throw new ErrorWithStatus({
+    //     message: FEEDBACK_MESSAGES.CONSULT_APPOINTMENT_NOT_FOUND,
+    //     status: HTTP_STATUS.NOT_FOUND
+    //   })
+    // }
 
     return feedbacks;
   }

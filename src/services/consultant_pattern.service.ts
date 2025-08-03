@@ -177,12 +177,12 @@ export class ConsultantPatternService {
       relations: ['working_slot']
     })
 
-    if (!consultantPattern) {
-      throw new ErrorWithStatus({
-        message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
+    // if (!consultantPattern) {
+    //   throw new ErrorWithStatus({
+    //     message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_NOT_FOUND,
+    //     status: HTTP_STATUS.NOT_FOUND
+    //   })
+    // }
 
     return consultantPattern
   }
@@ -215,12 +215,12 @@ export class ConsultantPatternService {
       relations: ['working_slot']
     })
 
-    if (!consultantPattern) {
-      throw new ErrorWithStatus({
-        message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
+    // if (!consultantPattern) {
+    //   throw new ErrorWithStatus({
+    //     message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_NOT_FOUND,
+    //     status: HTTP_STATUS.NOT_FOUND
+    //   })
+    // }
 
     return consultantPattern
   }
@@ -254,12 +254,12 @@ export class ConsultantPatternService {
           'working_slot',
         ],
       })
-      if (!consultantPatterns.length) {
-        throw new ErrorWithStatus({
-          message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_NOT_FOUND,
-          status: HTTP_STATUS.NOT_FOUND
-        })
-      }
+      // if (!consultantPatterns) {
+      //   throw new ErrorWithStatus({
+      //     message: CONSULTANT_PATTERNS_MESSAGES.CONSULTANT_PATTERN_NOT_FOUND,
+      //     status: HTTP_STATUS.NOT_FOUND
+      //   })
+      // }
   
       return consultantPatterns
     }

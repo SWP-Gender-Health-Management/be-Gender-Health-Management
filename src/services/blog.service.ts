@@ -157,12 +157,12 @@ export class BlogService {
       relations: ['account']
     })
 
-    if (!blogs || blogs.length === 0) {
-      throw new ErrorWithStatus({
-        message: BLOG_MESSAGES.BLOG_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
+    // if (!blogs) {
+    //   throw new ErrorWithStatus({
+    //     message: BLOG_MESSAGES.BLOG_NOT_FOUND,
+    //     status: HTTP_STATUS.NOT_FOUND
+    //   })
+    // }
 
     // Chuyển đổi images thành URL
     return blogs.map((blog) => ({
