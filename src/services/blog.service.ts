@@ -101,7 +101,7 @@ export class BlogService {
 
   // Get all blogs
   async getAllBlogs(pageVar: { limit: string; page: string }): Promise<Blog[]> {
-    let limit = parseInt(pageVar.limit) || LIMIT.default
+    let limit = parseInt(pageVar.limit) || LIMIT.all
     let page = parseInt(pageVar.page) || 1
     const skip = (page - 1) * limit
     const blogs = await blogRepository.find({
