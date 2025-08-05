@@ -254,8 +254,11 @@ class CustomerService {
       })
     }
 
-    const period =
+    let period =
       (new Date(start_date).getTime() - new Date(menstrualCycle.start_date).getTime()) / (24 * 60 * 60 * 1000)
+    if (period < 0) {
+      period = menstrualCycle.period
+    }
     console.log(period)
     await menstrualCycleRepository.update(menstrualCycle.cycle_id, {
       start_date,
