@@ -118,8 +118,9 @@ export class createTransactionService {
       orderCode: parseInt(orderCode), // orderCode phải là số nguyên
       amount: transaction.amount,
       description: transaction.description,
-      currency: 'VND',
-      expireTime: 1000 * 60 * 5,
+      // currency: 'VND',
+      // expiredAt: 1000 * 60 * 5,
+      expiredAt: Math.floor((Date.now() + 5 * 60 * 1000) / 1000),
       returnUrl: process.env.FRONTEND_RETURN_URL!,
       cancelUrl: process.env.FRONTEND_CANCEL_URL!
     }
