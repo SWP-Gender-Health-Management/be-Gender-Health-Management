@@ -22,6 +22,7 @@ import replyRoute from './routes/reply.route.js'
 import consultReportRoute from './routes/consult_report.route.js'
 import feedbackRoute from './routes/feedback.route.js'
 import blogRoute from './routes/blog.route.js'
+import nvRoute from './routes/nhanvien.route.js'
 import { SocketServer } from './config/websocket.config.js'
 // import { SocketIOService } from './services/websocket.service.js'
 import managerRoute from './routes/manager.route.js'
@@ -73,6 +74,8 @@ initializeApp()
       app.use('/manager', managerRoute)
       // route customer
       app.use('/customer', customerRoute)
+      // route nv
+      app.use('/nv', nvRoute)
       //route staff
       app.use('/staff', staffRoute)
       // route working slot
